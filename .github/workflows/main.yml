@@ -72,7 +72,7 @@ jobs:
   # https://docs.expo.dev/eas-update/github-actions/
   mobile-deploy:
     needs: [lint, type-check, check-prettier, test]
-    name: Mobile Deploy (iOS and Android)
+    name: iOS & Android Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Check for EXPO_TOKEN
@@ -82,7 +82,7 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout repository
+      - name: Checkout Too Many Men
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -102,3 +102,35 @@ jobs:
 
       - name: Publish update
         run: eas update --branch preview --auto
+
+  web-deploy:
+    name: Web Deploy
+    needs: [lint, type-check, check-prettier, test]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Too Many Men
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build Web App
+        run: EXPO_PUBLIC_API_URL=https://too-many-men-api-8dcb4a385e6b.herokuapp.com npx expo export -p web
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: "./dist"
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: ${{ github.event.head_commit.message }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
