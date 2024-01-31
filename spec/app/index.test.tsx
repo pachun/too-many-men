@@ -8,11 +8,7 @@ describe("Opening the app", () => {
     ERTL.renderRouter("src/app")
 
     await ERTL.waitFor(() => {
-      expect(
-        // @ts-ignore - We can't get RNTL to find this any other way
-        // https://callstack.github.io/react-native-testing-library/docs/api-queries/#legacy-unit-testing-helpers
-        ERTL.screen.UNSAFE_getByType("RNSScreenStackHeaderConfig").props.title,
-      ).toEqual("Teammates")
+      expect(ERTL.screen).toHaveNavigationBarTitle("Teammates")
     })
   })
 
@@ -38,7 +34,7 @@ describe("Opening the app", () => {
   })
 
   describe("when players have loaded", () => {
-    it("shows players", async () => {
+    it("shows players names", async () => {
       await apiMock({
         mockedRequest: {
           method: "get",
@@ -56,6 +52,47 @@ describe("Opening the app", () => {
             expect(ERTL.screen).toShowText("Dwight Schrute")
           })
         },
+      })
+    })
+
+    it("shows players jersey numbers", async () => {
+      await apiMock({
+        mockedRequest: {
+          method: "get",
+          route: "/players",
+          response: [
+            playerFactory({ jersey_number: 1 }),
+            playerFactory({ jersey_number: 2 }),
+          ],
+        },
+        test: async () => {
+          ERTL.renderRouter("src/app")
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).toShowText("#1")
+            expect(ERTL.screen).toShowText("#2")
+          })
+        },
+      })
+    })
+
+    describe("when a player does not have a jersey number", () => {
+      it("does not show a jersey number for the player", async () => {
+        await apiMock({
+          mockedRequest: {
+            method: "get",
+            route: "/players",
+            response: [playerFactory({ name: "Creed Bratton" })],
+          },
+          test: async () => {
+            ERTL.renderRouter("src/app")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowText("Creed Bratton")
+              expect(ERTL.screen).not.toShowText("#")
+            })
+          },
+        })
       })
     })
 

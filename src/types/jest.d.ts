@@ -5,6 +5,7 @@ declare namespace jest {
   interface Matchers<_R> {
     toShowText(text: string): CustomMatcherResult
     toShowTestID(text: string): CustomMatcherResult
+    toHaveNavigationBarTitle(title: string): CustomMatcherResult
   }
 }
 

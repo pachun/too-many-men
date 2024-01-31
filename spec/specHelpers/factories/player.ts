@@ -7,6 +7,7 @@ const playerFactory = (partialPlayer: Partial<Player>): Player => {
     id: partialPlayer.id || numberOfPlayers,
     name:
       partialPlayer.name || `Factory Generated Player Name ${numberOfPlayers}`,
+    jersey_number: partialPlayer.jersey_number,
   }
 
   numberOfPlayers += 1
