@@ -1,0 +1,104 @@
+name: Main
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      - name: Checkout Too Many Men
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+      - name: Install Dependencies
+        run: yarn install
+      - name: Lint
+        run: yarn lint
+
+  type-check:
+    runs-on: ubuntu-latest
+    name: Type Check
+    steps:
+      - name: Checkout Too Many Men
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+      - name: Install Dependencies
+        run: yarn install
+      - name: Type Check
+        run: yarn tsc
+
+  check-prettier:
+    runs-on: ubuntu-latest
+    name: Prettier Check
+    steps:
+      - name: Checkout Too Many Men
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+      - name: Install Dependencies
+        run: yarn install
+      - name: Prettier Check
+        run: yarn prettier-check
+
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    steps:
+      - name: Checkout Too Many Men
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "yarn"
+      - name: Install Dependencies
+        run: yarn install
+      - name: Test
+        run: EXPO_PUBLIC_API_URL=http://localhost:3000 yarn test --collectCoverage
+
+  # https://docs.expo.dev/eas-update/github-actions/
+  mobile-deploy:
+    needs: [lint, type-check, check-prettier, test]
+    name: Mobile Deploy (iOS and Android)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: yarn
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Publish update
+        run: eas update --branch preview --auto

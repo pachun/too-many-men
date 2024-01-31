@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "too-many-men",
+    "name": "Wolfpack Hockey",
     "slug": "too-many-men",
+    "scheme": "too-many-men",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,20 +12,33 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.castlelabs.too-many-men"
     },
     "android": {
+      "package": "com.castlelabs.too_many_men",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-updates",
+        {
+          "username": "pachun"
+        }
+      ]
+    ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
