@@ -124,7 +124,7 @@ jobs:
         run: EXPO_PUBLIC_API_URL=https://too-many-men-api-8dcb4a385e6b.herokuapp.com npx expo export -p web
 
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v2.0
+        uses: nwtgck/actions-netlify@v2.1.0
         with:
           publish-dir: "./dist"
           production-branch: main
