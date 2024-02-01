@@ -76,6 +76,27 @@ describe("Opening the app", () => {
       })
     })
 
+    it("shows players phone numbers", async () => {
+      await apiMock({
+        mockedRequest: {
+          method: "get",
+          route: "/players",
+          response: [
+            playerFactory({ phone_number: "0123456789" }),
+            playerFactory({ phone_number: "9876543210" }),
+          ],
+        },
+        test: async () => {
+          ERTL.renderRouter("src/app")
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).toShowText("(012) 345 6789")
+            expect(ERTL.screen).toShowText("(987) 654 3210")
+          })
+        },
+      })
+    })
+
     describe("when a player does not have a jersey number", () => {
       it("does not show a jersey number for the player", async () => {
         await apiMock({
