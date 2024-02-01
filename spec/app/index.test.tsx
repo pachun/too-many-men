@@ -34,14 +34,14 @@ describe("Opening the app", () => {
   })
 
   describe("when players have loaded", () => {
-    it("shows players names", async () => {
+    it("shows players full names", async () => {
       await apiMock({
         mockedRequest: {
           method: "get",
           route: "/players",
           response: [
-            playerFactory({ name: "Jim Halpert" }),
-            playerFactory({ name: "Dwight Schrute" }),
+            playerFactory({ first_name: "Jim", last_name: "Halpert" }),
+            playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
           ],
         },
         test: async () => {
@@ -50,6 +50,32 @@ describe("Opening the app", () => {
           await ERTL.waitFor(() => {
             expect(ERTL.screen).toShowText("Jim Halpert")
             expect(ERTL.screen).toShowText("Dwight Schrute")
+          })
+        },
+      })
+    })
+
+    it("orders players alphabetically by last name", async () => {
+      await apiMock({
+        mockedRequest: {
+          method: "get",
+          route: "/players",
+          response: [
+            playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
+            playerFactory({ first_name: "Jim", last_name: "Halpert" }),
+          ],
+        },
+        test: async () => {
+          ERTL.renderRouter("src/app")
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+
+            const playerListItems =
+              ERTL.screen.getAllByTestId("Player List Item")
+
+            expect(ERTL.within(playerListItems[0])).toShowText("Jim Halpert")
+            expect(ERTL.within(playerListItems[1])).toShowText("Dwight Schrute")
           })
         },
       })
@@ -103,7 +129,9 @@ describe("Opening the app", () => {
           mockedRequest: {
             method: "get",
             route: "/players",
-            response: [playerFactory({ name: "Creed Bratton" })],
+            response: [
+              playerFactory({ first_name: "Creed", last_name: "Bratton" }),
+            ],
           },
           test: async () => {
             ERTL.renderRouter("src/app")
@@ -123,8 +151,8 @@ describe("Opening the app", () => {
           method: "get",
           route: "/players",
           response: [
-            playerFactory({ name: "Jim Halpert" }),
-            playerFactory({ name: "Dwight Schrute" }),
+            playerFactory({ first_name: "Jim", last_name: "Halpert" }),
+            playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
           ],
         },
         test: async () => {
@@ -335,7 +363,9 @@ describe("Opening the app", () => {
                 mockedRequest: {
                   method: "get",
                   route: "/players",
-                  response: [playerFactory({ name: "Kelly Kapoor" })],
+                  response: [
+                    playerFactory({ first_name: "Kelly", last_name: "Kapoor" }),
+                  ],
                 },
                 test: async () => {
                   ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
@@ -359,8 +389,8 @@ describe("Opening the app", () => {
           method: "get",
           route: "/players",
           response: [
-            playerFactory({ name: "Jim Halpert" }),
-            playerFactory({ name: "Dwight Schrute" }),
+            playerFactory({ first_name: "Jim", last_name: "Halpert" }),
+            playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
           ],
         },
         test: async server => {
@@ -377,8 +407,8 @@ describe("Opening the app", () => {
               method: "get",
               route: "/players",
               response: [
-                playerFactory({ name: "Michael Scott" }),
-                playerFactory({ name: "Stanley Hudson" }),
+                playerFactory({ first_name: "Michael", last_name: "Scott" }),
+                playerFactory({ first_name: "Stanley", last_name: "Hudson" }),
               ],
             },
             test: async () => {
@@ -405,8 +435,8 @@ describe("Opening the app", () => {
             method: "get",
             route: "/players",
             response: [
-              playerFactory({ name: "Jim Halpert" }),
-              playerFactory({ name: "Dwight Schrute" }),
+              playerFactory({ first_name: "Jim", last_name: "Halpert" }),
+              playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
             ],
           },
           test: async server => {
@@ -448,8 +478,8 @@ describe("Opening the app", () => {
             method: "get",
             route: "/players",
             response: [
-              playerFactory({ name: "Jim Halpert" }),
-              playerFactory({ name: "Dwight Schrute" }),
+              playerFactory({ first_name: "Jim", last_name: "Halpert" }),
+              playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
             ],
           },
           test: async server => {

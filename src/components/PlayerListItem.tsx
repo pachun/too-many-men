@@ -32,7 +32,10 @@ const PlayerListItem = ({
   )
 
   return (
-    <ReactNative.View style={{ height: 44, paddingLeft: 10, width: "100%" }}>
+    <ReactNative.View
+      style={{ height: 44, paddingLeft: 10, width: "100%" }}
+      testID="Player List Item"
+    >
       <ReactNative.View
         style={{
           flex: 1,
@@ -45,8 +48,12 @@ const PlayerListItem = ({
         }}
       >
         <ReactNative.View>
-          <ReactNative.Text style={{ fontWeight: "bold" }}>
-            {player.name}
+          <ReactNative.Text>
+            {player.first_name}
+            <ReactNative.Text style={{ fontWeight: "bold" }}>
+              {" "}
+              {player.last_name}
+            </ReactNative.Text>
           </ReactNative.Text>
           <ReactNative.Text
             style={{ color: "gray", fontSize: 10, marginTop: 3 }}
