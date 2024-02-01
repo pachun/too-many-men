@@ -1,22 +1,25 @@
 import * as ExpoRouter from "expo-router"
-import { ThemeProvider, DefaultTheme } from "@react-navigation/native"
+import * as ReactNavigationNative from "@react-navigation/native"
+import * as ReactNativeSafeAreaContext from "react-native-safe-area-context"
 import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 
 const Layout = (): React.ReactElement => {
   const theme = {
-    ...DefaultTheme,
+    ...ReactNavigationNative.DefaultTheme,
     colors: {
-      ...DefaultTheme.colors,
+      ...ReactNavigationNative.DefaultTheme.colors,
       background: "#fff",
     },
   }
 
   return (
-    <ThemeProvider value={theme}>
-      <NavigationHeaderToastNotification.Provider>
-        <ExpoRouter.Stack />
-      </NavigationHeaderToastNotification.Provider>
-    </ThemeProvider>
+    <ReactNativeSafeAreaContext.SafeAreaProvider>
+      <ReactNavigationNative.ThemeProvider value={theme}>
+        <NavigationHeaderToastNotification.Provider>
+          <ExpoRouter.Stack />
+        </NavigationHeaderToastNotification.Provider>
+      </ReactNavigationNative.ThemeProvider>
+    </ReactNativeSafeAreaContext.SafeAreaProvider>
   )
 }
 
