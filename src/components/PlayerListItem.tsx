@@ -55,11 +55,13 @@ const PlayerListItem = ({
               {player.last_name}
             </ReactNative.Text>
           </ReactNative.Text>
-          <ReactNative.Text
-            style={{ color: "gray", fontSize: 10, marginTop: 3 }}
-          >
-            {formattedPhoneNumber}
-          </ReactNative.Text>
+          {formattedPhoneNumber && (
+            <ReactNative.Text
+              style={{ color: "gray", fontSize: 10, marginTop: 3 }}
+            >
+              {formattedPhoneNumber}
+            </ReactNative.Text>
+          )}
         </ReactNative.View>
         {player.jersey_number !== undefined && (
           <ReactNative.Text style={{ color: "gray", fontSize: 16 }}>
