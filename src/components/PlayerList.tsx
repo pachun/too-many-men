@@ -43,8 +43,10 @@ const PlayerList = ({
             onRefresh={onRefresh}
           />
         }
+        ListFooterComponent={
+          <ReactNative.View style={{ height: heightOfHomeIndicator }} />
+        }
       />
-      <ReactNative.View style={{ height: heightOfHomeIndicator }} />
     </>
   )
 }
