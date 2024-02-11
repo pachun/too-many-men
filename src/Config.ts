@@ -4,6 +4,7 @@ import * as Updates from "expo-updates"
 
 const Config = {
   apiUrl: process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000",
+  // apiUrl: "https://too-many-men-api-8dcb4a385e6b.herokuapp.com",
 }
 
 if (Updates.channel === "production") {

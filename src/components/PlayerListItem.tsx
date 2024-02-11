@@ -2,6 +2,8 @@ import React from "react"
 import * as ReactNative from "react-native"
 import type { Player } from "types/Player"
 
+export const paddingLeft = 10
+
 const formatPhoneNumber = (phoneNumber: string): string => {
   return Array.from(phoneNumber).reduce(
     (formattedPhoneNumber, currentDigit, currentDigitPosition) => {
@@ -33,14 +35,12 @@ const PlayerListItem = ({
 
   return (
     <ReactNative.View
-      style={{ height: 44, paddingLeft: 10, width: "100%" }}
+      style={{ height: 44, paddingLeft, width: "100%" }}
       testID="Player List Item"
     >
       <ReactNative.View
         style={{
           flex: 1,
-          borderBottomWidth: 0.25,
-          borderBottomColor: "gray",
           alignItems: "center",
           flexDirection: "row",
           justifyContent: "space-between",

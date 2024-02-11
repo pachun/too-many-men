@@ -6,7 +6,7 @@ import type { ComponentType } from "react"
 
 expect.extend({
   toShowText: (component: RenderResult, text: string) => {
-    const pass = component.queryByText(text) !== null
+    const pass = component.queryAllByText(text).length !== 0
     return {
       pass,
       message: (): string =>

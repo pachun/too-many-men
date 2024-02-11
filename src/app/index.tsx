@@ -1,50 +1,13 @@
 import React from "react"
-import * as ExpoRouter from "expo-router"
-import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
-import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
-import CenteredReloadButton from "components/CenteredReloadButton"
+import type { Player } from "types/Player"
 import PlayerList from "components/PlayerList"
-import useRefreshablePlayers from "hooks/useRefreshablePlayers"
+import RefreshableResourceList from "components/RefreshableResourceList"
 
-const App = (): React.ReactElement => {
-  const { dismissNotification } = React.useContext(
-    NavigationHeaderToastNotification.Context,
-  )
+const Team = (): React.ReactElement => (
+  <RefreshableResourceList<Player>
+    resourceApiPath="/players"
+    ListComponent={PlayerList}
+  />
+)
 
-  const { refreshablePlayers, loadPlayers, refreshPlayers } =
-    useRefreshablePlayers()
-
-  React.useEffect(() => {
-    loadPlayers()
-  }, [loadPlayers])
-
-  return (
-    <>
-      <ExpoRouter.Stack.Screen options={{ title: "Teammates" }} />
-
-      {(refreshablePlayers.status === "Not Started" ||
-        refreshablePlayers.status === "Loading") && <CenteredLoadingSpinner />}
-
-      {(refreshablePlayers.status === "Success" ||
-        refreshablePlayers.status === "Refreshing" ||
-        refreshablePlayers.status === "Refresh Error") && (
-        <PlayerList
-          players={refreshablePlayers.data}
-          isRefreshing={refreshablePlayers.status === "Refreshing"}
-          onRefresh={() => refreshPlayers(refreshablePlayers.data)}
-        />
-      )}
-
-      {refreshablePlayers.status === "Load Error" && (
-        <CenteredReloadButton
-          onPress={() => {
-            dismissNotification()
-            loadPlayers()
-          }}
-        />
-      )}
-    </>
-  )
-}
-
-export default App
+export default Team

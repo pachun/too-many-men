@@ -1,7 +1,7 @@
 import React from "react"
 import * as ExpoRouter from "expo-router"
+import * as ExpoVectorIcons from "@expo/vector-icons"
 import * as ReactNavigationNative from "@react-navigation/native"
-import * as ReactNativeSafeAreaContext from "react-native-safe-area-context"
 import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import useOverTheAirUpdates from "hooks/useOverTheAirUpdates"
 
@@ -17,13 +17,38 @@ const Layout = (): React.ReactElement => {
   useOverTheAirUpdates()
 
   return (
-    <ReactNativeSafeAreaContext.SafeAreaProvider>
-      <ReactNavigationNative.ThemeProvider value={theme}>
-        <NavigationHeaderToastNotification.Provider>
-          <ExpoRouter.Stack />
-        </NavigationHeaderToastNotification.Provider>
-      </ReactNavigationNative.ThemeProvider>
-    </ReactNativeSafeAreaContext.SafeAreaProvider>
+    <ReactNavigationNative.ThemeProvider value={theme}>
+      <NavigationHeaderToastNotification.Provider>
+        <ExpoRouter.Tabs>
+          <ExpoRouter.Tabs.Screen
+            name="index"
+            options={{
+              title: "Team",
+              tabBarIcon: ({ color }) => (
+                <ExpoVectorIcons.FontAwesome6
+                  name="people-group"
+                  color={color}
+                  size={20}
+                />
+              ),
+            }}
+          />
+          <ExpoRouter.Tabs.Screen
+            name="games"
+            options={{
+              title: "Games",
+              tabBarIcon: ({ color }) => (
+                <ExpoVectorIcons.FontAwesome
+                  name="calendar"
+                  color={color}
+                  size={20}
+                />
+              ),
+            }}
+          />
+        </ExpoRouter.Tabs>
+      </NavigationHeaderToastNotification.Provider>
+    </ReactNavigationNative.ThemeProvider>
   )
 }
 

@@ -1,17 +1,14 @@
 import React from "react"
 import * as ReactNative from "react-native"
 import type { Player } from "types/Player"
-import PlayerListItem from "./PlayerListItem"
-import * as ReactNativeSafeAreaContext from "react-native-safe-area-context"
+import PlayerListItem, { paddingLeft } from "./PlayerListItem"
+import ListItemSeparator from "./ListItemSeparator"
+import type { ListComponentProps } from "types/ListComponent"
 
-interface PlayerListProps {
-  players: Player[]
-  isRefreshing: boolean
-  onRefresh: () => Promise<void>
-}
+type PlayerListProps = ListComponentProps<Player>
 
 const PlayerList = ({
-  players,
+  data: players,
   isRefreshing,
   onRefresh,
 }: PlayerListProps): React.ReactElement => {
@@ -25,29 +22,24 @@ const PlayerList = ({
     [players],
   )
 
-  const { bottom: heightOfHomeIndicator } =
-    ReactNativeSafeAreaContext.useSafeAreaInsets()
-
   return (
-    <>
-      <ReactNative.FlatList
-        style={{ flex: 1 }}
-        testID="Player List"
-        data={playersSortedAlphabeticallyByLastName}
-        keyExtractor={player => player.id.toString()}
-        renderItem={({ item: player }) => <PlayerListItem player={player} />}
-        refreshControl={
-          <ReactNative.RefreshControl
-            enabled={!isRefreshing}
-            refreshing={isRefreshing}
-            onRefresh={onRefresh}
-          />
-        }
-        ListFooterComponent={
-          <ReactNative.View style={{ height: heightOfHomeIndicator }} />
-        }
-      />
-    </>
+    <ReactNative.FlatList
+      style={{ flex: 1 }}
+      testID="Player List"
+      data={playersSortedAlphabeticallyByLastName}
+      keyExtractor={player => player.id.toString()}
+      renderItem={({ item: player }) => <PlayerListItem player={player} />}
+      ItemSeparatorComponent={() => (
+        <ListItemSeparator paddingLeft={paddingLeft} />
+      )}
+      refreshControl={
+        <ReactNative.RefreshControl
+          enabled={!isRefreshing}
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+        />
+      }
+    />
   )
 }
 
