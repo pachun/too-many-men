@@ -107,6 +107,68 @@ describe("viewing the games tab", () => {
       })
     })
 
+    describe("when the game has an opposing team name populated", () => {
+      it("shows the opposing teams name", async () => {
+        const games = [
+          gameFactory({
+            played_at: "2024-02-09T02:30:00Z",
+            opposing_teams_name: "Scott's Tots",
+          }),
+          gameFactory({
+            played_at: "2024-02-16T03:15:00Z",
+            opposing_teams_name: "The Einsteins",
+          }),
+        ]
+
+        await mockGamesFromApi({
+          response: games,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            })
+
+            const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.within(gameListItems[0])).toShowText("v Scott's Tots")
+              expect(ERTL.within(gameListItems[1])).toShowText(
+                "v The Einsteins",
+              )
+            })
+          },
+        })
+      })
+    })
+
+    describe("when the game does not have an opposing team name populated", () => {
+      it("does not show an opposing team name label", async () => {
+        const games = [
+          gameFactory({
+            opposing_teams_name: undefined,
+          }),
+        ]
+
+        await mockGamesFromApi({
+          response: games,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            })
+
+            console.log(`-> ${ERTL.screen.debug()}`)
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowText(`v undefined`)
+            })
+          },
+        })
+      })
+    })
+
     it("orders games chronologically", async () => {
       const earlierGame = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
       const laterGame = gameFactory({ played_at: "2024-02-16T03:15:00Z" })

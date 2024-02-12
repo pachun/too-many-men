@@ -7,7 +7,8 @@ const gameFactory = (partialGame: Partial<Game>): Game => {
     id: partialGame.id || numberOfGames,
     played_at: partialGame.played_at || new Date().toISOString(),
     is_home_team: partialGame.is_home_team || false,
-    rink: partialGame.rink || `Factory Generated Rink ${numberOfGames}`,
+    rink: partialGame.rink,
+    opposing_teams_name: partialGame.opposing_teams_name,
   }
 
   numberOfGames += 1

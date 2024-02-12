@@ -77,7 +77,7 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
               textAlign: "right",
             }}
           >
-            {/* v Chicaronnes */}
+            {game.opposing_teams_name ? `v ${game.opposing_teams_name}` : ""}
           </ReactNative.Text>
         </ReactNative.View>
       </ReactNative.View>
