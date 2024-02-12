@@ -6,11 +6,9 @@ import mockGamesFromApi from "../specHelpers/mockGamesFromApi"
 import pullToRefresh from "../specHelpers/pullToRefresh"
 
 const gameDate = (game: Game): string =>
-  // Thursday, February 8th
   DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
 
 const gameTime = (game: Game): string =>
-  // 10:00 PM
   DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
 
 describe("viewing the games tab", () => {
@@ -79,6 +77,31 @@ describe("viewing the games tab", () => {
           await ERTL.waitFor(() => {
             expect(ERTL.within(gameListItems[0])).toShowText("Home")
             expect(ERTL.within(gameListItems[1])).toShowText("Away")
+          })
+        },
+      })
+    })
+
+    it("shows the rink that the game is played on", async () => {
+      const games = [
+        gameFactory({ played_at: "2024-02-09T02:30:00Z", rink: "Rink A" }),
+        gameFactory({ played_at: "2024-02-16T03:15:00Z", rink: "Rink B" }),
+      ]
+
+      await mockGamesFromApi({
+        response: games,
+        test: async () => {
+          ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+          })
+
+          const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.within(gameListItems[0])).toShowText("Rink A")
+            expect(ERTL.within(gameListItems[1])).toShowText("Rink B")
           })
         },
       })

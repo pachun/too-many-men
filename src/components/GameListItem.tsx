@@ -45,7 +45,7 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
 
         <ReactNative.View style={{ justifyContent: "center" }}>
           <ReactNative.Text style={{ textAlign: "center" }}>
-            {/* Rink C */}
+            {game.rink}
           </ReactNative.Text>
           <ReactNative.Text
             style={{
