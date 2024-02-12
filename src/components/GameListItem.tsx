@@ -32,8 +32,54 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
           paddingRight: 10,
         }}
       >
-        <ReactNative.Text>{formattedDate}</ReactNative.Text>
-        <ReactNative.Text>{formattedTime}</ReactNative.Text>
+        <ReactNative.View style={{ flexDirection: "row", width: 80 }}>
+          <ReactNative.View>
+            <ReactNative.Text>{formattedTime}</ReactNative.Text>
+            <ReactNative.Text
+              style={{ color: "gray", fontSize: 10, marginTop: 3 }}
+            >
+              {formattedDate}
+            </ReactNative.Text>
+          </ReactNative.View>
+        </ReactNative.View>
+
+        <ReactNative.View style={{ justifyContent: "center" }}>
+          <ReactNative.Text style={{ textAlign: "center" }}>
+            {/* Rink C */}
+          </ReactNative.Text>
+          <ReactNative.Text
+            style={{
+              textAlign: "center",
+              color: "gray",
+              fontSize: 10,
+              marginTop: 3,
+            }}
+          >
+            {game.is_home_team ? "Home" : "Away"}
+          </ReactNative.Text>
+        </ReactNative.View>
+
+        <ReactNative.View style={{ width: 80 }}>
+          <ReactNative.Text
+            style={{
+              textAlign: "right",
+              color: ReactNative.PlatformColor("systemRed"),
+              fontSize: 16,
+            }}
+          >
+            {/* 0 - 4 L */}
+          </ReactNative.Text>
+          <ReactNative.Text
+            style={{
+              color: "gray",
+              fontSize: 10,
+              marginTop: 3,
+              textAlign: "right",
+            }}
+          >
+            {/* v Chicaronnes */}
+          </ReactNative.Text>
+        </ReactNative.View>
       </ReactNative.View>
     </ReactNative.View>
   )

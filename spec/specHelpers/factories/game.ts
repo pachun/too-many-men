@@ -6,6 +6,7 @@ const gameFactory = (partialGame: Partial<Game>): Game => {
   const game: Game = {
     id: partialGame.id || numberOfGames,
     played_at: partialGame.played_at || new Date().toISOString(),
+    is_home_team: partialGame.is_home_team || false,
   }
 
   numberOfGames += 1

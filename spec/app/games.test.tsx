@@ -59,6 +59,31 @@ describe("viewing the games tab", () => {
       })
     })
 
+    it("shows whether the game is a home game or an away game", async () => {
+      const games = [
+        gameFactory({ played_at: "2024-02-09T02:30:00Z", is_home_team: true }),
+        gameFactory({ played_at: "2024-02-16T03:15:00Z", is_home_team: false }),
+      ]
+
+      await mockGamesFromApi({
+        response: games,
+        test: async () => {
+          ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+          })
+
+          const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.within(gameListItems[0])).toShowText("Home")
+            expect(ERTL.within(gameListItems[1])).toShowText("Away")
+          })
+        },
+      })
+    })
+
     it("orders games chronologically", async () => {
       const earlierGame = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
       const laterGame = gameFactory({ played_at: "2024-02-16T03:15:00Z" })
