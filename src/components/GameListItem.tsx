@@ -11,7 +11,7 @@ interface GameListItemProps {
 
 const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
   const formattedDate = React.useMemo(() => {
-    return DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMMM do")
+    return DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
   }, [game.played_at])
 
   const formattedTime = React.useMemo(() => {

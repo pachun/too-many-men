@@ -7,7 +7,7 @@ import pullToRefresh from "../specHelpers/pullToRefresh"
 
 const gameDate = (game: Game): string =>
   // Thursday, February 8th
-  DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMMM do")
+  DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
 
 const gameTime = (game: Game): string =>
   // 10:00 PM
