@@ -4,4 +4,6 @@ export interface Game {
   is_home_team: boolean
   rink?: string
   opposing_teams_name?: string
+  goals_for?: number
+  goals_against?: number
 }

@@ -10,13 +10,45 @@ interface GameListItemProps {
 }
 
 const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
-  const formattedDate = React.useMemo(() => {
+  const formattedDate = React.useMemo((): string => {
     return DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
   }, [game.played_at])
 
-  const formattedTime = React.useMemo(() => {
+  const formattedTime = React.useMemo((): string => {
     return DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
   }, [game.played_at])
+
+  const outcome = React.useMemo((): "win" | "loss" | "tie" | "unplayed" => {
+    if (game.goals_for !== undefined && game.goals_against !== undefined) {
+      if (game.goals_for > game.goals_against) {
+        return "win"
+      } else if (game.goals_for < game.goals_against) {
+        return "loss"
+      }
+      return "tie"
+    }
+    return "unplayed"
+  }, [game.goals_for, game.goals_against])
+
+  const formattedScore = React.useMemo((): string => {
+    if (outcome !== "unplayed") {
+      return `${game.goals_for} - ${game.goals_against} ${outcome.at(0)!.toUpperCase()}`
+    }
+    return ""
+  }, [game.goals_for, game.goals_against, outcome])
+
+  const scoreColor = React.useMemo((): string => {
+    switch (outcome) {
+      case "win":
+        return "green"
+      case "loss":
+        return "red"
+      case "tie":
+        return "black"
+      case "unplayed":
+        return "transparent"
+    }
+  }, [outcome])
 
   return (
     <ReactNative.View
@@ -63,11 +95,11 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
           <ReactNative.Text
             style={{
               textAlign: "right",
-              color: ReactNative.PlatformColor("systemRed"),
+              color: scoreColor,
               fontSize: 16,
             }}
           >
-            {/* 0 - 4 L */}
+            {formattedScore}
           </ReactNative.Text>
           <ReactNative.Text
             style={{

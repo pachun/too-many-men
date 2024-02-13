@@ -9,6 +9,8 @@ const gameFactory = (partialGame: Partial<Game>): Game => {
     is_home_team: partialGame.is_home_team || false,
     rink: partialGame.rink,
     opposing_teams_name: partialGame.opposing_teams_name,
+    goals_for: partialGame.goals_for,
+    goals_against: partialGame.goals_against,
   }
 
   numberOfGames += 1

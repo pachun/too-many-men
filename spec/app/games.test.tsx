@@ -142,6 +142,59 @@ describe("viewing the games tab", () => {
       })
     })
 
+    describe("when the game has a score populated", () => {
+      it("shows the games scores in green, red, and black for wins, losses and ties, respectively", async () => {
+        const games = [
+          gameFactory({
+            played_at: "2024-02-09T02:30:00Z",
+            goals_for: 2,
+            goals_against: 1,
+          }),
+          gameFactory({
+            played_at: "2024-02-16T03:15:00Z",
+            goals_for: 0,
+            goals_against: 3,
+          }),
+          gameFactory({
+            played_at: "2024-02-18T03:15:00Z",
+            goals_for: 0,
+            goals_against: 0,
+          }),
+        ]
+
+        await mockGamesFromApi({
+          response: games,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            })
+
+            const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.within(gameListItems[0])).toShowText("2 - 1 W")
+              expect(ERTL.within(gameListItems[1])).toShowText("0 - 3 L")
+              expect(ERTL.within(gameListItems[2])).toShowText("0 - 0 T")
+              expect(
+                ERTL.within(gameListItems[0]).getByText("2 - 1 W").props.style
+                  .color,
+              ).toEqual("green")
+              expect(
+                ERTL.within(gameListItems[1]).getByText("0 - 3 L").props.style
+                  .color,
+              ).toEqual("red")
+              expect(
+                ERTL.within(gameListItems[2]).getByText("0 - 0 T").props.style
+                  .color,
+              ).toEqual("black")
+            })
+          },
+        })
+      })
+    })
+
     describe("when the game does not have an opposing team name populated", () => {
       it("does not show an opposing team name label", async () => {
         const games = [
@@ -158,8 +211,6 @@ describe("viewing the games tab", () => {
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowTestID("Loading Spinner")
             })
-
-            console.log(`-> ${ERTL.screen.debug()}`)
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowText(`v undefined`)
