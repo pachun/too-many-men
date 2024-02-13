@@ -3,6 +3,8 @@ import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import type { Game } from "types/Game"
 
+const sideColumnWidth = 120
+
 export const paddingLeft = 10
 
 interface GameListItemProps {
@@ -64,7 +66,9 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
           paddingRight: 10,
         }}
       >
-        <ReactNative.View style={{ flexDirection: "row", width: 80 }}>
+        <ReactNative.View
+          style={{ flexDirection: "row", width: sideColumnWidth }}
+        >
           <ReactNative.View>
             <ReactNative.Text>{formattedTime}</ReactNative.Text>
             <ReactNative.Text
@@ -91,13 +95,14 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
           </ReactNative.Text>
         </ReactNative.View>
 
-        <ReactNative.View style={{ width: 80 }}>
+        <ReactNative.View style={{ width: sideColumnWidth }}>
           <ReactNative.Text
             style={{
               textAlign: "right",
               color: scoreColor,
               fontSize: 16,
             }}
+            numberOfLines={1}
           >
             {formattedScore}
           </ReactNative.Text>
