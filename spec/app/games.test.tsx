@@ -143,7 +143,7 @@ describe("viewing the games tab", () => {
     })
 
     describe("when the game has a score populated", () => {
-      it("shows the games scores in green, red, and black for wins, losses and ties, respectively", async () => {
+      it("shows the games scores in (green, red, and gray) for (wins, losses and ties), respectively", async () => {
         const games = [
           gameFactory({
             played_at: "2024-02-09T02:30:00Z",
@@ -188,7 +188,7 @@ describe("viewing the games tab", () => {
               expect(
                 ERTL.within(gameListItems[2]).getByText("0 - 0 T").props.style
                   .color,
-              ).toEqual("black")
+              ).toEqual("gray")
             })
           },
         })

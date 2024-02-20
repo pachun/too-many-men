@@ -46,7 +46,7 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
       case "loss":
         return "red"
       case "tie":
-        return "black"
+        return "gray"
       case "unplayed":
         return "transparent"
     }
