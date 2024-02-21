@@ -1,3 +1,4 @@
+import useTheme from "hooks/useTheme"
 import React from "react"
 import * as ReactNative from "react-native"
 import type { Player } from "types/Player"
@@ -33,6 +34,8 @@ const PlayerListItem = ({
     [player.phone_number],
   )
 
+  const theme = useTheme()
+
   return (
     <ReactNative.View
       style={{ height: 44, paddingLeft, width: "100%" }}
@@ -48,7 +51,7 @@ const PlayerListItem = ({
         }}
       >
         <ReactNative.View>
-          <ReactNative.Text>
+          <ReactNative.Text style={{ color: theme.colors.text }}>
             {player.first_name}
             <ReactNative.Text style={{ fontWeight: "bold" }}>
               {" "}
@@ -57,14 +60,23 @@ const PlayerListItem = ({
           </ReactNative.Text>
           {formattedPhoneNumber && (
             <ReactNative.Text
-              style={{ color: "gray", fontSize: 10, marginTop: 3 }}
+              style={{
+                color: theme.colors.secondaryLabel,
+                fontSize: 10,
+                marginTop: 3,
+              }}
             >
               {formattedPhoneNumber}
             </ReactNative.Text>
           )}
         </ReactNative.View>
         {player.jersey_number !== undefined && (
-          <ReactNative.Text style={{ color: "gray", fontSize: 16 }}>
+          <ReactNative.Text
+            style={{
+              color: theme.colors.secondaryLabel,
+              fontSize: 16,
+            }}
+          >
             #{player.jersey_number}
           </ReactNative.Text>
         )}

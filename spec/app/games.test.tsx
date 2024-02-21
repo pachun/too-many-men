@@ -1,4 +1,5 @@
 import * as ERTL from "expo-router/testing-library"
+import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import type { Game } from "types/Game"
 import gameFactory from "../specHelpers/factories/game"
@@ -28,7 +29,7 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowTestID("Loading Spinner")
+            expect(ERTL.screen).toShowTestId("Loading Spinner")
           })
         },
       })
@@ -69,7 +70,7 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
 
           const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
@@ -94,7 +95,7 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
 
           const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
@@ -126,7 +127,7 @@ describe("viewing the games tab", () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
             })
 
             const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
@@ -168,7 +169,7 @@ describe("viewing the games tab", () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
             })
 
             const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
@@ -177,18 +178,26 @@ describe("viewing the games tab", () => {
               expect(ERTL.within(gameListItems[0])).toShowText("2 - 1 W")
               expect(ERTL.within(gameListItems[1])).toShowText("0 - 3 L")
               expect(ERTL.within(gameListItems[2])).toShowText("0 - 0 T")
-              expect(
-                ERTL.within(gameListItems[0]).getByText("2 - 1 W").props.style
-                  .color,
-              ).toEqual("green")
-              expect(
-                ERTL.within(gameListItems[1]).getByText("0 - 3 L").props.style
-                  .color,
-              ).toEqual("red")
-              expect(
-                ERTL.within(gameListItems[2]).getByText("0 - 0 T").props.style
-                  .color,
-              ).toEqual("gray")
+
+              const winLabelColor = ERTL.within(gameListItems[0]).getByText(
+                "2 - 1 W",
+              ).props.style.color
+              const lossLabelColor = ERTL.within(gameListItems[1]).getByText(
+                "0 - 3 L",
+              ).props.style.color
+              const tieLabelColor = ERTL.within(gameListItems[2]).getByText(
+                "0 - 0 T",
+              ).props.style.color
+
+              if (ReactNative.Platform.OS === "ios") {
+                expect(winLabelColor).toEqual({ semantic: ["systemGreen"] })
+                expect(lossLabelColor).toEqual({ semantic: ["systemRed"] })
+                expect(tieLabelColor).toEqual({ semantic: ["systemGray"] })
+              } else {
+                expect(winLabelColor).toEqual("green")
+                expect(lossLabelColor).toEqual("red")
+                expect(tieLabelColor).toEqual("gray")
+              }
             })
           },
         })
@@ -209,7 +218,7 @@ describe("viewing the games tab", () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
             })
 
             await ERTL.waitFor(() => {
@@ -231,7 +240,7 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
 
           const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
@@ -255,7 +264,7 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
         },
       })
@@ -270,7 +279,7 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
         },
       })
@@ -324,7 +333,9 @@ describe("viewing the games tab", () => {
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
-          await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+          await ERTL.waitFor(() =>
+            expect(ERTL.screen).toShowTestId("Reload Button"),
+          )
         },
       })
     })
@@ -336,14 +347,16 @@ describe("viewing the games tab", () => {
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
-            await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+            await ERTL.waitFor(() =>
+              expect(ERTL.screen).toShowTestId("Reload Button"),
+            )
           },
         })
 
         await mockGamesFromApi({
           response: "Network Error",
           test: async () => {
-            ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+            ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
             await ERTL.waitFor(() =>
               expect(ERTL.screen).not.toShowText(
@@ -360,17 +373,19 @@ describe("viewing the games tab", () => {
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
-            await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+            await ERTL.waitFor(() =>
+              expect(ERTL.screen).toShowTestId("Reload Button"),
+            )
           },
         })
 
         await mockGamesFromApi({
           response: "Network Error",
           test: async () => {
-            ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+            ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
             await ERTL.waitFor(() =>
-              expect(ERTL.screen).not.toShowText("Reload"),
+              expect(ERTL.screen).not.toShowTestId("Reload Button"),
             )
           },
         })
@@ -382,17 +397,19 @@ describe("viewing the games tab", () => {
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
-            await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+            await ERTL.waitFor(() =>
+              expect(ERTL.screen).toShowTestId("Reload Button"),
+            )
           },
         })
 
         await mockGamesFromApi({
           response: "Network Error",
           test: async () => {
-            ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+            ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
             await ERTL.waitFor(() =>
-              expect(ERTL.screen).toShowTestID("Loading Spinner"),
+              expect(ERTL.screen).toShowTestId("Loading Spinner"),
             )
           },
         })
@@ -405,7 +422,9 @@ describe("viewing the games tab", () => {
             test: async () => {
               ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
-              await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+              await ERTL.waitFor(() =>
+                expect(ERTL.screen).toShowTestId("Reload Button"),
+              )
             },
           })
 
@@ -414,7 +433,7 @@ describe("viewing the games tab", () => {
           await mockGamesFromApi({
             response: [game],
             test: async () => {
-              ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).toShowText(gameDate(game))

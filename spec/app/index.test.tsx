@@ -20,7 +20,7 @@ describe("opening the app", () => {
           ERTL.renderRouter("src/app")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowTestID("Loading Spinner")
+            expect(ERTL.screen).toShowTestId("Loading Spinner")
           })
         },
       })
@@ -59,7 +59,7 @@ describe("opening the app", () => {
           ERTL.renderRouter("src/app")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
 
           const playerListItems = ERTL.screen.getAllByTestId("Player List Item")
@@ -136,7 +136,7 @@ describe("opening the app", () => {
           ERTL.renderRouter("src/app")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
         },
       })
@@ -151,7 +151,7 @@ describe("opening the app", () => {
           ERTL.renderRouter("src/app")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowTestID("Loading Spinner")
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
         },
       })
@@ -205,7 +205,9 @@ describe("opening the app", () => {
         test: async () => {
           ERTL.renderRouter("src/app")
 
-          await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+          await ERTL.waitFor(() =>
+            expect(ERTL.screen).toShowTestId("Reload Button"),
+          )
         },
       })
     })
@@ -217,14 +219,16 @@ describe("opening the app", () => {
           test: async () => {
             ERTL.renderRouter("src/app")
 
-            await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+            await ERTL.waitFor(() =>
+              expect(ERTL.screen).toShowTestId("Reload Button"),
+            )
           },
         })
 
         await mockPlayersFromApi({
           response: "Network Error",
           test: async () => {
-            ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+            ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
             await ERTL.waitFor(() =>
               expect(ERTL.screen).not.toShowText(
@@ -241,17 +245,19 @@ describe("opening the app", () => {
           test: async () => {
             ERTL.renderRouter("src/app")
 
-            await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+            await ERTL.waitFor(() =>
+              expect(ERTL.screen).toShowTestId("Reload Button"),
+            )
           },
         })
 
         await mockPlayersFromApi({
           response: "Network Error",
           test: async () => {
-            ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+            ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
             await ERTL.waitFor(() =>
-              expect(ERTL.screen).not.toShowText("Reload"),
+              expect(ERTL.screen).not.toShowTestId("Reload Button"),
             )
           },
         })
@@ -263,17 +269,19 @@ describe("opening the app", () => {
           test: async () => {
             ERTL.renderRouter("src/app")
 
-            await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+            await ERTL.waitFor(() =>
+              expect(ERTL.screen).toShowTestId("Reload Button"),
+            )
           },
         })
 
         await mockPlayersFromApi({
           response: "Network Error",
           test: async () => {
-            ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+            ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
             await ERTL.waitFor(() =>
-              expect(ERTL.screen).toShowTestID("Loading Spinner"),
+              expect(ERTL.screen).toShowTestId("Loading Spinner"),
             )
           },
         })
@@ -286,7 +294,9 @@ describe("opening the app", () => {
             test: async () => {
               ERTL.renderRouter("src/app")
 
-              await ERTL.waitFor(() => expect(ERTL.screen).toShowText("Reload"))
+              await ERTL.waitFor(() =>
+                expect(ERTL.screen).toShowTestId("Reload Button"),
+              )
             },
           })
 
@@ -295,7 +305,7 @@ describe("opening the app", () => {
               playerFactory({ first_name: "Kelly", last_name: "Kapoor" }),
             ],
             test: async () => {
-              ERTL.fireEvent.press(ERTL.screen.getByText("Reload"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
               await ERTL.waitFor(() =>
                 expect(ERTL.screen).toShowText("Kelly Kapoor"),

@@ -8,7 +8,11 @@ const CenteredReloadButton = ({
   <ReactNative.View
     style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
   >
-    <ReactNative.Button onPress={onPress} title="Reload" />
+    <ReactNative.Button
+      onPress={onPress}
+      title="Reload"
+      testID="Reload Button"
+    />
   </ReactNative.View>
 )
 

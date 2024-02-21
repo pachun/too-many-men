@@ -50,22 +50,31 @@
     "typescript": "^5.1.3"
   },
   "jest": {
-    "preset": "jest-expo",
+    "projects": [
+      {
+        "preset": "jest-expo/ios",
+        "setupFilesAfterEnv": [
+          "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
+          "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
+          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts"
+        ]
+      },
+      {
+        "preset": "jest-expo/android",
+        "setupFilesAfterEnv": [
+          "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
+          "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
+          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts"
+        ]
+      }
+    ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
-    ],
-    "setupFilesAfterEnv": [
-      "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
-      "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
-      "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts"
     ],
     "verbose": true,
     "passWithNoTests": true,
     "coverageProvider": "v8",
-    "collectCoverageFrom": [
-      "./src/**",
-      "!src/Config.ts"
-    ],
+    "collectCoverageFrom": ["./src/**", "!src/Config.ts", "!src/types/**"],
     "coverageThreshold": {
       "global": {
         "lines": 100,
@@ -73,10 +82,7 @@
         "branches": 100,
         "statements": 100
       }
-    },
-    "coveragePathIgnorePatterns": [
-      "./src/types"
-    ]
+    }
   },
   "private": true
 }

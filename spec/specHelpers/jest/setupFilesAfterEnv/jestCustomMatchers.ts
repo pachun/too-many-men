@@ -15,7 +15,7 @@ expect.extend({
           : `expected "${text}" to be shown`,
     }
   },
-  toShowTestID: (component: RenderResult, testID: string) => {
+  toShowTestId: (component: RenderResult, testID: string) => {
     const pass = component.queryByTestId(testID) !== null
     return {
       pass,
