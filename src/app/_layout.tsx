@@ -6,8 +6,15 @@ import * as ReactNavigationNative from "@react-navigation/native"
 import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import useOverTheAirUpdates from "hooks/useOverTheAirUpdates"
 import useTheme from "hooks/useTheme"
+import { initializeAptabase, trackAptabaseEvent } from "aptabase"
+
+initializeAptabase()
 
 const Layout = (): React.ReactElement => {
+  React.useEffect(() => {
+    trackAptabaseEvent("App Launched")
+  }, [])
+
   useOverTheAirUpdates()
 
   const theme = useTheme()

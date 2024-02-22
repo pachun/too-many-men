@@ -13,6 +13,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@aptabase/react-native": "^0.3.9",
     "date-fns": "^3.3.1",
     "expo": "~50.0.7",
     "expo-constants": "~15.4.5",
@@ -56,7 +57,8 @@
         "setupFilesAfterEnv": [
           "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
           "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts"
+          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
+          "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
         ]
       },
       {
@@ -64,7 +66,8 @@
         "setupFilesAfterEnv": [
           "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
           "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts"
+          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
+          "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
         ]
       }
     ],

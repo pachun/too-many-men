@@ -2,6 +2,7 @@ import React from "react"
 import type { RefreshableRequest } from "types/RefreshableRequest"
 import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import Config from "Config"
+import { trackAptabaseEvent } from "aptabase"
 
 interface UseRefreshableResourcesReturnType<Resource> {
   refreshableResources: RefreshableRequest<Resource[]>
@@ -34,14 +35,16 @@ const useRefreshableResources = <Resource>(
         status: "Success",
         data: await (await fetch(resourceUrl)).json(),
       })
+      trackAptabaseEvent(`Loaded ${resourceApiPath}`)
     } catch {
       showNotification({
         type: "warning",
         message: "Trouble Connecting to the Internet",
       })
       setRefreshableResources({ status: "Load Error" })
+      trackAptabaseEvent(`Failed to load ${resourceApiPath}`)
     }
-  }, [showNotification, resourceUrl])
+  }, [showNotification, resourceUrl, resourceApiPath])
 
   const refreshResources = React.useCallback(
     async (resourcesBeforeRefresh: Resource[]): Promise<void> => {
@@ -54,6 +57,7 @@ const useRefreshableResources = <Resource>(
           status: "Success",
           data: await (await fetch(resourceUrl)).json(),
         })
+        trackAptabaseEvent(`Refreshed ${resourceApiPath}`)
       } catch {
         showNotification({
           type: "warning",
@@ -63,9 +67,10 @@ const useRefreshableResources = <Resource>(
           status: "Refresh Error",
           data: resourcesBeforeRefresh,
         })
+        trackAptabaseEvent(`Failed to refresh ${resourceApiPath}`)
       }
     },
-    [showNotification, resourceUrl],
+    [showNotification, resourceUrl, resourceApiPath],
   )
 
   return { refreshableResources, loadResources, refreshResources }

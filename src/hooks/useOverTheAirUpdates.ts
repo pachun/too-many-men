@@ -6,6 +6,7 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoUpdates from "expo-updates"
 import useAppLifecycle from "hooks/useAppLifecycle"
+import { trackAptabaseEvent } from "aptabase"
 
 const ifThereIsAnOverTheAirUpdateDownloadItAndThenAskForPermissionToApplyItByRestartingTheApp =
   async (): Promise<void> => {
@@ -19,10 +20,17 @@ const ifThereIsAnOverTheAirUpdateDownloadItAndThenAskForPermissionToApplyItByRes
           "Update Available",
           "A newer version of wolfpack app is available. Without it, some features may not work properly. May we restart the app to apply the update?",
           [
-            { text: "No", style: "cancel" },
+            {
+              text: "No",
+              style: "cancel",
+              onPress: (): void => {
+                trackAptabaseEvent("OTA Update Relaunch Rejected")
+              },
+            },
             {
               text: "Yes",
               onPress: async (): Promise<void> => {
+                trackAptabaseEvent("OTA Update Relaunch Accepted")
                 await ExpoUpdates.reloadAsync()
               },
             },
