@@ -1,15 +1,17 @@
 import mockApi from "../specHelpers/mockApi"
-import type { MockedPlayersRequestResponse, Test } from "../specHelpers/mockApi"
+import type { MockedPlayerRequestResponse, Test } from "../specHelpers/mockApi"
 
 import * as MSW_NODE from "msw/node"
 
-const mockPlayersFromApi = async ({
+const mockPlayerFromApi = async ({
   server = MSW_NODE.setupServer(),
+  playerId,
   response,
   test,
 }: {
   server?: MSW_NODE.SetupServer
-  response: MockedPlayersRequestResponse
+  playerId: number
+  response: MockedPlayerRequestResponse
   test: Test
 }): Promise<void> => {
   await mockApi({
@@ -17,7 +19,8 @@ const mockPlayersFromApi = async ({
     mockedRequests: [
       {
         method: "get",
-        route: "/players",
+        route: "/players/[id]",
+        params: { id: playerId },
         response,
       },
     ],
@@ -25,4 +28,4 @@ const mockPlayersFromApi = async ({
   })
 }
 
-export default mockPlayersFromApi
+export default mockPlayerFromApi

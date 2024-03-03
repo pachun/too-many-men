@@ -4,21 +4,32 @@ import Config from "Config"
 import type { Player } from "types/Player"
 import type { Game } from "types/Game"
 
-export type MockedPlayerRequestResponse = Player[] | "Network Error"
-export interface MockedPlayersRequest {
+export type MockedPlayerRequestResponse = Player | "Network Error"
+export interface MockedPlayerRequest {
   method: "get"
-  route: "/players"
+  route: "/players/[id]"
+  params: { id: number }
   response: MockedPlayerRequestResponse
 }
 
-export type MockedGameRequestResponse = Game[] | "Network Error"
+export type MockedPlayersRequestResponse = Player[] | "Network Error"
+export interface MockedPlayersRequest {
+  method: "get"
+  route: "/players"
+  response: MockedPlayersRequestResponse
+}
+
+export type MockedGamesRequestResponse = Game[] | "Network Error"
 export interface MockedGamesRequest {
   method: "get"
   route: "/games"
-  response: MockedGameRequestResponse
+  response: MockedGamesRequestResponse
 }
 
-export type MockedRequest = MockedPlayersRequest | MockedGamesRequest
+export type MockedRequest =
+  | MockedPlayersRequest
+  | MockedPlayerRequest
+  | MockedGamesRequest
 export type Test = (server: MSW_NODE.SetupServer) => Promise<void>
 
 interface MockApiArguments {
@@ -27,20 +38,35 @@ interface MockApiArguments {
   test: Test
 }
 
+const toPath = (
+  route: string,
+  params: Record<string, string | number>,
+): string => {
+  return Object.entries(params).reduce((path, currentParam) => {
+    const [paramName, paramValue] = currentParam
+    return path.split(`[${paramName}]`).join(`${paramValue}`)
+  }, route)
+}
+
 const mockApi = async ({
   server = MSW_NODE.setupServer(),
   mockedRequests,
   test,
 }: MockApiArguments): Promise<void> => {
-  mockedRequests.forEach(({ method, route, response }) => {
+  mockedRequests.forEach(mockedRequest => {
     server.use(
-      MSW.http[method](
-        Config.apiUrl + route,
+      MSW.http[mockedRequest.method](
+        Config.apiUrl +
+          // @ts-ignore
+          (mockedRequest.params
+            ? // @ts-ignore
+              toPath(mockedRequest.route, mockedRequest.params)
+            : mockedRequest.route),
         () => {
-          if (response === "Network Error") {
+          if (mockedRequest.response === "Network Error") {
             return MSW.HttpResponse.error()
           } else {
-            return MSW.HttpResponse.json(response)
+            return MSW.HttpResponse.json(mockedRequest.response)
           }
         },
         { once: true },

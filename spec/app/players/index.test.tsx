@@ -1,7 +1,7 @@
 import * as ERTL from "expo-router/testing-library"
-import playerFactory from "../specHelpers/factories/player"
-import mockPlayersFromApi from "../specHelpers/mockPlayersFromApi"
-import pullToRefresh from "../specHelpers/pullToRefresh"
+import playerFactory from "../../specHelpers/factories/player"
+import mockPlayersFromApi from "../../specHelpers/mockPlayersFromApi"
+import pullToRefresh from "../../specHelpers/pullToRefresh"
 
 describe("opening the app", () => {
   it("sets the navigation bar title to Team", async () => {
@@ -165,7 +165,7 @@ describe("opening the app", () => {
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).toHavePathname("/players/1")
-              expect(ERTL.screen).toShowText("Creed Bratton")
+              expect(ERTL.screen).toHaveNavigationBarTitle("Creed Bratton")
               expect(ERTL.screen).toShowText("55")
               expect(ERTL.screen).toShowText("(012) 345 6789")
             })
