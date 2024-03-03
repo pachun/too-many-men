@@ -142,39 +142,39 @@ describe("opening the app", () => {
       })
     })
 
-    // describe("tapping a players name", () => {
-    //   it("shows the player's details screen (without refetching the players details from the api)", async () => {
-    //     const player = playerFactory({
-    //       id: 1,
-    //       first_name: "Creed",
-    //       last_name: "Bratton",
-    //       jersey_number: 55,
-    //       phone_number: "0123456789",
-    //     })
-    //
-    //     await mockPlayersFromApi({
-    //       response: [player],
-    //       test: async () => {
-    //         ERTL.renderRouter("src/app")
-    //
-    //         await ERTL.waitFor(() => {
-    //           expect(ERTL.screen).toShowText("Creed Bratton")
-    //         })
-    //
-    //         ERTL.fireEvent.press(ERTL.screen.getByText("Creed Bratton"))
-    //
-    //         // intentionally do not mock the request to fetch the individual player's details
-    //
-    //         await ERTL.waitFor(() => {
-    //           expect(ERTL.screen).toHavePathname("/players/1")
-    //           expect(ERTL.screen).toShowText("Creed Bratton")
-    //           expect(ERTL.screen).toShowText("55")
-    //           expect(ERTL.screen).toShowText("(012) 345 6789")
-    //         })
-    //       },
-    //     })
-    //   })
-    // })
+    describe("tapping a players name", () => {
+      it("shows the player's details screen (without refetching the players details from the api)", async () => {
+        const player = playerFactory({
+          id: 1,
+          first_name: "Creed",
+          last_name: "Bratton",
+          jersey_number: 55,
+          phone_number: "0123456789",
+        })
+
+        await mockPlayersFromApi({
+          response: [player],
+          test: async () => {
+            ERTL.renderRouter("src/app")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowText("Creed Bratton")
+            })
+
+            ERTL.fireEvent.press(ERTL.screen.getByText("Creed Bratton"))
+
+            // intentionally do not mock the request to fetch the individual player's details
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toHavePathname("/players/1")
+              expect(ERTL.screen).toShowText("Creed Bratton")
+              expect(ERTL.screen).toShowText("55")
+              expect(ERTL.screen).toShowText("(012) 345 6789")
+            })
+          },
+        })
+      })
+    })
   })
 
   describe("when there is a network problem loading players", () => {
