@@ -15,10 +15,10 @@
   "dependencies": {
     "@aptabase/react-native": "^0.3.9",
     "date-fns": "^3.3.1",
-    "expo": "~50.0.7",
+    "expo": "~50.0.8",
     "expo-constants": "~15.4.5",
     "expo-linking": "~6.2.2",
-    "expo-router": "~3.4.7",
+    "expo-router": "~3.4.8",
     "expo-status-bar": "~1.11.1",
     "expo-updates": "~0.24.11",
     "react": "18.2.0",
@@ -77,7 +77,11 @@
     "verbose": true,
     "passWithNoTests": true,
     "coverageProvider": "v8",
-    "collectCoverageFrom": ["./src/**", "!src/Config.ts", "!src/types/**"],
+    "collectCoverageFrom": [
+      "./src/**",
+      "!src/Config.ts",
+      "!src/types/**"
+    ],
     "coverageThreshold": {
       "global": {
         "lines": 100,

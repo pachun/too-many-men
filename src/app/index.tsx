@@ -1,13 +1,7 @@
-import React from "react"
-import type { Player } from "types/Player"
-import PlayerList from "components/PlayerList"
-import RefreshableResourceList from "components/RefreshableResourceList"
+import * as ExpoRouter from "expo-router"
 
-const Team = (): React.ReactElement => (
-  <RefreshableResourceList<Player>
-    resourceApiPath="/players"
-    ListComponent={PlayerList}
-  />
-)
+const index = (): React.ReactElement => {
+  return <ExpoRouter.Redirect href="/players" />
+}
 
-export default Team
+export default index

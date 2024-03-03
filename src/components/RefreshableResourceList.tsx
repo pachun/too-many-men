@@ -10,19 +10,16 @@ interface RefreshableResourceListProps<Resource> {
   ListComponent: ListComponent<Resource>
 }
 
-const RefreshableResourceList = <Resource,>({
+function RefreshableResourceList<Resource>({
   resourceApiPath,
   ListComponent,
-}: RefreshableResourceListProps<Resource>): React.ReactElement => {
+}: RefreshableResourceListProps<Resource>): React.ReactElement {
   const { dismissNotification } = React.useContext(
     NavigationHeaderToastNotification.Context,
   )
 
-  const {
-    refreshableResources: refreshableResources,
-    loadResources: loadResources,
-    refreshResources: refreshResources,
-  } = useRefreshableResources<Resource>(resourceApiPath)
+  const { refreshableResources, loadResources, refreshResources } =
+    useRefreshableResources<Resource>(resourceApiPath)
 
   React.useEffect(() => {
     loadResources()

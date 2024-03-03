@@ -24,9 +24,9 @@ const Layout = (): React.ReactElement => {
       <ExpoStatusBar.StatusBar style="auto" />
       <ReactNavigationNative.ThemeProvider value={theme}>
         <NavigationHeaderToastNotification.Provider>
-          <ExpoRouter.Tabs>
+          <ExpoRouter.Tabs screenOptions={{ headerShown: false }}>
             <ExpoRouter.Tabs.Screen
-              name="index"
+              name="players"
               options={{
                 title: "Team",
                 tabBarIcon: ({ color }) => (
@@ -49,6 +49,12 @@ const Layout = (): React.ReactElement => {
                     size={20}
                   />
                 ),
+              }}
+            />
+            <ExpoRouter.Tabs.Screen
+              name="index"
+              options={{
+                href: null,
               }}
             />
           </ExpoRouter.Tabs>

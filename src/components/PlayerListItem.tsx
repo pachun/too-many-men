@@ -1,6 +1,7 @@
-import useTheme from "hooks/useTheme"
 import React from "react"
 import * as ReactNative from "react-native"
+import * as ExpoRouter from "expo-router"
+import useTheme from "hooks/useTheme"
 import type { Player } from "types/Player"
 
 export const paddingLeft = 10
@@ -37,51 +38,53 @@ const PlayerListItem = ({
   const theme = useTheme()
 
   return (
-    <ReactNative.View
-      style={{ height: 44, paddingLeft, width: "100%" }}
-      testID="Player List Item"
-    >
-      <ReactNative.View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          paddingRight: 10,
-        }}
+    <ExpoRouter.Link href={`/players/${player.id}`} asChild>
+      <ReactNative.Pressable
+        style={{ height: 44, paddingLeft, width: "100%" }}
+        testID="Player List Item"
       >
-        <ReactNative.View>
-          <ReactNative.Text style={{ color: theme.colors.text }}>
-            {player.first_name}
-            <ReactNative.Text style={{ fontWeight: "bold" }}>
-              {" "}
-              {player.last_name}
+        <ReactNative.View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingRight: 10,
+          }}
+        >
+          <ReactNative.View>
+            <ReactNative.Text style={{ color: theme.colors.text }}>
+              {player.first_name}
+              <ReactNative.Text style={{ fontWeight: "bold" }}>
+                {" "}
+                {player.last_name}
+              </ReactNative.Text>
             </ReactNative.Text>
-          </ReactNative.Text>
-          {formattedPhoneNumber && (
+            {formattedPhoneNumber && (
+              <ReactNative.Text
+                style={{
+                  color: theme.colors.secondaryLabel,
+                  fontSize: 10,
+                  marginTop: 3,
+                }}
+              >
+                {formattedPhoneNumber}
+              </ReactNative.Text>
+            )}
+          </ReactNative.View>
+          {player.jersey_number !== undefined && (
             <ReactNative.Text
               style={{
                 color: theme.colors.secondaryLabel,
-                fontSize: 10,
-                marginTop: 3,
+                fontSize: 16,
               }}
             >
-              {formattedPhoneNumber}
+              #{player.jersey_number}
             </ReactNative.Text>
           )}
         </ReactNative.View>
-        {player.jersey_number !== undefined && (
-          <ReactNative.Text
-            style={{
-              color: theme.colors.secondaryLabel,
-              fontSize: 16,
-            }}
-          >
-            #{player.jersey_number}
-          </ReactNative.Text>
-        )}
-      </ReactNative.View>
-    </ReactNative.View>
+      </ReactNative.Pressable>
+    </ExpoRouter.Link>
   )
 }
 
