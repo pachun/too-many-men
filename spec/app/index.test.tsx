@@ -163,8 +163,6 @@ describe("opening the app", () => {
 
             ERTL.fireEvent.press(ERTL.screen.getByText("Creed Bratton"))
 
-            // intentionally do not mock the request to fetch the individual player's details
-
             await ERTL.waitFor(() => {
               expect(ERTL.screen).toHavePathname("/players/1")
               expect(ERTL.screen).toShowText("Creed Bratton")
