@@ -29,7 +29,9 @@ describe("viewing a player", () => {
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
 
-          expect(ERTL.screen).toHaveNavigationBarTitle("")
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).toHaveNavigationBarTitle("")
+          })
         },
       })
     })
