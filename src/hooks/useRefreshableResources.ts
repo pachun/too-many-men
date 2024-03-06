@@ -2,7 +2,7 @@ import React from "react"
 import type { RefreshableRequest } from "types/RefreshableRequest"
 import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import Config from "Config"
-import { trackAptabaseEvent } from "aptabase"
+import { trackAptabaseEvent } from "helpers/aptabase"
 
 interface UseRefreshableResourcesReturnType<Resource> {
   refreshableResources: RefreshableRequest<Resource[]>

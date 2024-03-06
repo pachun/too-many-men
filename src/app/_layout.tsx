@@ -6,7 +6,7 @@ import * as ReactNavigationNative from "@react-navigation/native"
 import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import useOverTheAirUpdates from "hooks/useOverTheAirUpdates"
 import useTheme from "hooks/useTheme"
-import { initializeAptabase, trackAptabaseEvent } from "aptabase"
+import { initializeAptabase, trackAptabaseEvent } from "helpers/aptabase"
 
 initializeAptabase()
 

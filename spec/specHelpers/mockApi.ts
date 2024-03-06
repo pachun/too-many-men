@@ -54,14 +54,17 @@ const mockApi = async ({
   test,
 }: MockApiArguments): Promise<void> => {
   mockedRequests.forEach(mockedRequest => {
+    const url =
+      Config.apiUrl +
+      // @ts-ignore
+      (mockedRequest.params
+        ? // @ts-ignore
+          toPath(mockedRequest.route, mockedRequest.params)
+        : mockedRequest.route)
+
     server.use(
       MSW.http[mockedRequest.method](
-        Config.apiUrl +
-          // @ts-ignore
-          (mockedRequest.params
-            ? // @ts-ignore
-              toPath(mockedRequest.route, mockedRequest.params)
-            : mockedRequest.route),
+        url,
         () => {
           if (mockedRequest.response === "Network Error") {
             return MSW.HttpResponse.error()

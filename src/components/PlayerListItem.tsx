@@ -3,25 +3,9 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import useTheme from "hooks/useTheme"
 import type { Player } from "types/Player"
+import formatPhoneNumber from "helpers/formatPhoneNumber"
 
 export const paddingLeft = 10
-
-const formatPhoneNumber = (phoneNumber: string): string => {
-  return Array.from(phoneNumber).reduce(
-    (formattedPhoneNumber, currentDigit, currentDigitPosition) => {
-      if (currentDigitPosition === 0) {
-        return `(${currentDigit}`
-      } else if (currentDigitPosition === 2) {
-        return `${formattedPhoneNumber}${currentDigit}) `
-      } else if (currentDigitPosition === 5) {
-        return `${formattedPhoneNumber}${currentDigit} `
-      } else {
-        return `${formattedPhoneNumber}${currentDigit}`
-      }
-    },
-    "",
-  )
-}
 
 interface PlayerListItemProps {
   player: Player
