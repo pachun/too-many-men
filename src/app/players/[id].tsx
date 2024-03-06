@@ -5,6 +5,7 @@ import Config from "Config"
 import type { Player as PlayerType } from "types/Player"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
 import RefreshablePlayersContext from "components/PlayersProvider"
+import useTheme from "hooks/useTheme"
 
 const Player = (): React.ReactElement => {
   const { id: playerId } = ExpoRouter.useLocalSearchParams()
@@ -43,6 +44,8 @@ const Player = (): React.ReactElement => {
     }, [playerId, refreshablePlayers]),
   )
 
+  const theme = useTheme()
+
   const navigationBarTitleLabel = React.useMemo(
     () => `${player?.first_name} ${player?.last_name}`,
     [player],
@@ -59,8 +62,12 @@ const Player = (): React.ReactElement => {
   return (
     <ReactNative.View>
       <ExpoRouter.Stack.Screen options={{ title: navigationBarTitleLabel }} />
-      <ReactNative.Text>{formattedPhoneNumberLabel}</ReactNative.Text>
-      <ReactNative.Text>{formattedJerseyNumberLabel}</ReactNative.Text>
+      <ReactNative.Text style={{ color: theme.colors.text }}>
+        {formattedPhoneNumberLabel}
+      </ReactNative.Text>
+      <ReactNative.Text style={{ color: theme.colors.text }}>
+        {formattedJerseyNumberLabel}
+      </ReactNative.Text>
     </ReactNative.View>
   )
 }

@@ -2,11 +2,11 @@ import React from "react"
 import type { RefreshableRequest } from "types/RefreshableRequest"
 import type { Player } from "types/Player"
 
-// this function is never used so it's not covered by tests;
-// but it's required to initialize the context
-//* c8 ignore start */
-const noOp = (): void => {}
-//* c8 ignore end */
+// // this function is never used so it's not covered by tests;
+// // but it's required to initialize the context
+// //* c8 ignore start */
+// const noOp = (): void => {}
+// //* c8 ignore end */
 
 const RefreshablePlayersContext = React.createContext<{
   refreshablePlayers: RefreshableRequest<Player[]>
@@ -15,7 +15,7 @@ const RefreshablePlayersContext = React.createContext<{
   ) => void
 }>({
   refreshablePlayers: { status: "Not Started" },
-  setRefreshablePlayers: noOp,
+  setRefreshablePlayers: (): void => {},
 })
 
 export default RefreshablePlayersContext
