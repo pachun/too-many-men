@@ -5,24 +5,20 @@ import Config from "Config"
 import { trackAptabaseEvent } from "helpers/aptabase"
 
 interface UseRefreshableResourcesReturnType<Resource> {
-  refreshableResources: RefreshableRequest<Resource[]>
   loadResources: () => Promise<void>
   refreshResources: (resourcesBeforeRefresh: Resource[]) => Promise<void>
 }
 
 const useRefreshableResources = <Resource>(
   resourceApiPath: string,
+  setRefreshableResources: (
+    refreshableResources: RefreshableRequest<Resource[]>,
+  ) => void,
 ): UseRefreshableResourcesReturnType<Resource> => {
   const resourceUrl = React.useMemo(
     () => Config.apiUrl + resourceApiPath,
     [resourceApiPath],
   )
-
-  const [refreshableResources, setRefreshableResources] = React.useState<
-    RefreshableRequest<Resource[]>
-  >({
-    status: "Not Started",
-  })
 
   const { showNotification } = React.useContext(
     NavigationHeaderToastNotification.Context,
@@ -44,7 +40,7 @@ const useRefreshableResources = <Resource>(
       setRefreshableResources({ status: "Load Error" })
       trackAptabaseEvent(`Failed to load ${resourceApiPath}`)
     }
-  }, [showNotification, resourceUrl, resourceApiPath])
+  }, [showNotification, resourceUrl, resourceApiPath, setRefreshableResources])
 
   const refreshResources = React.useCallback(
     async (resourcesBeforeRefresh: Resource[]): Promise<void> => {
@@ -70,10 +66,10 @@ const useRefreshableResources = <Resource>(
         trackAptabaseEvent(`Failed to refresh ${resourceApiPath}`)
       }
     },
-    [showNotification, resourceUrl, resourceApiPath],
+    [showNotification, resourceUrl, resourceApiPath, setRefreshableResources],
   )
 
-  return { refreshableResources, loadResources, refreshResources }
+  return { loadResources, refreshResources }
 }
 
 export default useRefreshableResources

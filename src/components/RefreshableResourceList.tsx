@@ -4,22 +4,31 @@ import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import CenteredReloadButton from "components/CenteredReloadButton"
 import useRefreshableResources from "hooks/useRefreshableResources"
 import type { ListComponent } from "types/ListComponent"
+import type { RefreshableRequest } from "types/RefreshableRequest"
 
 interface RefreshableResourceListProps<Resource> {
   resourceApiPath: string
+  refreshableResources: RefreshableRequest<Resource[]>
+  setRefreshableResources: (
+    refreshableResources: RefreshableRequest<Resource[]>,
+  ) => void
   ListComponent: ListComponent<Resource>
 }
 
 function RefreshableResourceList<Resource>({
   resourceApiPath,
+  refreshableResources,
+  setRefreshableResources,
   ListComponent,
 }: RefreshableResourceListProps<Resource>): React.ReactElement {
   const { dismissNotification } = React.useContext(
     NavigationHeaderToastNotification.Context,
   )
 
-  const { refreshableResources, loadResources, refreshResources } =
-    useRefreshableResources<Resource>(resourceApiPath)
+  const { loadResources, refreshResources } = useRefreshableResources<Resource>(
+    resourceApiPath,
+    setRefreshableResources,
+  )
 
   React.useEffect(() => {
     loadResources()

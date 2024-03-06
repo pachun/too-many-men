@@ -165,7 +165,7 @@ describe("opening the app", () => {
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).toHavePathname("/players/1")
-              expect(ERTL.screen).toShowText("Creed Bratton")
+              expect(ERTL.screen).toHaveNavigationBarTitle("Creed Bratton")
               expect(ERTL.screen).toShowText("#55")
               expect(ERTL.screen).toShowText("(012) 345 6789")
             })

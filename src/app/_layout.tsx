@@ -7,6 +7,9 @@ import NavigationHeaderToastNotification from "components/NavigationHeaderToastN
 import useOverTheAirUpdates from "hooks/useOverTheAirUpdates"
 import useTheme from "hooks/useTheme"
 import { initializeAptabase, trackAptabaseEvent } from "helpers/aptabase"
+import RefreshablePlayersContext from "components/PlayersProvider"
+import type { Player } from "types/Player"
+import type { RefreshableRequest } from "types/RefreshableRequest"
 
 initializeAptabase()
 
@@ -19,46 +22,56 @@ const Layout = (): React.ReactElement => {
 
   const theme = useTheme()
 
+  const [refreshablePlayers, setRefreshablePlayers] = React.useState<
+    RefreshableRequest<Player[]>
+  >({
+    status: "Not Started",
+  })
+
   return (
     <>
       <ExpoStatusBar.StatusBar style="auto" />
       <ReactNavigationNative.ThemeProvider value={theme}>
-        <NavigationHeaderToastNotification.Provider>
-          <ExpoRouter.Tabs screenOptions={{ headerShown: false }}>
-            <ExpoRouter.Tabs.Screen
-              name="players"
-              options={{
-                title: "Team",
-                tabBarIcon: ({ color }) => (
-                  <ExpoVectorIcons.FontAwesome6
-                    name="people-group"
-                    color={color}
-                    size={20}
-                  />
-                ),
-              }}
-            />
-            <ExpoRouter.Tabs.Screen
-              name="games"
-              options={{
-                title: "Games",
-                tabBarIcon: ({ color }) => (
-                  <ExpoVectorIcons.FontAwesome
-                    name="calendar"
-                    color={color}
-                    size={20}
-                  />
-                ),
-              }}
-            />
-            <ExpoRouter.Tabs.Screen
-              name="index"
-              options={{
-                href: null,
-              }}
-            />
-          </ExpoRouter.Tabs>
-        </NavigationHeaderToastNotification.Provider>
+        <RefreshablePlayersContext.Provider
+          value={{ refreshablePlayers, setRefreshablePlayers }}
+        >
+          <NavigationHeaderToastNotification.Provider>
+            <ExpoRouter.Tabs screenOptions={{ headerShown: false }}>
+              <ExpoRouter.Tabs.Screen
+                name="players"
+                options={{
+                  title: "Team",
+                  tabBarIcon: ({ color }) => (
+                    <ExpoVectorIcons.FontAwesome6
+                      name="people-group"
+                      color={color}
+                      size={20}
+                    />
+                  ),
+                }}
+              />
+              <ExpoRouter.Tabs.Screen
+                name="games"
+                options={{
+                  title: "Games",
+                  tabBarIcon: ({ color }) => (
+                    <ExpoVectorIcons.FontAwesome
+                      name="calendar"
+                      color={color}
+                      size={20}
+                    />
+                  ),
+                }}
+              />
+              <ExpoRouter.Tabs.Screen
+                name="index"
+                options={{
+                  href: null,
+                }}
+              />
+            </ExpoRouter.Tabs>
+          </NavigationHeaderToastNotification.Provider>
+        </RefreshablePlayersContext.Provider>
       </ReactNavigationNative.ThemeProvider>
     </>
   )

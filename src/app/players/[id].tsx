@@ -4,22 +4,43 @@ import * as ExpoRouter from "expo-router"
 import Config from "Config"
 import type { Player as PlayerType } from "types/Player"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
+import RefreshablePlayersContext from "components/PlayersProvider"
 
 const Player = (): React.ReactElement => {
   const { id: playerId } = ExpoRouter.useLocalSearchParams()
 
   const [player, setPlayer] = React.useState<PlayerType>()
 
+  const { refreshablePlayers } = React.useContext(RefreshablePlayersContext)
+
   ExpoRouter.useFocusEffect(
     React.useCallback(() => {
       const getPlayer = async (): Promise<void> => {
-        setPlayer(
-          await (await fetch(Config.apiUrl + `/players/${playerId}`)).json(),
-        )
+        const getPlayerFromCache = (): PlayerType | undefined => {
+          if (
+            refreshablePlayers.status === "Success" ||
+            refreshablePlayers.status === "Refreshing" ||
+            refreshablePlayers.status === "Refresh Error"
+          ) {
+            return refreshablePlayers.data.find(
+              refreshablePlayer => refreshablePlayer.id === Number(playerId),
+            )
+          }
+        }
+
+        const getPlayerFromApi = async (): Promise<PlayerType> => {
+          return await (
+            await fetch(Config.apiUrl + `/players/${playerId}`)
+          ).json()
+        }
+
+        const cachedPlayer = getPlayerFromCache()
+
+        setPlayer(cachedPlayer ? cachedPlayer : await getPlayerFromApi())
       }
 
       getPlayer()
-    }, [playerId]),
+    }, [playerId, refreshablePlayers]),
   )
 
   const navigationBarTitleLabel = React.useMemo(
