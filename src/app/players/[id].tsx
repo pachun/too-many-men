@@ -6,11 +6,12 @@ import type { Player as PlayerType } from "types/Player"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
 import RefreshablePlayersContext from "components/PlayersProvider"
 import useTheme from "hooks/useTheme"
+import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 
 const Player = (): React.ReactElement => {
   const { id: playerId } = ExpoRouter.useLocalSearchParams()
 
-  const [player, setPlayer] = React.useState<PlayerType>()
+  const [player, setPlayer] = React.useState<PlayerType | undefined>()
 
   const { refreshablePlayers } = React.useContext(RefreshablePlayersContext)
 
@@ -59,16 +60,28 @@ const Player = (): React.ReactElement => {
     return player?.jersey_number ? `#${player.jersey_number}` : ""
   }, [player?.jersey_number])
 
-  return (
-    <ReactNative.View>
+  return player ? (
+    <>
       <ExpoRouter.Stack.Screen options={{ title: navigationBarTitleLabel }} />
-      <ReactNative.Text style={{ color: theme.colors.text }}>
-        {formattedPhoneNumberLabel}
-      </ReactNative.Text>
-      <ReactNative.Text style={{ color: theme.colors.text }}>
-        {formattedJerseyNumberLabel}
-      </ReactNative.Text>
-    </ReactNative.View>
+      <ReactNative.View
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ReactNative.Text
+          style={{ color: theme.colors.text, fontSize: 24, fontWeight: "bold" }}
+        >
+          {formattedJerseyNumberLabel}
+        </ReactNative.Text>
+        <ReactNative.View style={{ height: 30 }} />
+        <ReactNative.Text style={{ color: theme.colors.text }}>
+          {formattedPhoneNumberLabel}
+        </ReactNative.Text>
+      </ReactNative.View>
+    </>
+  ) : (
+    <>
+      <ExpoRouter.Stack.Screen options={{ title: "" }} />
+      <CenteredLoadingSpinner />
+    </>
   )
 }
 
