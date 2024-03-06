@@ -75,6 +75,8 @@ const Player = (): React.ReactElement => {
         <ReactNative.Text style={{ color: theme.colors.text }}>
           {formattedPhoneNumberLabel}
         </ReactNative.Text>
+        <ReactNative.View style={{ height: 10 }} />
+        <ReactNative.Button testID="This is Me Button" title="👋 This is Me" />
       </ReactNative.View>
     </>
   ) : (

@@ -111,5 +111,21 @@ describe("viewing a player", () => {
         },
       })
     })
+
+    it("shows a This Is Me button", async () => {
+      const player = playerFactory({ id: 1 })
+
+      await mockPlayerFromApi({
+        playerId: 1,
+        response: player,
+        test: async () => {
+          ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).toShowTestId("This is Me Button")
+          })
+        },
+      })
+    })
   })
 })
