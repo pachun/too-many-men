@@ -52,7 +52,7 @@ const Player = (): React.ReactElement => {
   )
 
   const formattedPhoneNumberLabel = React.useMemo(() => {
-    return player?.phone_number ? formatPhoneNumber(player?.phone_number) : ""
+    return player?.phone_number ? formatPhoneNumber(player.phone_number) : ""
   }, [player?.phone_number])
 
   const formattedJerseyNumberLabel = React.useMemo(() => {
