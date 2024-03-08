@@ -3,8 +3,16 @@ import * as MSW from "msw"
 import Config from "Config"
 import type { Player } from "types/Player"
 import type { Game } from "types/Game"
+import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/CheckTextMessageConfirmationCodeRequestResponse"
 
-export interface MockedPlayerTextMessageConfirmationCodeRequest {
+export interface MockedCheckPlayersTextMessageConfirmationCodeRequest {
+  method: "post"
+  route: "/players/[id]/check_text_message_confirmation_code"
+  params: { id: number }
+  response: CheckTextMessageConfirmationCodeRequestResponse
+}
+
+export interface MockedSendPlayersTextMessageConfirmationCodeRequest {
   method: "get"
   route: "/players/[id]/send_text_message_confirmation_code"
   params: { id: number }
@@ -37,7 +45,8 @@ export type MockedRequest =
   | MockedPlayersRequest
   | MockedPlayerRequest
   | MockedGamesRequest
-  | MockedPlayerTextMessageConfirmationCodeRequest
+  | MockedSendPlayersTextMessageConfirmationCodeRequest
+  | MockedCheckPlayersTextMessageConfirmationCodeRequest
 export type Test = (server: MSW_NODE.SetupServer) => Promise<void>
 
 interface MockApiArguments {

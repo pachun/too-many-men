@@ -31,9 +31,12 @@ const Player = (): React.ReactElement => {
         }
 
         const getPlayerFromApi = async (): Promise<PlayerType> => {
-          return await (
+          console.log(`getting players`)
+          const x = await (
             await fetch(Config.apiUrl + `/players/${playerId}`)
           ).json()
+          console.log(`got players`)
+          return x
         }
 
         const cachedPlayer = getPlayerFromCache()
@@ -61,6 +64,9 @@ const Player = (): React.ReactElement => {
   }, [player?.jersey_number])
 
   const sendTextMessageConfirmationCode = async (): Promise<void> => {
+    await fetch(
+      `${Config.apiUrl}/players/${player!.id.toString()}/send_text_message_confirmation_code`,
+    )
     ReactNative.Alert.prompt(
       "We texted you a 6-digit code",
       "Enter it here",
@@ -70,9 +76,6 @@ const Player = (): React.ReactElement => {
       "plain-text",
       "",
       "number-pad",
-    )
-    await fetch(
-      `${Config.apiUrl}/players/${player!.id.toString()}/send_text_message_confirmation_code`,
     )
   }
 
