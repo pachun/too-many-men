@@ -61,11 +61,19 @@ const Player = (): React.ReactElement => {
   }, [player?.jersey_number])
 
   const sendTextMessageConfirmationCode = async (): Promise<void> => {
-    if (player) {
-      await fetch(
-        `${Config.apiUrl}/players/${player.id.toString()}/send_text_message_confirmation_code`,
-      )
-    }
+    ReactNative.Alert.prompt(
+      "We texted you a 6-digit code",
+      "Enter it here",
+      stuff => {
+        console.log(`got ${JSON.stringify(stuff)}`)
+      },
+      "plain-text",
+      "",
+      "number-pad",
+    )
+    await fetch(
+      `${Config.apiUrl}/players/${player!.id.toString()}/send_text_message_confirmation_code`,
+    )
   }
 
   return player ? (

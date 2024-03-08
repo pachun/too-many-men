@@ -1,3 +1,4 @@
+import * as ReactNative from "react-native"
 import * as ERTL from "expo-router/testing-library"
 import playerFactory from "../../specHelpers/factories/player"
 import mockPlayerFromApi from "../../specHelpers/mockPlayerFromApi"
@@ -158,6 +159,39 @@ describe("viewing a player", () => {
         expect(urlsOfApiRequests).toContain(
           `${Config.apiUrl}/players/1/send_text_message_confirmation_code`,
         )
+      })
+
+      it("shows an alert with an input to enter the text message's confirmation code", async () => {
+        jest.spyOn(ReactNative.Alert, "prompt")
+
+        const player = playerFactory({ id: 1, phone_number: "0123456789" })
+
+        await mockPlayerAndTextMessageConfirmationCodeFromApi({
+          playerId: 1,
+          response: player,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowTestId("This is Me Button")
+            })
+
+            await ERTL.waitFor(() =>
+              ERTL.fireEvent.press(
+                ERTL.screen.getByTestId("This is Me Button"),
+              ),
+            )
+
+            expect(ReactNative.Alert.prompt).toHaveBeenCalledWith(
+              "We texted you a 6-digit code",
+              "Enter it here",
+              expect.any(Function),
+              "plain-text",
+              "",
+              "number-pad",
+            )
+          },
+        })
       })
     })
   })
