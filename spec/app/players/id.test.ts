@@ -1,6 +1,8 @@
 import * as ERTL from "expo-router/testing-library"
 import playerFactory from "../../specHelpers/factories/player"
 import mockPlayerFromApi from "../../specHelpers/mockPlayerFromApi"
+import Config from "Config"
+import mockPlayerAndTextMessageConfirmationCodeFromApi from "../../specHelpers/mockPlayerAndTextMessageConfirmationCodeFromApi"
 
 describe("viewing a player", () => {
   describe("while the player is loaded from the api", () => {
@@ -125,6 +127,37 @@ describe("viewing a player", () => {
             expect(ERTL.screen).toShowTestId("This is Me Button")
           })
         },
+      })
+    })
+
+    describe("tapping the This Is Me button", () => {
+      it("sends a text message to the players phone number containing a 6-digit code", async () => {
+        // jest.spyOn(ReactNative.Alert, "alert")
+
+        const player = playerFactory({ id: 1, phone_number: "0123456789" })
+
+        const urlsOfApiRequests =
+          await mockPlayerAndTextMessageConfirmationCodeFromApi({
+            playerId: 1,
+            response: player,
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("This is Me Button")
+              })
+
+              await ERTL.waitFor(() =>
+                ERTL.fireEvent.press(
+                  ERTL.screen.getByTestId("This is Me Button"),
+                ),
+              )
+            },
+          })
+
+        expect(urlsOfApiRequests).toContain(
+          `${Config.apiUrl}/players/1/send_text_message_confirmation_code`,
+        )
       })
     })
   })

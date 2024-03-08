@@ -4,6 +4,13 @@ import Config from "Config"
 import type { Player } from "types/Player"
 import type { Game } from "types/Game"
 
+export interface MockedPlayerTextMessageConfirmationCodeRequest {
+  method: "get"
+  route: "/players/[id]/send_text_message_confirmation_code"
+  params: { id: number }
+  response: undefined
+}
+
 export type MockedPlayerRequestResponse = Player | "Network Error"
 export interface MockedPlayerRequest {
   method: "get"
@@ -30,6 +37,7 @@ export type MockedRequest =
   | MockedPlayersRequest
   | MockedPlayerRequest
   | MockedGamesRequest
+  | MockedPlayerTextMessageConfirmationCodeRequest
 export type Test = (server: MSW_NODE.SetupServer) => Promise<void>
 
 interface MockApiArguments {
@@ -48,23 +56,31 @@ const toPath = (
   }, route)
 }
 
+const url = (mockedRequest: MockedRequest): string => {
+  return (
+    Config.apiUrl +
+    // @ts-ignore
+    (mockedRequest.params
+      ? // @ts-ignore
+        toPath(mockedRequest.route, mockedRequest.params)
+      : mockedRequest.route)
+  )
+}
+
 const mockApi = async ({
   server = MSW_NODE.setupServer(),
   mockedRequests,
   test,
-}: MockApiArguments): Promise<void> => {
-  mockedRequests.forEach(mockedRequest => {
-    const url =
-      Config.apiUrl +
-      // @ts-ignore
-      (mockedRequest.params
-        ? // @ts-ignore
-          toPath(mockedRequest.route, mockedRequest.params)
-        : mockedRequest.route)
+}: MockApiArguments): Promise<string[]> => {
+  let urlsOfApiRequests: string[] = []
+  server.events.on("request:match", ({ request }) => {
+    urlsOfApiRequests = [...urlsOfApiRequests, request.url]
+  })
 
+  mockedRequests.forEach(mockedRequest => {
     server.use(
       MSW.http[mockedRequest.method](
-        url,
+        url(mockedRequest),
         () => {
           if (mockedRequest.response === "Network Error") {
             return MSW.HttpResponse.error()
@@ -76,12 +92,16 @@ const mockApi = async ({
       ),
     )
   })
+
   server.listen({ onUnhandledRequest: "error" })
+
   try {
     await test(server)
   } finally {
     server.close()
   }
+
+  return urlsOfApiRequests
 }
 
 export default mockApi

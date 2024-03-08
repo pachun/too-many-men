@@ -60,6 +60,14 @@ const Player = (): React.ReactElement => {
     return player?.jersey_number ? `#${player.jersey_number}` : ""
   }, [player?.jersey_number])
 
+  const sendTextMessageConfirmationCode = async (): Promise<void> => {
+    if (player) {
+      await fetch(
+        `${Config.apiUrl}/players/${player.id.toString()}/send_text_message_confirmation_code`,
+      )
+    }
+  }
+
   return player ? (
     <>
       <ExpoRouter.Stack.Screen options={{ title: navigationBarTitleLabel }} />
@@ -76,7 +84,11 @@ const Player = (): React.ReactElement => {
           {formattedPhoneNumberLabel}
         </ReactNative.Text>
         <ReactNative.View style={{ height: 10 }} />
-        <ReactNative.Button testID="This is Me Button" title="👋 This is Me" />
+        <ReactNative.Button
+          testID="This is Me Button"
+          title="👋 This is Me"
+          onPress={sendTextMessageConfirmationCode}
+        />
       </ReactNative.View>
     </>
   ) : (
