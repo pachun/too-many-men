@@ -8,6 +8,7 @@ import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/Chec
 export interface MockedCheckPlayersTextMessageConfirmationCodeRequest {
   method: "post"
   route: "/players/[id]/check_text_message_confirmation_code"
+  searchParams: { confirmation_code: string }
   params: { id: number }
   response: CheckTextMessageConfirmationCodeRequestResponse
 }
@@ -90,11 +91,25 @@ const mockApi = async ({
     server.use(
       MSW.http[mockedRequest.method](
         url(mockedRequest),
-        () => {
+        // @ts-ignore
+        ({ request }) => {
           if (mockedRequest.response === "Network Error") {
             return MSW.HttpResponse.error()
           } else {
-            return MSW.HttpResponse.json(mockedRequest.response)
+            // @ts-ignore
+            if (mockedRequest.searchParams) {
+              const url = new URL(request.url)
+              // @ts-ignore
+              Object.keys(mockedRequest.searchParams).forEach(searchParam => {
+                expect(url.searchParams.get(searchParam)).toEqual(
+                  // @ts-ignore
+                  mockedRequest.searchParams[searchParam],
+                )
+              })
+              return MSW.HttpResponse.json(mockedRequest.response)
+            } else {
+              return MSW.HttpResponse.json(mockedRequest.response)
+            }
           }
         },
         { once: true },

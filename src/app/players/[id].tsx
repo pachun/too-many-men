@@ -1,6 +1,8 @@
 import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
+import Dialog from "react-native-dialog"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import Config from "Config"
 import type { Player as PlayerType } from "types/Player"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
@@ -63,21 +65,27 @@ const Player = (): React.ReactElement => {
     return player?.jersey_number ? `#${player.jersey_number}` : ""
   }, [player?.jersey_number])
 
+  const [confirmationCodeInputIsVisible, setConfirmationCodeDialogIsVisible] =
+    React.useState(false)
+
   const sendTextMessageConfirmationCode = async (): Promise<void> => {
     await fetch(
       `${Config.apiUrl}/players/${player!.id.toString()}/send_text_message_confirmation_code`,
     )
-    ReactNative.Alert.prompt(
-      "We texted you a 6-digit code",
-      "Enter it here",
-      stuff => {
-        console.log(`got ${JSON.stringify(stuff)}`)
-      },
-      "plain-text",
-      "",
-      "number-pad",
-    )
+    // ReactNative.Alert.prompt(
+    //   "We texted you a 6-digit code",
+    //   "Enter it here",
+    //   stuff => {
+    //     console.log(`got ${JSON.stringify(stuff)}`)
+    //   },
+    //   "plain-text",
+    //   "",
+    //   "number-pad",
+    // )
+    setConfirmationCodeDialogIsVisible(true)
   }
+
+  const [confirmationCode, setConfirmationCode] = React.useState("")
 
   return player ? (
     <>
@@ -100,6 +108,41 @@ const Player = (): React.ReactElement => {
           title="👋 This is Me"
           onPress={sendTextMessageConfirmationCode}
         />
+        <Dialog.Container visible={confirmationCodeInputIsVisible}>
+          <Dialog.Title>Sent You Something 🌷</Dialog.Title>
+          <Dialog.CodeInput
+            autoFocus
+            onCodeChange={setConfirmationCode}
+            codeLength={6}
+            // placeholder="Enter it here"
+            // keyboardType="number-pad"
+            testID="Confirmation Code Input"
+          />
+          <Dialog.Button
+            label="Cancel"
+            onPress={async () => {
+              ReactNative.Keyboard.dismiss()
+              setConfirmationCodeDialogIsVisible(false)
+            }}
+          />
+          <Dialog.Button
+            testID="OK Button"
+            label="OK"
+            onPress={async () => {
+              ReactNative.Keyboard.dismiss()
+              setConfirmationCodeDialogIsVisible(false)
+              const apiToken = (
+                await (
+                  await fetch(
+                    `${Config.apiUrl}/players/${player.id}/check_text_message_confirmation_code?confirmation_code=${confirmationCode}`,
+                    { method: "post" },
+                  )
+                ).json()
+              ).apiToken
+              await AsyncStorage.setItem("API Token", apiToken)
+            }}
+          />
+        </Dialog.Container>
       </ReactNative.View>
     </>
   ) : (

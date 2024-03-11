@@ -1,9 +1,9 @@
 import * as ReactNative from "react-native"
 import * as ERTL from "expo-router/testing-library"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import playerFactory from "../../specHelpers/factories/player"
 import mockPlayerFromApi from "../../specHelpers/mockPlayerFromApi"
 import Config from "Config"
-import mockPlayerAndTextMessageConfirmationCodeFromApi from "../../specHelpers/mockPlayerAndTextMessageConfirmationCodeFromApi"
 import mockApi from "../../specHelpers/mockApi"
 
 describe("viewing a player", () => {
@@ -176,10 +176,7 @@ describe("viewing a player", () => {
         jest.spyOn(ReactNative.Alert, "prompt")
 
         const playerId = 1
-        const player = playerFactory({
-          id: playerId,
-          phone_number: "0123456789",
-        })
+        const player = playerFactory({ id: playerId })
 
         await mockApi({
           mockedRequests: [
@@ -229,36 +226,65 @@ describe("viewing a player", () => {
         })
       })
 
-      // describe("when the correct code is entered into the prompt", () => {
-      //   it("sets the users apiToken in async storage", async () => {
-      //     const player = playerFactory({ id: 1, phone_number: "0123456789" })
-      //
-      //     // await mockPlayerAndTextMessageConfirmationCodeFromApi({
-      //     //   playerId: 1,
-      //     //   checkTextMessageConfirmationCodeRequestResponse: {
-      //     //     status: "correct",
-      //     //     apiToken: "faked api token",
-      //     //   },
-      //     //   response: player,
-      //     //   test: async () => {
-      //
-      //     // nock(Config.apiUrl).get("/players/1").reply(200, player)
-      //
-      //     ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
-      //
-      //     await ERTL.waitFor(() => {
-      //       expect(ERTL.screen).toShowTestId("This is Me Button")
-      //     })
-      //
-      //     await ERTL.waitFor(() =>
-      //       ERTL.fireEvent.press(ERTL.screen.getByTestId("This is Me Button")),
-      //     )
-      //
-      //     await ERTL.fireEvent.changeText("123456")
-      //     // },
-      //     // })
-      //   })
-      // })
+      describe("when the correct code is entered into the prompt", () => {
+        it("authenticates the user (saves their api token in async storage)", async () => {
+          const playerId = 1
+          const player = playerFactory({ id: playerId })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/players/[id]",
+                params: { id: playerId },
+                response: player,
+              },
+              {
+                method: "get",
+                route: "/players/[id]/send_text_message_confirmation_code",
+                params: { id: playerId },
+                response: undefined,
+              },
+              {
+                method: "post",
+                route: "/players/[id]/check_text_message_confirmation_code",
+                params: { id: playerId },
+                searchParams: { confirmation_code: "123456" },
+                response: { status: "correct", apiToken: "apiTokenFromApi" },
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("This is Me Button")
+              })
+
+              await ERTL.waitFor(() =>
+                ERTL.fireEvent.press(
+                  ERTL.screen.getByTestId("This is Me Button"),
+                ),
+              )
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.changeText(
+                  ERTL.screen.getByTestId("Confirmation Code Input"),
+                  "123456",
+                )
+              })
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("OK Button"))
+              })
+
+              expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+                "API Token",
+                "apiTokenFromApi",
+              )
+            },
+          })
+        })
+      })
     })
   })
 })
