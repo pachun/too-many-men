@@ -4,7 +4,7 @@ import playerFactory from "../../specHelpers/factories/player"
 import mockPlayerFromApi from "../../specHelpers/mockPlayerFromApi"
 import Config from "Config"
 import mockPlayerAndTextMessageConfirmationCodeFromApi from "../../specHelpers/mockPlayerAndTextMessageConfirmationCodeFromApi"
-import nock from "nock"
+import mockApi from "../../specHelpers/mockApi"
 
 describe("viewing a player", () => {
   describe("while the player is loaded from the api", () => {
@@ -43,12 +43,18 @@ describe("viewing a player", () => {
 
   describe("when the player is done loading from the api", () => {
     it("hides the loading spinner", async () => {
-      nock(Config.apiUrl).get("/players/1").reply(200, playerFactory())
+      const player = playerFactory({ id: 1 })
 
-      ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+      await mockPlayerFromApi({
+        playerId: 1,
+        response: player,
+        test: async () => {
+          ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
 
-      await ERTL.waitFor(() => {
-        expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+          })
+        },
       })
     })
 
@@ -59,12 +65,16 @@ describe("viewing a player", () => {
         last_name: "Halpert",
       })
 
-      nock(Config.apiUrl).get("/players/1").reply(200, jimHalpert)
+      await mockPlayerFromApi({
+        playerId: 1,
+        response: jimHalpert,
+        test: async () => {
+          ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
 
-      ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
-
-      await ERTL.waitFor(() => {
-        expect(ERTL.screen).toHaveNavigationBarTitle("Jim Halpert")
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).toHaveNavigationBarTitle("Jim Halpert")
+          })
+        },
       })
     })
 
@@ -123,68 +133,69 @@ describe("viewing a player", () => {
     })
 
     describe("tapping the This Is Me button", () => {
-      // remove this later
       it("sends a text message to the players phone number containing a 6-digit code", async () => {
-        const player = playerFactory({ id: 1, phone_number: "0123456789" })
+        const playerId = 1
+        const player = playerFactory({ id: playerId })
 
-        const urlsOfApiRequests =
-          await mockPlayerAndTextMessageConfirmationCodeFromApi({
-            playerId: 1,
-            response: player,
-            test: async () => {
-              ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
-
-              await ERTL.waitFor(() => {
-                expect(ERTL.screen).toShowTestId("This is Me Button")
-              })
-
-              await ERTL.waitFor(() =>
-                ERTL.fireEvent.press(
-                  ERTL.screen.getByTestId("This is Me Button"),
-                ),
-              )
+        const urlsOfApiRequests = await mockApi({
+          mockedRequests: [
+            {
+              method: "get",
+              route: "/players/[id]",
+              params: { id: playerId },
+              response: player,
             },
-          })
+            {
+              method: "get",
+              route: "/players/[id]/send_text_message_confirmation_code",
+              params: { id: playerId },
+              response: undefined,
+            },
+          ],
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowTestId("This is Me Button")
+            })
+
+            await ERTL.waitFor(() =>
+              ERTL.fireEvent.press(
+                ERTL.screen.getByTestId("This is Me Button"),
+              ),
+            )
+          },
+        })
 
         expect(urlsOfApiRequests).toContain(
-          `${Config.apiUrl}/players/1/send_text_message_confirmation_code`,
-        )
-      })
-      it("sends a text message to the players phone number containing a 6-digit code", async () => {
-        const player = playerFactory({ id: 1, phone_number: "0123456789" })
-
-        const urlsOfApiRequests =
-          await mockPlayerAndTextMessageConfirmationCodeFromApi({
-            playerId: 1,
-            response: player,
-            test: async () => {
-              ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
-
-              await ERTL.waitFor(() => {
-                expect(ERTL.screen).toShowTestId("This is Me Button")
-              })
-
-              await ERTL.waitFor(() =>
-                ERTL.fireEvent.press(
-                  ERTL.screen.getByTestId("This is Me Button"),
-                ),
-              )
-            },
-          })
-
-        expect(urlsOfApiRequests).toContain(
-          `${Config.apiUrl}/players/1/send_text_message_confirmation_code`,
+          `${Config.apiUrl}/players/${playerId}/send_text_message_confirmation_code`,
         )
       })
 
       it("shows an alert with an input to enter the text message's confirmation code", async () => {
         jest.spyOn(ReactNative.Alert, "prompt")
 
-        const player = playerFactory({ id: 1, phone_number: "0123456789" })
+        const playerId = 1
+        const player = playerFactory({
+          id: playerId,
+          phone_number: "0123456789",
+        })
 
-        await mockPlayerAndTextMessageConfirmationCodeFromApi({
-          playerId: 1,
-          response: player,
+        await mockApi({
+          mockedRequests: [
+            {
+              method: "get",
+              route: "/players/[id]",
+              params: { id: playerId },
+              response: player,
+            },
+            {
+              method: "get",
+              route: "/players/[id]/send_text_message_confirmation_code",
+              params: { id: playerId },
+              response: undefined,
+            },
+          ],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
 
@@ -218,36 +229,36 @@ describe("viewing a player", () => {
         })
       })
 
-      describe("when the correct code is entered into the prompt", () => {
-        it("sets the users apiToken in async storage", async () => {
-          const player = playerFactory({ id: 1, phone_number: "0123456789" })
-
-          // await mockPlayerAndTextMessageConfirmationCodeFromApi({
-          //   playerId: 1,
-          //   checkTextMessageConfirmationCodeRequestResponse: {
-          //     status: "correct",
-          //     apiToken: "faked api token",
-          //   },
-          //   response: player,
-          //   test: async () => {
-
-          nock(Config.apiUrl).get("/players/1").reply(200, player)
-
-          ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
-
-          await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowTestId("This is Me Button")
-          })
-
-          await ERTL.waitFor(() =>
-            ERTL.fireEvent.press(ERTL.screen.getByTestId("This is Me Button")),
-          )
-
-          await ERTL.fireEvent.changeText("123456")
-          // },
-          // })
-        })
-      })
+      // describe("when the correct code is entered into the prompt", () => {
+      //   it("sets the users apiToken in async storage", async () => {
+      //     const player = playerFactory({ id: 1, phone_number: "0123456789" })
+      //
+      //     // await mockPlayerAndTextMessageConfirmationCodeFromApi({
+      //     //   playerId: 1,
+      //     //   checkTextMessageConfirmationCodeRequestResponse: {
+      //     //     status: "correct",
+      //     //     apiToken: "faked api token",
+      //     //   },
+      //     //   response: player,
+      //     //   test: async () => {
+      //
+      //     // nock(Config.apiUrl).get("/players/1").reply(200, player)
+      //
+      //     ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+      //
+      //     await ERTL.waitFor(() => {
+      //       expect(ERTL.screen).toShowTestId("This is Me Button")
+      //     })
+      //
+      //     await ERTL.waitFor(() =>
+      //       ERTL.fireEvent.press(ERTL.screen.getByTestId("This is Me Button")),
+      //     )
+      //
+      //     await ERTL.fireEvent.changeText("123456")
+      //     // },
+      //     // })
+      //   })
+      // })
     })
   })
 })

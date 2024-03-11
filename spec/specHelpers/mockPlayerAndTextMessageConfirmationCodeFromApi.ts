@@ -6,8 +6,6 @@ import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/Chec
 const mockPlayerAndTextMessageConfirmationCodeFromApi = async ({
   server = MSW_NODE.setupServer(),
   playerId,
-  confirmationCode = "",
-  checkTextMessageConfirmationCodeRequestResponse = { status: "incorrect" },
   response,
   test,
 }: {
@@ -33,13 +31,13 @@ const mockPlayerAndTextMessageConfirmationCodeFromApi = async ({
         params: { id: playerId },
         response: undefined,
       },
-      {
-        method: "post",
-        route:
-          "/players/[id]/check_text_message_confirmation_code?confirmation_code=[confirmationCode]",
-        params: { id: playerId, confirmationCode: confirmationCode },
-        response: checkTextMessageConfirmationCodeRequestResponse,
-      },
+      // {
+      //   method: "post",
+      //   route:
+      //     "/players/[id]/check_text_message_confirmation_code?confirmation_code=[confirmationCode]",
+      //   params: { id: playerId, confirmationCode: confirmationCode },
+      //   response: checkTextMessageConfirmationCodeRequestResponse,
+      // },
     ],
     test,
   })

@@ -31,11 +31,11 @@ const Player = (): React.ReactElement => {
         }
 
         const getPlayerFromApi = async (): Promise<PlayerType> => {
-          console.log(`getting players`)
+          // console.log(`getting player`)
           const x = await (
             await fetch(Config.apiUrl + `/players/${playerId}`)
           ).json()
-          console.log(`got players`)
+          // console.log(`got player`)
           return x
         }
 
