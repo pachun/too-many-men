@@ -1,4 +1,3 @@
-import * as ReactNative from "react-native"
 import * as ERTL from "expo-router/testing-library"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import playerFactory from "../../specHelpers/factories/player"
@@ -172,9 +171,7 @@ describe("viewing a player", () => {
         )
       })
 
-      it("shows an alert with an input to enter the text message's confirmation code", async () => {
-        jest.spyOn(ReactNative.Alert, "prompt")
-
+      it("shows an input popup to enter the text message's confirmation code", async () => {
         const playerId = 1
         const player = playerFactory({ id: playerId })
 
@@ -206,27 +203,198 @@ describe("viewing a player", () => {
               ),
             )
 
-            // https://reactnative.dev/docs/alert#prompt-ios
-            const expectedTitle = "We texted you a 6-digit code"
-            const expectedMessage = "Enter it here"
-            const expectedCallback = expect.any(Function)
-            const expectedType = "plain-text"
-            const expectedDefaultValue = ""
-            const expectedKeyboardType = "number-pad"
+            const confirmationCodeInputPopupTitle = "Sent You Something 🌷"
 
-            expect(ReactNative.Alert.prompt).toHaveBeenCalledWith(
-              expectedTitle,
-              expectedMessage,
-              expectedCallback,
-              expectedType,
-              expectedDefaultValue,
-              expectedKeyboardType,
+            await ERTL.waitFor(() =>
+              expect(
+                ERTL.screen.getByText(confirmationCodeInputPopupTitle),
+              ).toBeVisible(),
             )
           },
         })
       })
 
-      describe("when the correct code is entered into the prompt", () => {
+      describe("when an incomplete (less than 6 characters) code is entered and OK is tapped", () => {
+        it("does not attempt to authenticate the user (send a request to the API)", async () => {
+          const playerId = 1
+          const player = playerFactory({ id: playerId })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/players/[id]",
+                params: { id: playerId },
+                response: player,
+              },
+              {
+                method: "get",
+                route: "/players/[id]/send_text_message_confirmation_code",
+                params: { id: playerId },
+                response: undefined,
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("This is Me Button")
+              })
+
+              await ERTL.waitFor(() =>
+                ERTL.fireEvent.press(
+                  ERTL.screen.getByTestId("This is Me Button"),
+                ),
+              )
+
+              const incompleteConfirmationCode = "123"
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.changeText(
+                  ERTL.screen.getByTestId("Confirmation Code Input"),
+                  incompleteConfirmationCode,
+                )
+              })
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("OK Button"))
+              })
+
+              expect(AsyncStorage.setItem).not.toHaveBeenCalled()
+            },
+          })
+        })
+      })
+
+      describe("when an incorrect code is entered into the prompt and OK is tapped", () => {
+        it("does not authenticate the user (save their api token in async storage)", async () => {
+          const playerId = 1
+          const player = playerFactory({ id: playerId })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/players/[id]",
+                params: { id: playerId },
+                response: player,
+              },
+              {
+                method: "get",
+                route: "/players/[id]/send_text_message_confirmation_code",
+                params: { id: playerId },
+                response: undefined,
+              },
+              {
+                method: "post",
+                route: "/players/[id]/check_text_message_confirmation_code",
+                params: { id: playerId },
+                searchParams: { confirmation_code: "123456" },
+                response: { status: "incorrect" },
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("This is Me Button")
+              })
+
+              await ERTL.waitFor(() =>
+                ERTL.fireEvent.press(
+                  ERTL.screen.getByTestId("This is Me Button"),
+                ),
+              )
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.changeText(
+                  ERTL.screen.getByTestId("Confirmation Code Input"),
+                  "123456",
+                )
+              })
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("OK Button"))
+              })
+
+              expect(AsyncStorage.setItem).not.toHaveBeenCalled()
+            },
+          })
+        })
+
+        it("sets the displayed (entered) confirmation code to an empty string", async () => {
+          const playerId = 1
+          const player = playerFactory({ id: playerId })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/players/[id]",
+                params: { id: playerId },
+                response: player,
+              },
+              {
+                method: "get",
+                route: "/players/[id]/send_text_message_confirmation_code",
+                params: { id: playerId },
+                response: undefined,
+              },
+              {
+                method: "post",
+                route: "/players/[id]/check_text_message_confirmation_code",
+                params: { id: playerId },
+                searchParams: { confirmation_code: "123456" },
+                response: { status: "incorrect" },
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("This is Me Button")
+              })
+
+              await ERTL.waitFor(() =>
+                ERTL.fireEvent.press(
+                  ERTL.screen.getByTestId("This is Me Button"),
+                ),
+              )
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.changeText(
+                  ERTL.screen.getByTestId("Confirmation Code Input"),
+                  "123456",
+                )
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen.queryByText("1")).toBeVisible()
+                expect(ERTL.screen.queryByText("2")).toBeVisible()
+                expect(ERTL.screen.queryByText("3")).toBeVisible()
+                expect(ERTL.screen.queryByText("4")).toBeVisible()
+                expect(ERTL.screen.queryByText("5")).toBeVisible()
+                expect(ERTL.screen.queryByText("6")).toBeVisible()
+              })
+
+              await ERTL.waitFor(() => {
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("OK Button"))
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen.queryByText("1")).toBe(null)
+                expect(ERTL.screen.queryByText("2")).toBe(null)
+                expect(ERTL.screen.queryByText("3")).toBe(null)
+                expect(ERTL.screen.queryByText("4")).toBe(null)
+                expect(ERTL.screen.queryByText("5")).toBe(null)
+                expect(ERTL.screen.queryByText("6")).toBe(null)
+              })
+            },
+          })
+        })
+      })
+
+      describe("when the correct code is entered into the prompt and OK is tapped", () => {
         it("authenticates the user (saves their api token in async storage)", async () => {
           const playerId = 1
           const player = playerFactory({ id: playerId })
