@@ -101,8 +101,7 @@ const Player = (): React.ReactElement => {
         if (
           viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered.current
         ) {
-          console.log(`shaking`)
-          // @ts-ignore
+          // @ts-ignore https://github.com/oblador/react-native-animatable/issues/313#issuecomment-951038397
           viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered.current.shake(
             300,
           )

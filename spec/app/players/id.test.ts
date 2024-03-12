@@ -203,7 +203,7 @@ describe("viewing a player", () => {
               ),
             )
 
-            const confirmationCodeInputPopupTitle = "Sent You Something 🌷"
+            const confirmationCodeInputPopupTitle = "Texted You 😘"
 
             await ERTL.waitFor(() =>
               expect(
