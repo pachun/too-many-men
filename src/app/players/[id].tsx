@@ -3,6 +3,7 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import Dialog from "react-native-dialog"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import * as Animatable from "react-native-animatable"
 import Config from "Config"
 import type { Player as PlayerType } from "types/Player"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
@@ -82,6 +83,9 @@ const Player = (): React.ReactElement => {
     setConfirmationCode("")
   }, [])
 
+  const viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered =
+    React.useRef<Animatable.View>(null)
+
   const checkConfirmationCodeCorrectness = React.useCallback(async () => {
     if (player && confirmationCode.length === completeConfirmationCodeLength) {
       const response = await (
@@ -94,6 +98,15 @@ const Player = (): React.ReactElement => {
         await AsyncStorage.setItem("API Token", response.apiToken)
         removeConfirmationCodeInputPopup()
       } else {
+        if (
+          viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered.current
+        ) {
+          console.log(`shaking`)
+          // @ts-ignore
+          viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered.current.shake(
+            300,
+          )
+        }
         setConfirmationCode("")
       }
     }
@@ -121,14 +134,20 @@ const Player = (): React.ReactElement => {
           onPress={sendTextMessageConfirmationCode}
         />
         <Dialog.Container visible={confirmationCodeInputIsVisible}>
-          <Dialog.Title>Sent You Something 🌷</Dialog.Title>
-          <Dialog.CodeInput
-            autoFocus
-            codeLength={completeConfirmationCodeLength}
-            value={confirmationCode}
-            onChangeText={setConfirmationCode}
-            testID="Confirmation Code Input"
-          />
+          <Dialog.Title>Texted You 😘</Dialog.Title>
+          <Animatable.View
+            ref={
+              viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered
+            }
+          >
+            <Dialog.CodeInput
+              autoFocus
+              codeLength={completeConfirmationCodeLength}
+              value={confirmationCode}
+              onChangeText={setConfirmationCode}
+              testID="Confirmation Code Input"
+            />
+          </Animatable.View>
           <Dialog.Button
             label="Cancel"
             onPress={removeConfirmationCodeInputPopup}

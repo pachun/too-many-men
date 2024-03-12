@@ -25,6 +25,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.73.4",
+    "react-native-animatable": "^1.4.0",
     "react-native-dialog": "pachun/react-native-dialog#include-lib",
     "react-native-reanimated": "~3.6.2",
     "react-native-safe-area-context": "4.8.2",
@@ -62,7 +63,9 @@
           "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
           "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
         ],
-        "setupFiles": ["./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"]
+        "setupFiles": [
+          "./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"
+        ]
       },
       {
         "preset": "jest-expo/android",
@@ -72,7 +75,9 @@
           "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
           "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
         ],
-        "setupFiles": ["./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"]
+        "setupFiles": [
+          "./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"
+        ]
       }
     ],
     "transformIgnorePatterns": [
@@ -81,7 +86,11 @@
     "verbose": true,
     "passWithNoTests": true,
     "coverageProvider": "v8",
-    "collectCoverageFrom": ["./src/**", "!src/Config.ts", "!src/types/**"],
+    "collectCoverageFrom": [
+      "./src/**",
+      "!src/Config.ts",
+      "!src/types/**"
+    ],
     "coverageThreshold": {
       "global": {
         "lines": 100,
