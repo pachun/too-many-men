@@ -2,59 +2,24 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import Dialog from "react-native-dialog"
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as Animatable from "react-native-animatable"
 import Config from "Config"
-import type { Player as PlayerType } from "types/Player"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
-import RefreshablePlayersContext from "components/PlayersProvider"
 import useTheme from "hooks/useTheme"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
+import useTheCachedPlayerFirstOrGetThePlayerFromTheApi from "hooks/useTheCachedPlayerFirstOrGetThePlayerFromTheApi"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 
 const completeConfirmationCodeLength = 6
 
 const Player = (): React.ReactElement => {
   const { id: playerId } = ExpoRouter.useLocalSearchParams()
-
-  const [player, setPlayer] = React.useState<PlayerType | undefined>()
-
-  const { refreshablePlayers } = React.useContext(RefreshablePlayersContext)
-
-  ExpoRouter.useFocusEffect(
-    React.useCallback(() => {
-      const getPlayer = async (): Promise<void> => {
-        const getPlayerFromCache = (): PlayerType | undefined => {
-          if (
-            refreshablePlayers.status === "Success" ||
-            refreshablePlayers.status === "Refreshing" ||
-            refreshablePlayers.status === "Refresh Error"
-          ) {
-            return refreshablePlayers.data.find(
-              refreshablePlayer => refreshablePlayer.id === Number(playerId),
-            )
-          }
-        }
-
-        const getPlayerFromApi = async (): Promise<PlayerType> => {
-          return await (
-            await fetch(Config.apiUrl + `/players/${playerId}`)
-          ).json()
-        }
-
-        const cachedPlayer = getPlayerFromCache()
-
-        setPlayer(cachedPlayer ? cachedPlayer : await getPlayerFromApi())
-      }
-
-      getPlayer()
-    }, [playerId, refreshablePlayers]),
-  )
-
-  const theme = useTheme()
+  const player = useTheCachedPlayerFirstOrGetThePlayerFromTheApi(playerId)
 
   const navigationBarTitleLabel = React.useMemo(
     () => `${player?.first_name} ${player?.last_name}`,
-    [player],
+    [player?.first_name, player?.last_name],
   )
 
   const formattedPhoneNumberLabel = React.useMemo(() => {
@@ -65,15 +30,26 @@ const Player = (): React.ReactElement => {
     return player?.jersey_number ? `#${player.jersey_number}` : ""
   }, [player?.jersey_number])
 
+  const theme = useTheme()
+
+  const { showNotification } = React.useContext(
+    NavigationHeaderToastNotification.Context,
+  )
+
   const [confirmationCodeInputIsVisible, setConfirmationCodeDialogIsVisible] =
     React.useState(false)
 
   const sendTextMessageConfirmationCode = async (): Promise<void> => {
-    await fetch(
-      `${Config.apiUrl}/players/${player!.id.toString()}/send_text_message_confirmation_code`,
-    )
-    setConfirmationCodeDialogIsVisible(true)
+    if (player) {
+      await fetch(
+        `${Config.apiUrl}/players/${player.id.toString()}/send_text_message_confirmation_code`,
+      )
+      setConfirmationCodeDialogIsVisible(true)
+    }
   }
+
+  const viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered =
+    React.useRef<Animatable.View>(null)
 
   const [confirmationCode, setConfirmationCode] = React.useState("")
 
@@ -83,11 +59,8 @@ const Player = (): React.ReactElement => {
     setConfirmationCode("")
   }, [])
 
-  const viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered =
-    React.useRef<Animatable.View>(null)
-
   const checkConfirmationCodeCorrectness = React.useCallback(async () => {
-    if (player && confirmationCode.length === completeConfirmationCodeLength) {
+    if (player) {
       const response = await (
         await fetch(
           `${Config.apiUrl}/players/${player.id}/check_text_message_confirmation_code?confirmation_code=${confirmationCode}`,
@@ -96,6 +69,11 @@ const Player = (): React.ReactElement => {
       ).json()
       if (response.status === "correct") {
         await AsyncStorage.setItem("API Token", response.apiToken)
+        showNotification({
+          type: "success",
+          message: `Hey ${player.first_name}! You're signed in.`,
+          dismissAfter: 3,
+        })
         removeConfirmationCodeInputPopup()
       } else {
         if (
@@ -109,7 +87,12 @@ const Player = (): React.ReactElement => {
         setConfirmationCode("")
       }
     }
-  }, [confirmationCode, player, removeConfirmationCodeInputPopup])
+  }, [
+    confirmationCode,
+    player,
+    removeConfirmationCodeInputPopup,
+    showNotification,
+  ])
 
   return player ? (
     <>
