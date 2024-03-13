@@ -453,7 +453,7 @@ describe("viewing a player", () => {
           })
         })
 
-        it("displays a message indicating that the player was authenticated", async () => {
+        it("displays a flash message indicating that the player was authenticated", async () => {
           const playerId = 1
           const player = playerFactory({ id: playerId, first_name: "Meredith" })
 
@@ -508,6 +508,21 @@ describe("viewing a player", () => {
                   "Hey Meredith! You're signed in.",
                 )
               })
+
+              const secondsTheFlashMethodIsShown = 3
+              const secondsToWaitForFlashMessageToDisappear =
+                secondsTheFlashMethodIsShown + 1
+              const millisecondsToWaitForFlashMessageToDisappear =
+                secondsToWaitForFlashMessageToDisappear * 1000
+
+              await ERTL.waitFor(
+                () => {
+                  expect(ERTL.screen).not.toShowText(
+                    "Hey Meredith! You're signed in.",
+                  )
+                },
+                { timeout: millisecondsToWaitForFlashMessageToDisappear },
+              )
             },
           })
         })
