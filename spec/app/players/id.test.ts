@@ -418,7 +418,7 @@ describe("viewing a player", () => {
                 route: "/players/[id]/check_text_message_confirmation_code",
                 params: { id: playerId },
                 searchParams: { confirmation_code: "123456" },
-                response: { status: "correct", apiToken: "apiTokenFromApi" },
+                response: { status: "correct", api_token: "apiTokenFromApi" },
               },
             ],
             test: async () => {
@@ -476,7 +476,7 @@ describe("viewing a player", () => {
                 route: "/players/[id]/check_text_message_confirmation_code",
                 params: { id: playerId },
                 searchParams: { confirmation_code: "123456" },
-                response: { status: "correct", apiToken: "apiTokenFromApi" },
+                response: { status: "correct", api_token: "apiTokenFromApi" },
               },
             ],
             test: async () => {

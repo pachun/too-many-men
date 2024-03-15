@@ -1,3 +1,3 @@
 export type CheckTextMessageConfirmationCodeRequestResponse =
-  | { status: "correct"; apiToken: string }
+  | { status: "correct"; api_token: string }
   | { status: "incorrect" }

@@ -49,7 +49,7 @@ const PlayerAuthenticationFlow = ({
       )
     ).json()
     if (response.status === "correct") {
-      await AsyncStorage.setItem("API Token", response.apiToken)
+      await AsyncStorage.setItem("API Token", response.api_token)
       showNotification({
         type: "success",
         message: `Hey ${player.first_name}! You're signed in.`,
