@@ -6,6 +6,10 @@ import Config from "Config"
 import mockApi from "../../specHelpers/mockApi"
 
 describe("viewing a player", () => {
+  beforeEach(async () => {
+    await AsyncStorage.clear()
+  })
+
   describe("while the player is loaded from the api", () => {
     it("shows a loading spinner", async () => {
       const player = playerFactory({ id: 1 })
@@ -115,29 +119,31 @@ describe("viewing a player", () => {
       })
     })
 
-    // describe("when the player has been authenticated", () => {
-    //   it("does not show a This Is Me button", async () => {
-    //     AsyncStorage.setItem("API Token", "apiToken")
-    //
-    //     const player = playerFactory({ id: 1 })
-    //
-    //     await mockPlayerFromApi({
-    //       playerId: 1,
-    //       response: player,
-    //       test: async () => {
-    //         ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
-    //
-    //         await ERTL.waitFor(() => {
-    //           expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-    //         })
-    //
-    //         await ERTL.waitFor(() => {
-    //           expect(ERTL.screen).not.toShowTestId("This is Me Button")
-    //         })
-    //       },
-    //     })
-    //   })
-    // })
+    describe("when the player has been authenticated", () => {
+      it("does not show a This Is Me button", async () => {
+        await AsyncStorage.setItem("API Token", "apiToken")
+
+        const player = playerFactory({ id: 1 })
+
+        await mockPlayerFromApi({
+          playerId: 1,
+          response: player,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/players/1" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("This is Me Button")
+            })
+          },
+        })
+
+        await AsyncStorage.clear()
+      })
+    })
 
     describe("when the player is not authenticated", () => {
       it("shows a This Is Me button", async () => {
@@ -285,7 +291,7 @@ describe("viewing a player", () => {
                   ERTL.fireEvent.press(ERTL.screen.getByTestId("OK Button"))
                 })
 
-                expect(AsyncStorage.setItem).not.toHaveBeenCalled()
+                expect(await AsyncStorage.getItem("API Token")).toBe(null)
               },
             })
           })
@@ -342,7 +348,7 @@ describe("viewing a player", () => {
                   ERTL.fireEvent.press(ERTL.screen.getByTestId("OK Button"))
                 })
 
-                expect(AsyncStorage.setItem).not.toHaveBeenCalled()
+                expect(await AsyncStorage.getItem("API Token")).toBe(null)
               },
             })
           })
@@ -470,8 +476,7 @@ describe("viewing a player", () => {
                   ERTL.fireEvent.press(ERTL.screen.getByTestId("OK Button"))
                 })
 
-                expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-                  "API Token",
+                expect(await AsyncStorage.getItem("API Token")).toEqual(
                   "apiTokenFromApi",
                 )
               },
