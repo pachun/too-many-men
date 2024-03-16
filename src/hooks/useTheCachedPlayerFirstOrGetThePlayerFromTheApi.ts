@@ -1,7 +1,7 @@
 import React from "react"
 import * as ExpoRouter from "expo-router"
 import type { Player } from "types/Player"
-import RefreshablePlayersContext from "components/PlayersProvider"
+import RefreshablePlayersContext from "contexts/RefreshablePlayersContext"
 import Config from "Config"
 
 const useTheCachedPlayerFirstOrGetThePlayerFromTheApi = (

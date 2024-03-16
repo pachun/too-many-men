@@ -3,7 +3,7 @@ import * as ExpoRouter from "expo-router"
 import type { Player } from "types/Player"
 import PlayerList from "components/PlayerList"
 import RefreshableResourceList from "components/RefreshableResourceList"
-import RefreshablePlayersContext from "components/PlayersProvider"
+import RefreshablePlayersContext from "contexts/RefreshablePlayersContext"
 
 const Players = (): React.ReactElement => {
   const { refreshablePlayers, setRefreshablePlayers } = React.useContext(
