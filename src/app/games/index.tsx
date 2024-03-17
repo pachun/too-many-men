@@ -3,12 +3,10 @@ import * as ExpoRouter from "expo-router"
 import GameList from "components/GameList"
 import type { Game } from "types/Game"
 import RefreshableResourceList from "components/RefreshableResourceList"
-import RefreshableGamesContext from "contexts/RefreshableGamesContext"
+import useRefreshableGames from "hooks/useRefreshableGames"
 
 const Games = (): React.ReactElement => {
-  const { refreshableGames, setRefreshableGames } = React.useContext(
-    RefreshableGamesContext,
-  )
+  const { refreshableGames, setRefreshableGames } = useRefreshableGames()
 
   return (
     <>

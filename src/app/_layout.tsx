@@ -4,7 +4,11 @@ import * as ExpoStatusBar from "expo-status-bar"
 import * as ExpoVectorIcons from "@expo/vector-icons"
 import useOverTheAirUpdates from "hooks/useOverTheAirUpdates"
 import { initializeAptabase, trackAptabaseEvent } from "helpers/aptabase"
-import Providers from "components/Providers"
+import RefreshablePlayersProvider from "components/RefreshablePlayersProvider"
+import RefreshableGamesProvider from "components/RefreshableGamesProvider"
+import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
+import ThemeProvider from "components/ThemeProvider"
+import ComposedProviders from "components/ComposedProviders"
 
 initializeAptabase()
 
@@ -18,7 +22,14 @@ const Layout = (): React.ReactElement => {
   return (
     <>
       <ExpoStatusBar.StatusBar style="auto" />
-      <Providers>
+      <ComposedProviders
+        providers={[
+          ThemeProvider,
+          RefreshableGamesProvider,
+          RefreshablePlayersProvider,
+          NavigationHeaderToastNotification.Provider,
+        ]}
+      >
         <ExpoRouter.Tabs screenOptions={{ headerShown: false }}>
           <ExpoRouter.Tabs.Screen
             name="players"
@@ -53,7 +64,7 @@ const Layout = (): React.ReactElement => {
             }}
           />
         </ExpoRouter.Tabs>
-      </Providers>
+      </ComposedProviders>
     </>
   )
 }

@@ -1,15 +1,15 @@
 import React from "react"
 import * as ExpoRouter from "expo-router"
 import type { Player } from "types/Player"
-import RefreshablePlayersContext from "contexts/RefreshablePlayersContext"
 import Config from "Config"
+import useRefreshablePlayers from "./useRefreshablePlayers"
 
 const useTheCachedPlayerFirstOrGetThePlayerFromTheApi = (
   playerId: string | string[] | undefined,
 ): Player | undefined => {
   const [player, setPlayer] = React.useState<Player | undefined>()
 
-  const { refreshablePlayers } = React.useContext(RefreshablePlayersContext)
+  const { refreshablePlayers } = useRefreshablePlayers()
 
   ExpoRouter.useFocusEffect(
     React.useCallback(() => {
