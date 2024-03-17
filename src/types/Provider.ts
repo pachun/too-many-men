@@ -1,7 +1,5 @@
-import type { Children } from "./Children"
-
 export type Provider = ({
   children,
 }: {
-  children: Children
+  children: React.ReactElement | React.ReactElement[]
 }) => React.ReactElement

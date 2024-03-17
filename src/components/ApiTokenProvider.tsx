@@ -1,8 +1,14 @@
-import React from "react"
-import type { AuthenticationContext as AuthenticationContextType } from "types/AuthenticationContext"
-
-const AuthenticationContext = React.createContext<AuthenticationContextType>({
-  apiToken: undefined,
-})
-
-export default AuthenticationContext
+// import React from "react"
+// import type { Provider as ProviderType } from "types/Provider"
+//
+// export interface ApiTokenContextType {
+//   apiToken: string | undefined
+// }
+//
+// export const ApiTokenContext = React.createContext<ApiTokenContextType>({
+//   apiToken: undefined,
+// })
+//
+// const ApiTokenProvider: ProviderType = ({ children }) => {}
+//
+// export default ApiTokenProvider

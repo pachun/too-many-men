@@ -1,6 +1,6 @@
 import React from "react"
 import emptyFunctionForInitializingContexts from "helpers/emptyFunctionForInitializingContexts"
-import type { Children } from "types/Children"
+import type { Provider as ProviderType } from "types/Provider"
 import type { Player } from "types/Player"
 import type { RefreshableRequest } from "types/RefreshableRequest"
 
@@ -17,11 +17,7 @@ export const RefreshablePlayersContext =
     setRefreshablePlayers: emptyFunctionForInitializingContexts,
   })
 
-const RefreshablePlayersProvider = ({
-  children,
-}: {
-  children: Children
-}): React.ReactElement => {
+const RefreshablePlayersProvider: ProviderType = ({ children }) => {
   const [refreshablePlayers, setRefreshablePlayers] = React.useState<
     RefreshableRequest<Player[]>
   >({
