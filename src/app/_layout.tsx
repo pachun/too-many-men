@@ -9,6 +9,7 @@ import RefreshableGamesProvider from "components/RefreshableGamesProvider"
 import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import ThemeProvider from "components/ThemeProvider"
 import ComposedProviders from "components/ComposedProviders"
+import ApiTokenProvider from "components/ApiTokenProvider"
 
 initializeAptabase()
 
@@ -25,6 +26,7 @@ const Layout = (): React.ReactElement => {
       <ComposedProviders
         providers={[
           ThemeProvider,
+          ApiTokenProvider,
           RefreshableGamesProvider,
           RefreshablePlayersProvider,
           NavigationHeaderToastNotification.Provider,

@@ -2,10 +2,11 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as Animatable from "react-native-animatable"
 import Dialog from "react-native-dialog"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+// import AsyncStorage from "@react-native-async-storage/async-storage"
 import NavigationHeaderToastNotification from "./NavigationHeaderToastNotification"
 import type { Player } from "types/Player"
 import Config from "Config"
+import useApiToken from "hooks/useApiToken"
 
 const completeConfirmationCodeLength = 6
 
@@ -30,6 +31,10 @@ const PlayerAuthenticationFlow = ({
     )
   }
 
+  const { apiToken, setApiToken } = useApiToken()
+
+  const isSignedIn = React.useMemo(() => Boolean(apiToken), [apiToken])
+
   const viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered =
     React.useRef<Animatable.View>(null)
 
@@ -49,7 +54,8 @@ const PlayerAuthenticationFlow = ({
       )
     ).json()
     if (response.status === "correct") {
-      await AsyncStorage.setItem("API Token", response.api_token)
+      await setApiToken(response.api_token)
+      // await AsyncStorage.setItem("API Token", response.api_token)
       showNotification({
         type: "success",
         message: `Hey ${player.first_name}! You're signed in.`,
@@ -72,14 +78,18 @@ const PlayerAuthenticationFlow = ({
     player,
     removeConfirmationCodeInputPopup,
     showNotification,
+    setApiToken,
   ])
+
   return (
     <>
-      <ReactNative.Button
-        testID="This is Me Button"
-        title="👋 This is Me"
-        onPress={sendTextMessageConfirmationCode}
-      />
+      {!isSignedIn && (
+        <ReactNative.Button
+          testID="This is Me Button"
+          title="👋 This is Me"
+          onPress={sendTextMessageConfirmationCode}
+        />
+      )}
       <Dialog.Container visible={confirmationCodeInputIsVisible}>
         <Dialog.Title>Texted You 😘</Dialog.Title>
         <Animatable.View
