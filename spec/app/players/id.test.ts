@@ -8,8 +8,6 @@ import mockApi from "../../specHelpers/mockApi"
 describe("viewing a player", () => {
   afterEach(async () => {
     await AsyncStorage.clear()
-    // const keys = await AsyncStorage.getAllKeys()
-    // await AsyncStorage.multiRemove(keys)
   })
 
   describe("while the player is loaded from the api", () => {
