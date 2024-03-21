@@ -94,7 +94,7 @@ describe("viewing a player", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/players/2" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("(012) 345 6789")
+            expect(ERTL.screen).toShowText("(012) 345-6789")
           })
         },
       })

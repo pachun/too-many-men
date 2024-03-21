@@ -101,8 +101,8 @@ describe("opening the app", () => {
           ERTL.renderRouter("src/app")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("(012) 345 6789")
-            expect(ERTL.screen).toShowText("(987) 654 3210")
+            expect(ERTL.screen).toShowText("(012) 345-6789")
+            expect(ERTL.screen).toShowText("(987) 654-3210")
           })
         },
       })
@@ -167,7 +167,7 @@ describe("opening the app", () => {
               expect(ERTL.screen).toHavePathname("/players/1")
               expect(ERTL.screen).toHaveNavigationBarTitle("Creed Bratton")
               expect(ERTL.screen).toShowText("#55")
-              expect(ERTL.screen).toShowText("(012) 345 6789")
+              expect(ERTL.screen).toShowText("(012) 345-6789")
             })
           },
         })

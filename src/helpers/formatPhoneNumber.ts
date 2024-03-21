@@ -6,7 +6,7 @@ const formatPhoneNumber = (phoneNumber: string): string => {
       } else if (currentDigitPosition === 2) {
         return `${formattedPhoneNumber}${currentDigit}) `
       } else if (currentDigitPosition === 5) {
-        return `${formattedPhoneNumber}${currentDigit} `
+        return `${formattedPhoneNumber}${currentDigit}-`
       } else {
         return `${formattedPhoneNumber}${currentDigit}`
       }

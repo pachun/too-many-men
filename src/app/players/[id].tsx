@@ -2,10 +2,10 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
-import useTheme from "hooks/useTheme"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedPlayerFirstOrGetThePlayerFromTheApi from "hooks/useTheCachedPlayerFirstOrGetThePlayerFromTheApi"
 import PlayerAuthenticationFlow from "components/PlayerAuthenticationFlow"
+import LabeledValue from "components/LabeledValue"
 
 const Player = (): React.ReactElement => {
   const { id: playerId } = ExpoRouter.useLocalSearchParams()
@@ -25,24 +25,15 @@ const Player = (): React.ReactElement => {
     return player?.jersey_number ? `#${player.jersey_number}` : ""
   }, [player?.jersey_number])
 
-  const theme = useTheme()
-
   return player ? (
     <>
       <ExpoRouter.Stack.Screen options={{ title: navigationBarTitleLabel }} />
-      <ReactNative.View
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
-        <ReactNative.Text
-          style={{ color: theme.colors.text, fontSize: 24, fontWeight: "bold" }}
-        >
-          {formattedJerseyNumberLabel}
-        </ReactNative.Text>
-        <ReactNative.View style={{ height: 8 }} />
-        <ReactNative.Text style={{ color: theme.colors.text }}>
-          {formattedPhoneNumberLabel}
-        </ReactNative.Text>
-        <ReactNative.View style={{ height: 8 }} />
+      <ReactNative.View style={{ flex: 1 }}>
+        <ReactNative.View style={{ height: 20 }} />
+        <LabeledValue label="Phone" value={formattedPhoneNumberLabel} />
+        <ReactNative.View style={{ height: 20 }} />
+        <LabeledValue label="Jersey" value={formattedJerseyNumberLabel} />
+        <ReactNative.View style={{ height: 20 }} />
         <PlayerAuthenticationFlow player={player} />
       </ReactNative.View>
     </>
