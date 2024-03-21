@@ -2,11 +2,11 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as Animatable from "react-native-animatable"
 import Dialog from "react-native-dialog"
-// import AsyncStorage from "@react-native-async-storage/async-storage"
 import NavigationHeaderToastNotification from "./NavigationHeaderToastNotification"
 import type { Player } from "types/Player"
 import Config from "Config"
 import useApiToken from "hooks/useApiToken"
+import useUserId from "hooks/useUserId"
 
 const completeConfirmationCodeLength = 6
 
@@ -32,6 +32,7 @@ const PlayerAuthenticationFlow = ({
   }
 
   const { apiToken, setApiToken } = useApiToken()
+  const { setUserId } = useUserId()
 
   const isSignedIn = React.useMemo(() => Boolean(apiToken), [apiToken])
 
@@ -55,7 +56,7 @@ const PlayerAuthenticationFlow = ({
     ).json()
     if (response.status === "correct") {
       await setApiToken(response.api_token)
-      // await AsyncStorage.setItem("API Token", response.api_token)
+      await setUserId(player.id)
       showNotification({
         type: "success",
         message: `Hey ${player.first_name}! You're signed in.`,
@@ -79,6 +80,7 @@ const PlayerAuthenticationFlow = ({
     removeConfirmationCodeInputPopup,
     showNotification,
     setApiToken,
+    setUserId,
   ])
 
   return (

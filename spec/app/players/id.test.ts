@@ -424,7 +424,7 @@ describe("viewing a player", () => {
         })
 
         describe("when the correct code is entered into the prompt and OK is tapped", () => {
-          it("authenticates the user (saves their api token in async storage)", async () => {
+          it("authenticates the user (saves their api token and user id in async storage)", async () => {
             const playerId = 1
             const player = playerFactory({ id: playerId })
 
@@ -477,6 +477,7 @@ describe("viewing a player", () => {
                 expect(await AsyncStorage.getItem("API Token")).toEqual(
                   "apiTokenFromApi",
                 )
+                expect(await AsyncStorage.getItem("User ID")).toEqual("1")
               },
             })
           })

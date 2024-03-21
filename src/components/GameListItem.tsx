@@ -1,5 +1,6 @@
 import React from "react"
 import * as ReactNative from "react-native"
+import * as ExpoRouter from "expo-router"
 import * as DateFNS from "date-fns"
 import useTheme from "hooks/useTheme"
 import useGameOutcome from "hooks/useGameOutcome"
@@ -37,87 +38,89 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
   const theme = useTheme()
 
   return (
-    <ReactNative.View
-      style={{ height: 44, paddingLeft, width: "100%" }}
-      testID="Game List Item"
-    >
-      <ReactNative.View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          paddingRight: 10,
-        }}
+    <ExpoRouter.Link href={`/games/${game.id}`} asChild>
+      <ReactNative.Pressable
+        style={{ height: 44, paddingLeft, width: "100%" }}
+        testID="Game List Item"
       >
         <ReactNative.View
-          style={{ flexDirection: "row", width: sideColumnWidth }}
+          style={{
+            flex: 1,
+            alignItems: "center",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingRight: 10,
+          }}
         >
-          <ReactNative.View>
+          <ReactNative.View
+            style={{ flexDirection: "row", width: sideColumnWidth }}
+          >
+            <ReactNative.View>
+              <ReactNative.Text
+                style={{
+                  color: theme.colors.text,
+                }}
+              >
+                {timeLabel}
+              </ReactNative.Text>
+              <ReactNative.Text
+                style={{
+                  color: theme.colors.secondaryLabel,
+                  fontSize: 10,
+                  marginTop: 3,
+                }}
+              >
+                {dateLabel}
+              </ReactNative.Text>
+            </ReactNative.View>
+          </ReactNative.View>
+
+          <ReactNative.View style={{ justifyContent: "center" }}>
             <ReactNative.Text
               style={{
                 color: theme.colors.text,
+                textAlign: "center",
               }}
             >
-              {timeLabel}
+              {game.rink}
+            </ReactNative.Text>
+            <ReactNative.Text
+              style={{
+                color: theme.colors.secondaryLabel,
+                textAlign: "center",
+                fontSize: 10,
+                marginTop: 3,
+              }}
+            >
+              {game.is_home_team ? "Home" : "Away"}
+            </ReactNative.Text>
+          </ReactNative.View>
+
+          <ReactNative.View style={{ width: sideColumnWidth }}>
+            <ReactNative.Text
+              style={{
+                textAlign: "right",
+                fontSize: 16,
+                color: gameScoreColor,
+              }}
+              numberOfLines={1}
+            >
+              {scoreLabel}
             </ReactNative.Text>
             <ReactNative.Text
               style={{
                 color: theme.colors.secondaryLabel,
                 fontSize: 10,
                 marginTop: 3,
+                textAlign: "right",
               }}
             >
-              {dateLabel}
+              {game.opposing_teams_name ? `v ${game.opposing_teams_name}` : ""}
             </ReactNative.Text>
           </ReactNative.View>
         </ReactNative.View>
-
-        <ReactNative.View style={{ justifyContent: "center" }}>
-          <ReactNative.Text
-            style={{
-              color: theme.colors.text,
-              textAlign: "center",
-            }}
-          >
-            {game.rink}
-          </ReactNative.Text>
-          <ReactNative.Text
-            style={{
-              color: theme.colors.secondaryLabel,
-              textAlign: "center",
-              fontSize: 10,
-              marginTop: 3,
-            }}
-          >
-            {game.is_home_team ? "Home" : "Away"}
-          </ReactNative.Text>
-        </ReactNative.View>
-
-        <ReactNative.View style={{ width: sideColumnWidth }}>
-          <ReactNative.Text
-            style={{
-              textAlign: "right",
-              fontSize: 16,
-              color: gameScoreColor,
-            }}
-            numberOfLines={1}
-          >
-            {scoreLabel}
-          </ReactNative.Text>
-          <ReactNative.Text
-            style={{
-              color: theme.colors.secondaryLabel,
-              fontSize: 10,
-              marginTop: 3,
-              textAlign: "right",
-            }}
-          >
-            {game.opposing_teams_name ? `v ${game.opposing_teams_name}` : ""}
-          </ReactNative.Text>
-        </ReactNative.View>
-      </ReactNative.View>
-    </ReactNative.View>
+      </ReactNative.Pressable>
+    </ExpoRouter.Link>
   )
 }
 

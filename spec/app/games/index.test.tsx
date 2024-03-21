@@ -2,9 +2,9 @@ import * as ERTL from "expo-router/testing-library"
 import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import type { Game } from "types/Game"
-import gameFactory from "../specHelpers/factories/game"
-import mockGamesFromApi from "../specHelpers/mockGamesFromApi"
-import pullToRefresh from "../specHelpers/pullToRefresh"
+import gameFactory from "../../specHelpers/factories/game"
+import mockGamesFromApi from "../../specHelpers/mockGamesFromApi"
+import pullToRefresh from "../../specHelpers/pullToRefresh"
 
 const gameDate = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
@@ -267,6 +267,33 @@ describe("viewing the games tab", () => {
             expect(ERTL.screen).not.toShowTestId("Loading Spinner")
           })
         },
+      })
+    })
+
+    describe("tapping a players name", () => {
+      it("shows the player's details screen (without refetching the players details from the api)", async () => {
+        const game = gameFactory({
+          id: 1,
+          played_at: "2024-02-16T03:15:00Z",
+        })
+
+        await mockGamesFromApi({
+          response: [game],
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "games" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
+            ERTL.fireEvent.press(ERTL.screen.getByText(gameDate(game)))
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toHavePathname("/games/1")
+              expect(ERTL.screen).toShowText(gameDate(game))
+            })
+          },
+        })
       })
     })
   })
