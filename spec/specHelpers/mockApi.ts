@@ -20,6 +20,14 @@ export interface MockedSendPlayersTextMessageConfirmationCodeRequest {
   response: undefined
 }
 
+export type MockedGameRequestResponse = Game | "Network Error"
+export interface MockedGameRequest {
+  method: "get"
+  route: "/games/[id]"
+  params: { id: number }
+  response: MockedGameRequestResponse
+}
+
 export type MockedPlayerRequestResponse = Player | "Network Error"
 export interface MockedPlayerRequest {
   method: "get"
@@ -46,6 +54,7 @@ export type MockedRequest =
   | MockedPlayersRequest
   | MockedPlayerRequest
   | MockedGamesRequest
+  | MockedGameRequest
   | MockedSendPlayersTextMessageConfirmationCodeRequest
   | MockedCheckPlayersTextMessageConfirmationCodeRequest
 export type Test = (server: MSW_NODE.SetupServer) => Promise<void>

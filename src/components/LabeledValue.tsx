@@ -23,7 +23,7 @@ const LabeledValue = ({
           paddingBottom: 20,
           borderRadius: 5,
           backgroundColor: ReactNative.PlatformColor(
-            "secondarySystemBackground",
+            "tertiarySystemBackground",
           ),
           flexDirection: "row",
           justifyContent: "space-between",

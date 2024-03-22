@@ -2,9 +2,9 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import * as DateFNS from "date-fns"
-import useTheme from "hooks/useTheme"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameFirstOrGetTheGameFromTheApi"
+import LabeledValue from "components/LabeledValue"
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
@@ -13,22 +13,41 @@ const Game = (): React.ReactElement => {
 
   const dateLabel = React.useMemo((): string => {
     return game?.played_at
-      ? DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
+      ? DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
       : ""
   }, [game?.played_at])
 
-  const theme = useTheme()
+  const timeLabel = React.useMemo((): string => {
+    return game
+      ? DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
+      : ""
+  }, [game])
 
   return game ? (
     <>
-      <ReactNative.View
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
-        <ReactNative.Text
-          style={{ color: theme.colors.text, fontSize: 24, fontWeight: "bold" }}
-        >
-          {dateLabel}
-        </ReactNative.Text>
+      <ExpoRouter.Stack.Screen options={{ title: dateLabel }} />
+      <ReactNative.View style={{ flex: 1 }}>
+        <ReactNative.View style={{ height: 20 }} />
+        <LabeledValue label="Day" value={dateLabel} />
+        <ReactNative.View style={{ height: 20 }} />
+        <LabeledValue label="Time" value={timeLabel} />
+        <ReactNative.View style={{ height: 20 }} />
+        {game.rink && (
+          <>
+            <LabeledValue label="Rink" value={game.rink} />
+            <ReactNative.View style={{ height: 20 }} />
+          </>
+        )}
+        {game.opposing_teams_name && (
+          <>
+            <LabeledValue label="Opponent" value={game.opposing_teams_name} />
+            <ReactNative.View style={{ height: 20 }} />
+          </>
+        )}
+        <LabeledValue
+          label="Home or Away"
+          value={game.is_home_team ? "Home" : "Away"}
+        />
       </ReactNative.View>
     </>
   ) : (

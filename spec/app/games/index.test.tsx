@@ -9,6 +9,9 @@ import pullToRefresh from "../../specHelpers/pullToRefresh"
 const gameDate = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
 
+const gameDateWithWeekday = (game: Game): string =>
+  DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
+
 const gameTime = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
 
@@ -270,8 +273,8 @@ describe("viewing the games tab", () => {
       })
     })
 
-    describe("tapping a players name", () => {
-      it("shows the player's details screen (without refetching the players details from the api)", async () => {
+    describe("tapping a game", () => {
+      it("shows the games details screen (without refetching the games details from the api)", async () => {
         const game = gameFactory({
           id: 1,
           played_at: "2024-02-16T03:15:00Z",
@@ -290,7 +293,7 @@ describe("viewing the games tab", () => {
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).toHavePathname("/games/1")
-              expect(ERTL.screen).toShowText(gameDate(game))
+              expect(ERTL.screen).toShowText(gameDateWithWeekday(game))
             })
           },
         })
