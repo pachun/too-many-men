@@ -1,7 +1,7 @@
 import React from "react"
 import type { Provider as ProviderType } from "types/Provider"
 import emptyPromiseReturningFunctionForInitializingContexts from "helpers/emptyPromiseReturningFunctionForInitializingContexts"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import useStateSyncedWithAsyncStorage from "hooks/useStateSyncedWithAsyncStorage"
 
 export interface UserIdContextType {
   userId: number | null
@@ -14,25 +14,13 @@ export const UserIdContext = React.createContext<UserIdContextType>({
 })
 
 const UserIdProvider: ProviderType = ({ children }) => {
-  const [userIdInContext, setUserIdInContext] = React.useState<number | null>(
-    null,
+  const [userId, setUserId] = useStateSyncedWithAsyncStorage<number>(
+    "User ID",
+    Number,
   )
 
-  const setUserId = async (userId: number): Promise<void> => {
-    setUserIdInContext(userId)
-    await AsyncStorage.setItem("User ID", userId.toString())
-  }
-
-  React.useEffect(() => {
-    const setUserIdInContextFromUserIdInAsyncStorageOnMount =
-      async (): Promise<void> => {
-        setUserIdInContext(Number(await AsyncStorage.getItem("User ID")))
-      }
-    setUserIdInContextFromUserIdInAsyncStorageOnMount()
-  }, [])
-
   return (
-    <UserIdContext.Provider value={{ userId: userIdInContext, setUserId }}>
+    <UserIdContext.Provider value={{ userId, setUserId }}>
       {children}
     </UserIdContext.Provider>
   )

@@ -122,6 +122,7 @@ describe("viewing a player", () => {
     describe("when the player has been authenticated", () => {
       it("does not show a This Is Me button", async () => {
         await AsyncStorage.setItem("API Token", "apiToken")
+        await AsyncStorage.setItem("User ID", "1")
 
         const player = playerFactory({ id: 1 })
 

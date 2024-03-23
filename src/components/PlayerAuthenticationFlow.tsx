@@ -7,6 +7,7 @@ import type { Player } from "types/Player"
 import Config from "Config"
 import useApiToken from "hooks/useApiToken"
 import useUserId from "hooks/useUserId"
+import useIsSignedIn from "hooks/useIsSignedIn"
 
 const completeConfirmationCodeLength = 6
 
@@ -31,10 +32,10 @@ const PlayerAuthenticationFlow = ({
     )
   }
 
-  const { apiToken, setApiToken } = useApiToken()
+  const { setApiToken } = useApiToken()
   const { setUserId } = useUserId()
 
-  const isSignedIn = React.useMemo(() => Boolean(apiToken), [apiToken])
+  const isSignedIn = useIsSignedIn()
 
   const viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered =
     React.useRef<Animatable.View>(null)
