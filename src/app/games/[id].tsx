@@ -7,6 +7,7 @@ import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameF
 import LabeledValue from "components/LabeledValue"
 import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
 import type { Game as GameType } from "types/Game"
+import useEffectEverySecond from "hooks/useEffectEverySecond"
 
 const isTheGameInTheFuture = (game: GameType): boolean => {
   const currentTime = new Date()
@@ -35,18 +36,13 @@ const Game = (): React.ReactElement => {
     game ? isTheGameInTheFuture(game) : false,
   )
 
-  React.useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (game) {
-        setTheGameIsInTheFuture(isTheGameInTheFuture(game))
-        console.log(`the game is in the future: ${isTheGameInTheFuture(game)}`)
-      }
-    }, 1000)
+  const updateWhetherOrNotTheGameIsInTheFuture = React.useCallback(() => {
     if (game) {
       setTheGameIsInTheFuture(isTheGameInTheFuture(game))
     }
-    return () => clearInterval(intervalId)
   }, [game])
+
+  useEffectEverySecond(updateWhetherOrNotTheGameIsInTheFuture)
 
   const shouldShowAreYouGoingToThisGameQuestion = React.useMemo(
     () => theGameIsInTheFuture,
