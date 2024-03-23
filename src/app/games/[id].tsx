@@ -5,6 +5,7 @@ import * as DateFNS from "date-fns"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameFirstOrGetTheGameFromTheApi"
 import LabeledValue from "components/LabeledValue"
+import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
@@ -27,6 +28,8 @@ const Game = (): React.ReactElement => {
     <>
       <ExpoRouter.Stack.Screen options={{ title: dateLabel }} />
       <ReactNative.View style={{ flex: 1 }}>
+        <ReactNative.View style={{ height: 20 }} />
+        <AreYouGoingToThisGame />
         <ReactNative.View style={{ height: 20 }} />
         <LabeledValue label="Day" value={dateLabel} />
         <ReactNative.View style={{ height: 20 }} />
