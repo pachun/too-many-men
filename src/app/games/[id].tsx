@@ -6,6 +6,13 @@ import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameFirstOrGetTheGameFromTheApi"
 import LabeledValue from "components/LabeledValue"
 import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
+import type { Game as GameType } from "types/Game"
+
+const isTheGameInTheFuture = (game: GameType): boolean => {
+  const currentTime = new Date()
+  const gameTime = DateFNS.parseISO(game.played_at)
+  return DateFNS.isBefore(currentTime, gameTime)
+}
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
@@ -24,12 +31,38 @@ const Game = (): React.ReactElement => {
       : ""
   }, [game])
 
+  const [theGameIsInTheFuture, setTheGameIsInTheFuture] = React.useState(
+    game ? isTheGameInTheFuture(game) : false,
+  )
+
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (game) {
+        setTheGameIsInTheFuture(isTheGameInTheFuture(game))
+        console.log(`the game is in the future: ${isTheGameInTheFuture(game)}`)
+      }
+    }, 1000)
+    if (game) {
+      setTheGameIsInTheFuture(isTheGameInTheFuture(game))
+    }
+    return () => clearInterval(intervalId)
+  }, [game])
+
+  const shouldShowAreYouGoingToThisGameQuestion = React.useMemo(
+    () => theGameIsInTheFuture,
+    [theGameIsInTheFuture],
+  )
+
   return game ? (
     <>
       <ExpoRouter.Stack.Screen options={{ title: dateLabel }} />
       <ReactNative.View style={{ flex: 1 }}>
-        <ReactNative.View style={{ height: 20 }} />
-        <AreYouGoingToThisGame />
+        {shouldShowAreYouGoingToThisGameQuestion && (
+          <>
+            <ReactNative.View style={{ height: 20 }} />
+            <AreYouGoingToThisGame onChange={() => {}} />
+          </>
+        )}
         <ReactNative.View style={{ height: 20 }} />
         <LabeledValue label="Day" value={dateLabel} />
         <ReactNative.View style={{ height: 20 }} />

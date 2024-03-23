@@ -1,5 +1,6 @@
 import * as ERTL from "expo-router/testing-library"
 import * as DateFNS from "date-fns"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import gameFactory from "../../specHelpers/factories/game"
 import mockGameFromApi from "../../specHelpers/mockGameFromApi"
 import type { Game } from "types/Game"
@@ -191,6 +192,58 @@ describe("viewing a game", () => {
             expect(ERTL.screen).toShowText("Away")
           })
         },
+      })
+    })
+
+    describe("when the game is in the future and the player is authenticated", () => {
+      it("shows an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
+        await AsyncStorage.setItem("API Token", "Faked API Token")
+
+        const game = gameFactory({
+          id: 3,
+          played_at: DateFNS.addMinutes(new Date(), 1),
+        })
+
+        await mockGameFromApi({
+          gameId: 3,
+          response: game,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowText("Are you going to this game?")
+              expect(ERTL.screen).toShowText("Yes")
+              expect(ERTL.screen).toShowText("No")
+              expect(ERTL.screen).toShowText("Maybe")
+            })
+          },
+        })
+      })
+    })
+
+    describe("when the game has already started or is in the past", () => {
+      it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
+        await AsyncStorage.setItem("API Token", "Faked API Token")
+
+        const game = gameFactory({
+          id: 3,
+          played_at: DateFNS.addMinutes(new Date(), -1),
+        })
+
+        await mockGameFromApi({
+          gameId: 3,
+          response: game,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowText("Are you going to this game?")
+              expect(ERTL.screen).not.toShowText("Yes")
+              expect(ERTL.screen).not.toShowText("No")
+              expect(ERTL.screen).not.toShowText("Maybe")
+            })
+          },
+        })
       })
     })
   })
