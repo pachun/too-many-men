@@ -8,7 +8,17 @@ import type { Game } from "types/Game"
 const gameDateWithWeekday = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
 
+const gamePlayedAtValue = ({
+  minutesInFuture,
+}: {
+  minutesInFuture: number
+}): string => DateFNS.formatISO(DateFNS.addMinutes(new Date(), minutesInFuture))
+
 describe("viewing a game", () => {
+  afterEach(async () => {
+    await AsyncStorage.clear()
+  })
+
   describe("while the game is loaded from the api", () => {
     it("shows a loading spinner", async () => {
       const game = gameFactory({ id: 1 })
@@ -201,7 +211,7 @@ describe("viewing a game", () => {
 
         const game = gameFactory({
           id: 3,
-          played_at: DateFNS.addMinutes(new Date(), 1),
+          played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
         })
 
         await mockGameFromApi({
@@ -211,6 +221,7 @@ describe("viewing a game", () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
             await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
               expect(ERTL.screen).toShowText("Are you going to this game?")
               expect(ERTL.screen).toShowText("Yes")
               expect(ERTL.screen).toShowText("No")
@@ -227,7 +238,7 @@ describe("viewing a game", () => {
 
         const game = gameFactory({
           id: 3,
-          played_at: DateFNS.addMinutes(new Date(), -1),
+          played_at: gamePlayedAtValue({ minutesInFuture: -1 }),
         })
 
         await mockGameFromApi({
@@ -237,6 +248,34 @@ describe("viewing a game", () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
             await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              expect(ERTL.screen).not.toShowText("Are you going to this game?")
+              expect(ERTL.screen).not.toShowText("Yes")
+              expect(ERTL.screen).not.toShowText("No")
+              expect(ERTL.screen).not.toShowText("Maybe")
+            })
+          },
+        })
+      })
+    })
+
+    describe("when the game is in the future and the user is not authenticated", () => {
+      it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
+        // no api token set
+
+        const game = gameFactory({
+          id: 3,
+          played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+        })
+
+        await mockGameFromApi({
+          gameId: 3,
+          response: game,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
               expect(ERTL.screen).not.toShowText("Are you going to this game?")
               expect(ERTL.screen).not.toShowText("Yes")
               expect(ERTL.screen).not.toShowText("No")
