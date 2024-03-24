@@ -16,6 +16,10 @@ const setUserRespondedNoToAttendingGame =
       const gamesWithPlayerRespondingNoToAttending = refreshableGames.data.map(
         currentGame => {
           if (currentGame.id === game.id) {
+            const idsOfPlayersWhoRespondedYesToAttending =
+              game.ids_of_players_who_responded_yes_to_attending.filter(
+                id => id !== userId,
+              )
             const idsOfPlayersWhoRespondedNoToAttendingWithoutDuplicates = [
               ...new Set([
                 ...game.ids_of_players_who_responded_no_to_attending,
@@ -26,6 +30,8 @@ const setUserRespondedNoToAttendingGame =
               ...currentGame,
               ids_of_players_who_responded_no_to_attending:
                 idsOfPlayersWhoRespondedNoToAttendingWithoutDuplicates,
+              ids_of_players_who_responded_yes_to_attending:
+                idsOfPlayersWhoRespondedYesToAttending,
             }
             return gameWithPlayerRespondingNoToAttending
           } else {
