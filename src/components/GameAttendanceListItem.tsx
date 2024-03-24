@@ -22,6 +22,11 @@ const GameAttendanceListItem = ({
     [game.ids_of_players_who_responded_yes_to_attending, player.id],
   )
 
+  const playerIsNotAttending = React.useMemo(
+    () => game.ids_of_players_who_responded_no_to_attending.includes(player.id),
+    [game.ids_of_players_who_responded_no_to_attending, player.id],
+  )
+
   return (
     <ReactNative.View testID={`Player ${player.id} Attendance List Item`}>
       <ReactNative.View
@@ -38,14 +43,15 @@ const GameAttendanceListItem = ({
             name="check"
             size={24}
             color={ReactNative.PlatformColor("systemGreen")}
-            testID="Checkmark"
+            testID="Checkmark Icon"
           />
         )}
-        {false && (
+        {playerIsNotAttending && (
           <ExpoVectorIcons.FontAwesome
             name="close"
             size={24}
             color={ReactNative.PlatformColor("systemRed")}
+            testID="X Icon"
           />
         )}
         {false && (

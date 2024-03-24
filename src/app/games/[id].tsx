@@ -10,41 +10,7 @@ import useShouldShowThe_AreYouGoingToThisGame_Question from "hooks/useShouldShow
 import GameAttendanceList from "components/GameAttendanceList"
 import useRefreshableGames from "hooks/useRefreshableGames"
 import useUserId from "hooks/useUserId"
-import type { Game as GameType } from "types/Game"
-import type { RefreshableRequest } from "types/RefreshableRequest"
-
-const setUserIsAttendingGame =
-  (userId: number | null, game: GameType | undefined) =>
-  (
-    refreshableGames: RefreshableRequest<GameType[]>,
-  ): RefreshableRequest<GameType[]> => {
-    if (
-      userId &&
-      game &&
-      (refreshableGames.status === "Success" ||
-        refreshableGames.status === "Refreshing" ||
-        refreshableGames.status === "Refresh Error")
-    ) {
-      return {
-        status: refreshableGames.status,
-        data: refreshableGames.data.map(currentGame =>
-          currentGame.id === game.id
-            ? {
-                ...currentGame,
-                ids_of_players_who_responded_yes_to_attending: [
-                  ...new Set([
-                    ...game.ids_of_players_who_responded_yes_to_attending,
-                    userId,
-                  ]),
-                ],
-              }
-            : currentGame,
-        ),
-      }
-    } else {
-      return refreshableGames
-    }
-  }
+import setUserRespondedYesToAttendingGame from "updaters/setUserRespondedYesToAttendingGame"
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
@@ -74,7 +40,7 @@ const Game = (): React.ReactElement => {
     (playerAttendance: "Yes" | "No" | "Maybe") => {
       switch (playerAttendance) {
         case "Yes":
-          setRefreshableGames(setUserIsAttendingGame(userId, game))
+          setRefreshableGames(setUserRespondedYesToAttendingGame(userId, game))
           break
         case "No":
           "123"

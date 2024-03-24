@@ -270,7 +270,6 @@ describe("viewing a game", () => {
         })
       })
 
-      // here
       describe("when Yes is tapped", () => {
         it("shows a checkmark by the players name in the attendance list", async () => {
           const playerId = 3
@@ -286,11 +285,11 @@ describe("viewing a game", () => {
                 first_name: "Michael",
                 last_name: "Scott",
               },
-              // {
-              //   id: 2,
-              //   first_name: "Dwight",
-              //   last_name: "Schrute",
-              // },
+              {
+                id: 2,
+                first_name: "Dwight",
+                last_name: "Schrute",
+              },
             ],
           })
 
@@ -313,7 +312,56 @@ describe("viewing a game", () => {
                       `Player ${playerId} Attendance List Item`,
                     ),
                   ),
-                ).toShowTestId("Checkmark")
+                ).toShowTestId("Checkmark Icon")
+              })
+            },
+          })
+        })
+      })
+
+      describe("when No is tapped", () => {
+        it("shows an X by the players name in the attendance list", async () => {
+          const playerId = 3
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: 1,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+              {
+                id: 2,
+                first_name: "Dwight",
+                last_name: "Schrute",
+              },
+            ],
+          })
+
+          await mockGameFromApi({
+            gameId: 1,
+            response: game,
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes"))
+
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.within(
+                    ERTL.screen.getByTestId(
+                      `Player ${playerId} Attendance List Item`,
+                    ),
+                  ),
+                ).toShowTestId("X Icon")
               })
             },
           })
