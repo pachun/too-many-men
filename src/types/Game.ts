@@ -9,4 +9,7 @@ export interface Game {
   goals_for?: number
   goals_against?: number
   players: Player[]
+  ids_of_players_who_responded_yes_to_attending: number[]
+  ids_of_players_who_responded_no_to_attending: number[]
+  ids_of_players_who_responded_maybe_to_attending: number[]
 }

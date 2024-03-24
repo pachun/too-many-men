@@ -205,10 +205,9 @@ describe("viewing a game", () => {
       })
     })
 
-    it("shows a list of the games players", async () => {
+    it("shows a list of the games players (for attendance tracking purposes)", async () => {
       const game = gameFactory({
         id: 3,
-        is_home_team: false,
         players: [
           {
             id: 3,
@@ -271,8 +270,52 @@ describe("viewing a game", () => {
         })
       })
 
-      describe("when Yes is tapped", () => {
-        it("saves the players selected attendance option", () => {})
+      // here
+      describe("asdf", () => {
+        it("asdf", async () => {
+          const playerId = 3
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: 1,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+              {
+                id: 2,
+                first_name: "Dwight",
+                last_name: "Schrute",
+              },
+            ],
+          })
+
+          await mockGameFromApi({
+            gameId: 1,
+            response: game,
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.within(
+                    ERTL.screen.getByTestId(`Player ${playerId} Attendance`),
+                  ),
+                ).toShowTestId("Checkmark")
+              })
+            },
+          })
+        })
       })
     })
 

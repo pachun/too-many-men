@@ -4,7 +4,7 @@ import * as ReactNative from "react-native"
 import RadioButton from "./RadioButton"
 
 interface AreYouGoingToThisGameProps {
-  onChange: (yesNoOrMaybe: string) => void
+  onChange: (yesNoOrMaybe: "Yes" | "No" | "Maybe") => void
 }
 
 const AreYouGoingToThisGame = ({

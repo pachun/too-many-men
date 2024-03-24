@@ -7,13 +7,18 @@ import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameF
 import LabeledValue from "components/LabeledValue"
 import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
 import useShouldShowThe_AreYouGoingToThisGame_Question from "hooks/useShouldShowThe_AreYouGoingToThisGame_Question"
-import useTheme from "hooks/useTheme"
 import GameAttendanceList from "components/GameAttendanceList"
+import useRefreshableGames from "hooks/useRefreshableGames"
+import useUserId from "hooks/useUserId"
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
 
   const game = useTheCachedGameFirstOrGetTheGameFromTheApi(gameId)
+
+  const { refreshableGames, setRefreshableGames } = useRefreshableGames()
+
+  const { userId } = useUserId()
 
   const dateLabel = React.useMemo((): string => {
     return game?.played_at
@@ -30,7 +35,50 @@ const Game = (): React.ReactElement => {
   const shouldShowThe_AreYouGoingToThisGame_Question =
     useShouldShowThe_AreYouGoingToThisGame_Question(game)
 
-  const theme = useTheme()
+  const onPlayerAttendanceUpdate = React.useCallback(
+    (playerAttendance: "Yes" | "No" | "Maybe") => {
+      if (
+        userId &&
+        game &&
+        (refreshableGames.status === "Success" ||
+          refreshableGames.status === "Refreshing" ||
+          refreshableGames.status === "Refresh Error")
+      ) {
+        switch (playerAttendance) {
+          case "Yes":
+            setRefreshableGames({
+              status: refreshableGames.status,
+              data: refreshableGames.data.map(currentGame =>
+                currentGame.id === game.id ? game : currentGame,
+              ),
+              // .map(currentGame =>
+              //   currentGame.id === game.id
+              //     ? game
+              //     : // ? {
+              //       //     ...game,
+              //       //     ids_of_players_who_responded_yes_to_attending: [
+              //       //       ...new Set([
+              //       //         ...game.ids_of_players_who_responded_yes_to_attending,
+              //       //         userId,
+              //       //       ]),
+              //       //     ],
+              //       //   }
+              //       game,
+              // ),
+            })
+            "123"
+            break
+          case "No":
+            "123"
+            break
+          case "Maybe":
+            "123"
+            break
+        }
+      }
+    },
+    [refreshableGames, setRefreshableGames, game, userId],
+  )
 
   return game ? (
     <>
@@ -39,32 +87,33 @@ const Game = (): React.ReactElement => {
         {shouldShowThe_AreYouGoingToThisGame_Question && (
           <>
             <ReactNative.View style={{ height: 20 }} />
-            <AreYouGoingToThisGame onChange={() => {}} />
+            <AreYouGoingToThisGame onChange={onPlayerAttendanceUpdate} />
           </>
         )}
         <ReactNative.View style={{ height: 20 }} />
         <LabeledValue label="Day" value={dateLabel} />
         <ReactNative.View style={{ height: 20 }} />
         <LabeledValue label="Time" value={timeLabel} />
-        <ReactNative.View style={{ height: 20 }} />
         {game.rink && (
           <>
-            <LabeledValue label="Rink" value={game.rink} />
             <ReactNative.View style={{ height: 20 }} />
+            <LabeledValue label="Rink" value={game.rink} />
           </>
         )}
         {game.opposing_teams_name && (
           <>
-            <LabeledValue label="Opponent" value={game.opposing_teams_name} />
             <ReactNative.View style={{ height: 20 }} />
+            <LabeledValue label="Opponent" value={game.opposing_teams_name} />
           </>
         )}
+        <ReactNative.View style={{ height: 20 }} />
         <LabeledValue
           label="Home or Away"
           value={game.is_home_team ? "Home" : "Away"}
         />
         <ReactNative.View style={{ height: 20 }} />
-        <GameAttendanceList players={game.players} />
+        <GameAttendanceList game={game} />
+        <ReactNative.View style={{ height: 20 }} />
       </ReactNative.ScrollView>
     </>
   ) : (
