@@ -6,14 +6,9 @@ import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameFirstOrGetTheGameFromTheApi"
 import LabeledValue from "components/LabeledValue"
 import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
-import type { Game as GameType } from "types/Game"
-import useEffectEverySecond from "hooks/useEffectEverySecond"
-
-const isTheGameInTheFuture = (game: GameType): boolean => {
-  const currentTime = new Date()
-  const gameTime = DateFNS.parseISO(game.played_at)
-  return DateFNS.isBefore(currentTime, gameTime)
-}
+import useShouldShowThe_AreYouGoingToThisGame_Question from "hooks/useShouldShowThe_AreYouGoingToThisGame_Question"
+import useTheme from "hooks/useTheme"
+import GameAttendanceList from "components/GameAttendanceList"
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
@@ -32,28 +27,16 @@ const Game = (): React.ReactElement => {
       : ""
   }, [game])
 
-  const [theGameIsInTheFuture, setTheGameIsInTheFuture] = React.useState(
-    game ? isTheGameInTheFuture(game) : false,
-  )
+  const shouldShowThe_AreYouGoingToThisGame_Question =
+    useShouldShowThe_AreYouGoingToThisGame_Question(game)
 
-  const updateWhetherOrNotTheGameIsInTheFuture = React.useCallback(() => {
-    if (game) {
-      setTheGameIsInTheFuture(isTheGameInTheFuture(game))
-    }
-  }, [game])
-
-  useEffectEverySecond(updateWhetherOrNotTheGameIsInTheFuture)
-
-  const shouldShowAreYouGoingToThisGameQuestion = React.useMemo(
-    () => theGameIsInTheFuture,
-    [theGameIsInTheFuture],
-  )
+  const theme = useTheme()
 
   return game ? (
     <>
       <ExpoRouter.Stack.Screen options={{ title: dateLabel }} />
-      <ReactNative.View style={{ flex: 1 }}>
-        {shouldShowAreYouGoingToThisGameQuestion && (
+      <ReactNative.ScrollView style={{ flex: 1 }}>
+        {shouldShowThe_AreYouGoingToThisGame_Question && (
           <>
             <ReactNative.View style={{ height: 20 }} />
             <AreYouGoingToThisGame onChange={() => {}} />
@@ -80,7 +63,9 @@ const Game = (): React.ReactElement => {
           label="Home or Away"
           value={game.is_home_team ? "Home" : "Away"}
         />
-      </ReactNative.View>
+        <ReactNative.View style={{ height: 20 }} />
+        <GameAttendanceList players={game.players} />
+      </ReactNative.ScrollView>
     </>
   ) : (
     <>

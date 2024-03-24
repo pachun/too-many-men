@@ -39,7 +39,9 @@ const AreYouGoingToThisGame = ({
           ),
         }}
       >
-        <ReactNative.Text style={{ color: theme.colors.text, fontSize: 20 }}>
+        <ReactNative.Text
+          style={{ color: theme.colors.text, fontSize: 20, fontWeight: "bold" }}
+        >
           Are you going to this game?
         </ReactNative.Text>
         <ReactNative.View style={{ height: 20 }} />

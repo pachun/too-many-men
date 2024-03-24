@@ -7,8 +7,6 @@ import useGameOutcome from "hooks/useGameOutcome"
 import useGameScoreColor from "hooks/useGameScoreColor"
 import type { Game } from "types/Game"
 
-const sideColumnWidth = 120
-
 export const paddingLeft = 10
 
 interface GameListItemProps {
@@ -16,8 +14,12 @@ interface GameListItemProps {
 }
 
 const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
-  const dateLabel = React.useMemo((): string => {
-    return DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
+  const monthLabel = React.useMemo((): string => {
+    return DateFNS.format(DateFNS.parseISO(game.played_at), "MMM")
+  }, [game.played_at])
+
+  const dayOfMonthLabel = React.useMemo((): string => {
+    return DateFNS.format(DateFNS.parseISO(game.played_at), "d")
   }, [game.played_at])
 
   const timeLabel = React.useMemo((): string => {
@@ -37,85 +39,81 @@ const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
 
   const theme = useTheme()
 
+  const [isTappingGame, setIsTappingGame] = React.useState(false)
+
   return (
     <ExpoRouter.Link href={`/games/${game.id}`} asChild>
       <ReactNative.Pressable
-        style={{ height: 44, paddingLeft, width: "100%" }}
+        style={{
+          height: 120,
+          paddingTop: 10,
+          paddingBottom: 10,
+          paddingLeft,
+          width: "100%",
+          ...(isTappingGame
+            ? {
+                backgroundColor: ReactNative.PlatformColor(
+                  "tertiarySystemBackground",
+                ),
+              }
+            : {}),
+        }}
+        onPressIn={() => setIsTappingGame(true)}
+        onPressOut={() => setIsTappingGame(false)}
         testID="Game List Item"
       >
-        <ReactNative.View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingRight: 10,
-          }}
-        >
+        <ReactNative.View style={{ flexDirection: "row" }}>
           <ReactNative.View
-            style={{ flexDirection: "row", width: sideColumnWidth }}
+            style={{
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              width: 80,
+              borderRightColor: theme.colors.border,
+              borderRightWidth: 1,
+            }}
           >
-            <ReactNative.View>
-              <ReactNative.Text
-                style={{
-                  color: theme.colors.text,
-                }}
-              >
-                {timeLabel}
-              </ReactNative.Text>
-              <ReactNative.Text
-                style={{
-                  color: theme.colors.secondaryLabel,
-                  fontSize: 10,
-                  marginTop: 3,
-                }}
-              >
-                {dateLabel}
-              </ReactNative.Text>
-            </ReactNative.View>
-          </ReactNative.View>
-
-          <ReactNative.View style={{ justifyContent: "center" }}>
+            <ReactNative.Text
+              style={{ fontSize: 20, color: theme.colors.text }}
+            >
+              {monthLabel}
+            </ReactNative.Text>
             <ReactNative.Text
               style={{
+                fontWeight: "bold",
+                fontSize: 32,
                 color: theme.colors.text,
-                textAlign: "center",
               }}
             >
-              {game.rink}
-            </ReactNative.Text>
-            <ReactNative.Text
-              style={{
-                color: theme.colors.secondaryLabel,
-                textAlign: "center",
-                fontSize: 10,
-                marginTop: 3,
-              }}
-            >
-              {game.is_home_team ? "Home" : "Away"}
+              {dayOfMonthLabel}
             </ReactNative.Text>
           </ReactNative.View>
-
-          <ReactNative.View style={{ width: sideColumnWidth }}>
+          <ReactNative.View
+            style={{ paddingLeft: 20, justifyContent: "space-between" }}
+          >
             <ReactNative.Text
               style={{
-                textAlign: "right",
-                fontSize: 16,
-                color: gameScoreColor,
+                fontSize: 20,
+                color: theme.colors.text,
+                fontWeight: "bold",
               }}
-              numberOfLines={1}
             >
-              {scoreLabel}
+              {timeLabel}
             </ReactNative.Text>
+            {game.opposing_teams_name && (
+              <>
+                <ReactNative.Text
+                  style={{ fontSize: 20, color: theme.colors.secondaryLabel }}
+                >
+                  v {game.opposing_teams_name}
+                </ReactNative.Text>
+              </>
+            )}
             <ReactNative.Text
-              style={{
-                color: theme.colors.secondaryLabel,
-                fontSize: 10,
-                marginTop: 3,
-                textAlign: "right",
-              }}
+              style={{ fontSize: 20, color: theme.colors.secondaryLabel }}
             >
-              {game.opposing_teams_name ? `v ${game.opposing_teams_name}` : ""}
+              {game.rink ? `${game.rink} ` : ""}
+              {game.is_home_team ? "Home" : "Away"}{" "}
             </ReactNative.Text>
           </ReactNative.View>
         </ReactNative.View>

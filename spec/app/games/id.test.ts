@@ -205,9 +205,49 @@ describe("viewing a game", () => {
       })
     })
 
+    it("shows a list of the games players", async () => {
+      const game = gameFactory({
+        id: 3,
+        is_home_team: false,
+        players: [
+          {
+            id: 3,
+            first_name: "Toby",
+            last_name: "Flenderson",
+          },
+          {
+            id: 1,
+            first_name: "Kelly",
+            last_name: "Kapoor",
+          },
+          {
+            id: 2,
+            first_name: "Meredith",
+            last_name: "Palmer",
+          },
+        ],
+      })
+
+      await mockGameFromApi({
+        gameId: 3,
+        response: game,
+        test: async () => {
+          ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).toShowText("Attendance")
+            expect(ERTL.screen).toShowText("Toby Flenderson")
+            expect(ERTL.screen).toShowText("Kelly Kapoor")
+            expect(ERTL.screen).toShowText("Meredith Palmer")
+          })
+        },
+      })
+    })
+
     describe("when the game is in the future and the player is authenticated", () => {
       it("shows an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
         await AsyncStorage.setItem("API Token", "Faked API Token")
+        await AsyncStorage.setItem("User ID", "3")
 
         const game = gameFactory({
           id: 3,
@@ -229,6 +269,10 @@ describe("viewing a game", () => {
             })
           },
         })
+      })
+
+      describe("when Yes is tapped", () => {
+        it("saves the players selected attendance option", () => {})
       })
     })
 
@@ -259,31 +303,29 @@ describe("viewing a game", () => {
       })
     })
 
-    // describe("when the game is in the future and the user is not authenticated", () => {
-    //   it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
-    //     // no api token set or user id set
-    //
-    //     const game = gameFactory({
-    //       id: 3,
-    //       played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-    //     })
-    //
-    //     await mockGameFromApi({
-    //       gameId: 3,
-    //       response: game,
-    //       test: async () => {
-    //         ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
-    //
-    //         await ERTL.waitFor(() => {
-    //           expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-    //           expect(ERTL.screen).not.toShowText("Are you going to this game?")
-    //           expect(ERTL.screen).not.toShowText("Yes")
-    //           expect(ERTL.screen).not.toShowText("No")
-    //           expect(ERTL.screen).not.toShowText("Maybe")
-    //         })
-    //       },
-    //     })
-    //   })
-    // })
+    describe("when the game is in the future and the user is not authenticated", () => {
+      it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
+        const game = gameFactory({
+          id: 3,
+          played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+        })
+
+        await mockGameFromApi({
+          gameId: 3,
+          response: game,
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              expect(ERTL.screen).not.toShowText("Are you going to this game?")
+              expect(ERTL.screen).not.toShowText("Yes")
+              expect(ERTL.screen).not.toShowText("No")
+              expect(ERTL.screen).not.toShowText("Maybe")
+            })
+          },
+        })
+      })
+    })
   })
 })

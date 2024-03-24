@@ -11,6 +11,7 @@ const gameFactory = (partialGame: Partial<Game>): Game => {
     opposing_teams_name: partialGame.opposing_teams_name,
     goals_for: partialGame.goals_for,
     goals_against: partialGame.goals_against,
+    players: partialGame.players || [],
   }
 
   numberOfGames += 1

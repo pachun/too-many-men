@@ -1,3 +1,5 @@
+import type { Player } from "./Player"
+
 export interface Game {
   id: number
   played_at: string
@@ -6,4 +8,5 @@ export interface Game {
   opposing_teams_name?: string
   goals_for?: number
   goals_against?: number
+  players: Player[]
 }
