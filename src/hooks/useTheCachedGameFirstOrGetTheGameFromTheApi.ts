@@ -9,7 +9,7 @@ const useTheCachedGameFirstOrGetTheGameFromTheApi = (
 ): Game | undefined => {
   const [game, setGame] = React.useState<Game | undefined>()
 
-  const { refreshableGames } = useRefreshableGames()
+  const { refreshableGames, setRefreshableGames } = useRefreshableGames()
 
   ExpoRouter.useFocusEffect(
     React.useCallback(() => {
@@ -32,11 +32,17 @@ const useTheCachedGameFirstOrGetTheGameFromTheApi = (
 
         const cachedGame = getGameFromCache()
 
-        setGame(cachedGame ? cachedGame : await getGameFromApi())
+        if (cachedGame) {
+          setGame(cachedGame)
+        } else {
+          const gameFromApi = await getGameFromApi()
+          setRefreshableGames({ status: "Success", data: [gameFromApi] })
+          setGame(gameFromApi)
+        }
       }
 
       getGame()
-    }, [gameId, refreshableGames]),
+    }, [gameId, refreshableGames, setRefreshableGames]),
   )
 
   return game

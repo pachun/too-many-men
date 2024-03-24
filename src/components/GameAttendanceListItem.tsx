@@ -16,11 +16,14 @@ const GameAttendanceListItem = ({
 }: GameAttendanceListItemProps): React.ReactElement => {
   const theme = useTheme()
 
-  const playerIsAttending =
-    game.ids_of_players_who_responded_yes_to_attending.includes(player.id)
+  const playerIsAttending = React.useMemo(
+    () =>
+      game.ids_of_players_who_responded_yes_to_attending.includes(player.id),
+    [game.ids_of_players_who_responded_yes_to_attending, player.id],
+  )
 
   return (
-    <ReactNative.View testID={`Player ${player.id} Attendance`}>
+    <ReactNative.View testID={`Player ${player.id} Attendance List Item`}>
       <ReactNative.View
         style={{
           flexDirection: "row",

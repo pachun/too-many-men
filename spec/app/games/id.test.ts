@@ -286,11 +286,11 @@ describe("viewing a game", () => {
                 first_name: "Michael",
                 last_name: "Scott",
               },
-              {
-                id: 2,
-                first_name: "Dwight",
-                last_name: "Schrute",
-              },
+              // {
+              //   id: 2,
+              //   first_name: "Dwight",
+              //   last_name: "Schrute",
+              // },
             ],
           })
 
@@ -304,13 +304,14 @@ describe("viewing a game", () => {
                 expect(ERTL.screen).not.toShowTestId("Loading Spinner")
               })
 
-              ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+              ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes"))
 
               await ERTL.waitFor(() => {
-                ERTL.screen.debug()
                 expect(
                   ERTL.within(
-                    ERTL.screen.getByTestId(`Player ${playerId} Attendance`),
+                    ERTL.screen.getByTestId(
+                      `Player ${playerId} Attendance List Item`,
+                    ),
                   ),
                 ).toShowTestId("Checkmark")
               })

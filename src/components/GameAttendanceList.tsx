@@ -1,6 +1,5 @@
 import React from "react"
 import * as ReactNative from "react-native"
-import * as ExpoVectorIcons from "@expo/vector-icons"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
 import GameAttendanceListItem from "./GameAttendanceListItem"

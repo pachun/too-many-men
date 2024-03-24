@@ -39,7 +39,7 @@ const RadioButton = ({
   }
 
   return (
-    <ReactNative.Pressable onPress={onPress} hitSlop={20}>
+    <ReactNative.Pressable onPress={onPress} hitSlop={20} testID={label}>
       <Animatable.View
         ref={buttonRef}
         style={{
