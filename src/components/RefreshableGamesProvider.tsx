@@ -6,7 +6,9 @@ import type { RefreshableRequest } from "types/RefreshableRequest"
 
 export interface RefreshableGamesContextType {
   refreshableGames: RefreshableRequest<Game[]>
-  setRefreshableGames: (refreshableGames: RefreshableRequest<Game[]>) => void
+  setRefreshableGames: React.Dispatch<
+    React.SetStateAction<RefreshableRequest<Game[]>>
+  >
 }
 
 export const RefreshableGamesContext =

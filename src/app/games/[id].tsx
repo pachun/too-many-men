@@ -10,13 +10,48 @@ import useShouldShowThe_AreYouGoingToThisGame_Question from "hooks/useShouldShow
 import GameAttendanceList from "components/GameAttendanceList"
 import useRefreshableGames from "hooks/useRefreshableGames"
 import useUserId from "hooks/useUserId"
+import type { Game as GameType } from "types/Game"
+import type { RefreshableRequest } from "types/RefreshableRequest"
+
+const setUserIsAttendingGame =
+  (userId: number | null, game: GameType | undefined) =>
+  (
+    refreshableGames: RefreshableRequest<GameType[]>,
+  ): RefreshableRequest<GameType[]> => {
+    if (
+      userId &&
+      game &&
+      (refreshableGames.status === "Success" ||
+        refreshableGames.status === "Refreshing" ||
+        refreshableGames.status === "Refresh Error")
+    ) {
+      return {
+        status: refreshableGames.status,
+        data: refreshableGames.data.map(currentGame =>
+          currentGame.id === game.id
+            ? {
+                ...currentGame,
+                ids_of_players_who_responded_yes_to_attending: [
+                  ...new Set([
+                    ...game.ids_of_players_who_responded_yes_to_attending,
+                    userId,
+                  ]),
+                ],
+              }
+            : currentGame,
+        ),
+      }
+    } else {
+      return refreshableGames
+    }
+  }
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
 
   const game = useTheCachedGameFirstOrGetTheGameFromTheApi(gameId)
 
-  const { refreshableGames, setRefreshableGames } = useRefreshableGames()
+  const { setRefreshableGames } = useRefreshableGames()
 
   const { userId } = useUserId()
 
@@ -37,43 +72,19 @@ const Game = (): React.ReactElement => {
 
   const onPlayerAttendanceUpdate = React.useCallback(
     (playerAttendance: "Yes" | "No" | "Maybe") => {
-      if (
-        userId &&
-        game &&
-        (refreshableGames.status === "Success" ||
-          refreshableGames.status === "Refreshing" ||
-          refreshableGames.status === "Refresh Error")
-      ) {
-        switch (playerAttendance) {
-          case "Yes":
-            setRefreshableGames({
-              status: refreshableGames.status,
-              data: refreshableGames.data.map(currentGame =>
-                currentGame.id === game.id
-                  ? {
-                      ...currentGame,
-                      ids_of_players_who_responded_yes_to_attending: [
-                        ...new Set([
-                          ...game.ids_of_players_who_responded_yes_to_attending,
-                          userId,
-                        ]),
-                      ],
-                    }
-                  : currentGame,
-              ),
-            })
-            "123"
-            break
-          case "No":
-            "123"
-            break
-          case "Maybe":
-            "123"
-            break
-        }
+      switch (playerAttendance) {
+        case "Yes":
+          setRefreshableGames(setUserIsAttendingGame(userId, game))
+          break
+        case "No":
+          "123"
+          break
+        case "Maybe":
+          "123"
+          break
       }
     },
-    [refreshableGames, setRefreshableGames, game, userId],
+    [game, userId, setRefreshableGames],
   )
 
   return game ? (
