@@ -1,7 +1,7 @@
 import type { Game as GameType } from "types/Game"
 import type { RefreshableRequest } from "types/RefreshableRequest"
 
-const setUserRespondedYesToAttendingGame =
+const setUserRespondedMaybeToAttendingGame =
   (userId: number | null, game: GameType | undefined) =>
   (
     refreshableGames: RefreshableRequest<GameType[]>,
@@ -13,34 +13,33 @@ const setUserRespondedYesToAttendingGame =
         refreshableGames.status === "Refreshing" ||
         refreshableGames.status === "Refresh Error")
     ) {
-      const gamesWithPlayerRespondingYesToAttending = refreshableGames.data.map(
-        currentGame => {
+      const gamesWithPlayerRespondingMaybeToAttending =
+        refreshableGames.data.map(currentGame => {
           if (currentGame.id === game.id) {
-            const idsOfPlayersWhoRespondedYesToAttendingWithoutDuplicates = [
+            const idsOfPlayersWhoRespondedMaybeToAttendingWithoutDuplicates = [
               ...new Set([
-                ...game.ids_of_players_who_responded_yes_to_attending,
+                ...game.ids_of_players_who_responded_maybe_to_attending,
                 userId,
               ]),
             ]
-            const gameWithPlayerRespondingYesToAttending = {
+            const gameWithPlayerRespondingMaybeToAttending = {
               ...currentGame,
-              ids_of_players_who_responded_yes_to_attending:
-                idsOfPlayersWhoRespondedYesToAttendingWithoutDuplicates,
+              ids_of_players_who_responded_maybe_to_attending:
+                idsOfPlayersWhoRespondedMaybeToAttendingWithoutDuplicates,
             }
-            return gameWithPlayerRespondingYesToAttending
+            return gameWithPlayerRespondingMaybeToAttending
           } else {
             return currentGame
           }
-        },
-      )
+        })
 
       return {
         status: refreshableGames.status,
-        data: gamesWithPlayerRespondingYesToAttending,
+        data: gamesWithPlayerRespondingMaybeToAttending,
       }
     } else {
       return refreshableGames
     }
   }
 
-export default setUserRespondedYesToAttendingGame
+export default setUserRespondedMaybeToAttendingGame

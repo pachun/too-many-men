@@ -11,6 +11,8 @@ import GameAttendanceList from "components/GameAttendanceList"
 import useRefreshableGames from "hooks/useRefreshableGames"
 import useUserId from "hooks/useUserId"
 import setUserRespondedYesToAttendingGame from "updaters/setUserRespondedYesToAttendingGame"
+import setUserRespondedNoToAttendingGame from "updaters/setUserRespondedNoToAttendingGame"
+import setUserRespondedMaybeToAttendingGame from "updaters/setUserRespondedMaybeToAttendingGame"
 
 const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
@@ -43,10 +45,12 @@ const Game = (): React.ReactElement => {
           setRefreshableGames(setUserRespondedYesToAttendingGame(userId, game))
           break
         case "No":
-          "123"
+          setRefreshableGames(setUserRespondedNoToAttendingGame(userId, game))
           break
         case "Maybe":
-          "123"
+          setRefreshableGames(
+            setUserRespondedMaybeToAttendingGame(userId, game),
+          )
           break
       }
     },

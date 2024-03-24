@@ -271,7 +271,7 @@ describe("viewing a game", () => {
       })
 
       describe("when Yes is tapped", () => {
-        it("shows a checkmark by the players name in the attendance list", async () => {
+        it("shows a checkmark icon by the players name in the attendance list", async () => {
           const playerId = 3
           await AsyncStorage.setItem("API Token", "Faked API Token")
           await AsyncStorage.setItem("User ID", playerId.toString())
@@ -319,8 +319,11 @@ describe("viewing a game", () => {
         })
       })
 
+      // make the player list items highlight when tapped, like games
+      // show the game scores on the game list page & this details screen
+
       describe("when No is tapped", () => {
-        it("shows an X by the players name in the attendance list", async () => {
+        it("shows an X icon by the players name in the attendance list", async () => {
           const playerId = 3
           await AsyncStorage.setItem("API Token", "Faked API Token")
           await AsyncStorage.setItem("User ID", playerId.toString())
@@ -352,7 +355,7 @@ describe("viewing a game", () => {
                 expect(ERTL.screen).not.toShowTestId("Loading Spinner")
               })
 
-              ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes"))
+              ERTL.userEvent.setup().press(ERTL.screen.getByText("No"))
 
               await ERTL.waitFor(() => {
                 expect(
@@ -362,6 +365,55 @@ describe("viewing a game", () => {
                     ),
                   ),
                 ).toShowTestId("X Icon")
+              })
+            },
+          })
+        })
+      })
+
+      describe("when Maybe is tapped", () => {
+        it("shows an ? icon by the players name in the attendance list", async () => {
+          const playerId = 3
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: 1,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+              {
+                id: 2,
+                first_name: "Dwight",
+                last_name: "Schrute",
+              },
+            ],
+          })
+
+          await mockGameFromApi({
+            gameId: 1,
+            response: game,
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe"))
+
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.within(
+                    ERTL.screen.getByTestId(
+                      `Player ${playerId} Attendance List Item`,
+                    ),
+                  ),
+                ).toShowTestId("? Icon")
               })
             },
           })

@@ -1,7 +1,7 @@
 import type { Game as GameType } from "types/Game"
 import type { RefreshableRequest } from "types/RefreshableRequest"
 
-const setUserRespondedYesToAttendingGame =
+const setUserRespondedNoToAttendingGame =
   (userId: number | null, game: GameType | undefined) =>
   (
     refreshableGames: RefreshableRequest<GameType[]>,
@@ -13,21 +13,21 @@ const setUserRespondedYesToAttendingGame =
         refreshableGames.status === "Refreshing" ||
         refreshableGames.status === "Refresh Error")
     ) {
-      const gamesWithPlayerRespondingYesToAttending = refreshableGames.data.map(
+      const gamesWithPlayerRespondingNoToAttending = refreshableGames.data.map(
         currentGame => {
           if (currentGame.id === game.id) {
-            const idsOfPlayersWhoRespondedYesToAttendingWithoutDuplicates = [
+            const idsOfPlayersWhoRespondedNoToAttendingWithoutDuplicates = [
               ...new Set([
-                ...game.ids_of_players_who_responded_yes_to_attending,
+                ...game.ids_of_players_who_responded_no_to_attending,
                 userId,
               ]),
             ]
-            const gameWithPlayerRespondingYesToAttending = {
+            const gameWithPlayerRespondingNoToAttending = {
               ...currentGame,
-              ids_of_players_who_responded_yes_to_attending:
-                idsOfPlayersWhoRespondedYesToAttendingWithoutDuplicates,
+              ids_of_players_who_responded_no_to_attending:
+                idsOfPlayersWhoRespondedNoToAttendingWithoutDuplicates,
             }
-            return gameWithPlayerRespondingYesToAttending
+            return gameWithPlayerRespondingNoToAttending
           } else {
             return currentGame
           }
@@ -36,11 +36,11 @@ const setUserRespondedYesToAttendingGame =
 
       return {
         status: refreshableGames.status,
-        data: gamesWithPlayerRespondingYesToAttending,
+        data: gamesWithPlayerRespondingNoToAttending,
       }
     } else {
       return refreshableGames
     }
   }
 
-export default setUserRespondedYesToAttendingGame
+export default setUserRespondedNoToAttendingGame
