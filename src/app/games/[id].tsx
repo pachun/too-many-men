@@ -49,22 +49,18 @@ const Game = (): React.ReactElement => {
             setRefreshableGames({
               status: refreshableGames.status,
               data: refreshableGames.data.map(currentGame =>
-                currentGame.id === game.id ? game : currentGame,
+                currentGame.id === game.id
+                  ? {
+                      ...currentGame,
+                      ids_of_players_who_responded_yes_to_attending: [
+                        ...new Set([
+                          ...game.ids_of_players_who_responded_yes_to_attending,
+                          userId,
+                        ]),
+                      ],
+                    }
+                  : currentGame,
               ),
-              // .map(currentGame =>
-              //   currentGame.id === game.id
-              //     ? game
-              //     : // ? {
-              //       //     ...game,
-              //       //     ids_of_players_who_responded_yes_to_attending: [
-              //       //       ...new Set([
-              //       //         ...game.ids_of_players_who_responded_yes_to_attending,
-              //       //         userId,
-              //       //       ]),
-              //       //     ],
-              //       //   }
-              //       game,
-              // ),
             })
             "123"
             break

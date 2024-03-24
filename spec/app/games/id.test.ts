@@ -271,8 +271,8 @@ describe("viewing a game", () => {
       })
 
       // here
-      describe("asdf", () => {
-        it("asdf", async () => {
+      describe("when Yes is tapped", () => {
+        it("shows a checkmark by the players name in the attendance list", async () => {
           const playerId = 3
           await AsyncStorage.setItem("API Token", "Faked API Token")
           await AsyncStorage.setItem("User ID", playerId.toString())
@@ -307,6 +307,7 @@ describe("viewing a game", () => {
               ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
 
               await ERTL.waitFor(() => {
+                ERTL.screen.debug()
                 expect(
                   ERTL.within(
                     ERTL.screen.getByTestId(`Player ${playerId} Attendance`),
