@@ -22,10 +22,22 @@ const setUserRespondedMaybeToAttendingGame =
                 userId,
               ]),
             ]
+            const idsOfPlayersWhoRespondedYesToAttending =
+              game.ids_of_players_who_responded_yes_to_attending.filter(
+                id => id !== userId,
+              )
+            const idsOfPlayersWhoRespondedNoToAttending =
+              game.ids_of_players_who_responded_no_to_attending.filter(
+                id => id !== userId,
+              )
             const gameWithPlayerRespondingMaybeToAttending = {
               ...currentGame,
               ids_of_players_who_responded_maybe_to_attending:
                 idsOfPlayersWhoRespondedMaybeToAttendingWithoutDuplicates,
+              ids_of_players_who_responded_yes_to_attending:
+                idsOfPlayersWhoRespondedYesToAttending,
+              ids_of_players_who_responded_no_to_attending:
+                idsOfPlayersWhoRespondedNoToAttending,
             }
             return gameWithPlayerRespondingMaybeToAttending
           } else {
