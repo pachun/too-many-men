@@ -26,12 +26,18 @@ const setUserRespondedYesToAttendingGame =
               game.ids_of_players_who_responded_no_to_attending.filter(
                 id => id !== userId,
               )
+            const idsOfPlayersWhoRespondedMaybeToAttending =
+              game.ids_of_players_who_responded_maybe_to_attending.filter(
+                id => id !== userId,
+              )
             const gameWithPlayerRespondingYesToAttending = {
               ...currentGame,
               ids_of_players_who_responded_yes_to_attending:
                 idsOfPlayersWhoRespondedYesToAttendingWithoutDuplicates,
               ids_of_players_who_responded_no_to_attending:
                 idsOfPlayersWhoRespondedNoToAttending,
+              ids_of_players_who_responded_maybe_to_attending:
+                idsOfPlayersWhoRespondedMaybeToAttending,
             }
             return gameWithPlayerRespondingYesToAttending
           } else {
