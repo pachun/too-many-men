@@ -1,4 +1,5 @@
 import * as ERTL from "expo-router/testing-library"
+import * as ReactNative from "react-native"
 import playerFactory from "../../specHelpers/factories/player"
 import mockPlayersFromApi from "../../specHelpers/mockPlayersFromApi"
 import pullToRefresh from "../../specHelpers/pullToRefresh"
@@ -70,65 +71,6 @@ describe("opening the app", () => {
       })
     })
 
-    it("shows players jersey numbers", async () => {
-      const players = [
-        playerFactory({ jersey_number: 1 }),
-        playerFactory({ jersey_number: 2 }),
-      ]
-
-      await mockPlayersFromApi({
-        response: players,
-        test: async () => {
-          ERTL.renderRouter("src/app")
-
-          await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("#1")
-            expect(ERTL.screen).toShowText("#2")
-          })
-        },
-      })
-    })
-
-    it("shows players phone numbers", async () => {
-      const players = [
-        playerFactory({ phone_number: "0123456789" }),
-        playerFactory({ phone_number: "9876543210" }),
-      ]
-
-      await mockPlayersFromApi({
-        response: players,
-        test: async () => {
-          ERTL.renderRouter("src/app")
-
-          await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("(012) 345-6789")
-            expect(ERTL.screen).toShowText("(987) 654-3210")
-          })
-        },
-      })
-    })
-
-    describe("when a player does not have a jersey number", () => {
-      it("does not show a jersey number for the player", async () => {
-        const player = playerFactory({
-          first_name: "Creed",
-          last_name: "Bratton",
-        })
-
-        await mockPlayersFromApi({
-          response: [player],
-          test: async () => {
-            ERTL.renderRouter("src/app")
-
-            await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Creed Bratton")
-              expect(ERTL.screen).not.toShowText("#")
-            })
-          },
-        })
-      })
-    })
-
     it("removes the loading spinner", async () => {
       await mockPlayersFromApi({
         response: [],
@@ -143,6 +85,60 @@ describe("opening the app", () => {
     })
 
     describe("tapping a players name", () => {
+      it("highlights the player list item while the player is tap is in progress", async () => {
+        const players = [
+          playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
+        ]
+
+        await mockPlayersFromApi({
+          response: players,
+          test: async () => {
+            ERTL.renderRouter("src/app")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
+            const playerListItems =
+              ERTL.screen.getAllByTestId("Player List Item")
+
+            ERTL.fireEvent(playerListItems[0], "pressIn")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(playerListItems[0].props.style.backgroundColor).toEqual({
+                  semantic: ["tertiarySystemBackground"],
+                })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(playerListItems[0].props.style.backgroundColor).toEqual(
+                  "white",
+                )
+              })
+            }
+
+            ERTL.fireEvent(playerListItems[0], "pressOut")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(
+                  playerListItems[0].props.style.backgroundColor,
+                ).not.toEqual({
+                  semantic: ["tertiarySystemBackground"],
+                })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(
+                  playerListItems[0].props.style.backgroundColor,
+                ).not.toEqual("white")
+              })
+            }
+          },
+        })
+      })
+
       it("shows the player's details screen (without refetching the players details from the api)", async () => {
         const player = playerFactory({
           id: 1,

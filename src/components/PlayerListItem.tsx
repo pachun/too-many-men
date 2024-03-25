@@ -15,6 +15,8 @@ const PlayerListItem = ({
 }: PlayerListItemProps): React.ReactElement => {
   const theme = useTheme()
 
+  const [isTappingPlayer, setIsTappingPlayer] = React.useState(false)
+
   return (
     <ExpoRouter.Link href={`/players/${player.id}`} asChild>
       <ReactNative.Pressable
@@ -23,7 +25,14 @@ const PlayerListItem = ({
           paddingBottom: 15,
           paddingLeft,
           width: "100%",
+          ...(isTappingPlayer
+            ? {
+                backgroundColor: theme.colors.listItemTapHighlightColor,
+              }
+            : {}),
         }}
+        onPressIn={() => setIsTappingPlayer(true)}
+        onPressOut={() => setIsTappingPlayer(false)}
         testID="Player List Item"
       >
         <ReactNative.View

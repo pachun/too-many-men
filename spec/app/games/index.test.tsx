@@ -299,7 +299,7 @@ describe("viewing the games tab", () => {
         })
       })
 
-      it("highlights the game while the tap is in progress", async () => {
+      it("highlights the game list item while the tap is in progress", async () => {
         const game = gameFactory({
           id: 1,
           played_at: "2024-02-16T03:15:00Z",

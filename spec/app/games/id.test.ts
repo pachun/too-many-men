@@ -441,11 +441,6 @@ describe("viewing a game", () => {
         })
       })
 
-      // make the player list items highlight when tapped, like games - test both; fixes some coverage issues
-      // show the game scores on the game list page & this details screen - fixes broken tests & lint errors
-      // fix broken /games/index tests looking for dates whose labels were broken up - fixes broken tests
-      // update expo deps
-
       describe("when No is tapped", () => {
         it("shows an X icon by the players name in the attendance list", async () => {
           const playerId = 3
