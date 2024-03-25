@@ -273,7 +273,7 @@ describe("viewing the games tab", () => {
       })
     })
 
-    describe("tapping a game", () => {
+    describe("when a game is tapped", () => {
       it("shows the games details screen (without refetching the games details from the api)", async () => {
         const game = gameFactory({
           id: 1,
@@ -295,6 +295,60 @@ describe("viewing the games tab", () => {
               expect(ERTL.screen).toHavePathname("/games/1")
               expect(ERTL.screen).toShowText(gameDateWithWeekday(game))
             })
+          },
+        })
+      })
+
+      it("highlights the game while the tap is in progress", async () => {
+        const game = gameFactory({
+          id: 1,
+          played_at: "2024-02-16T03:15:00Z",
+        })
+
+        await mockGamesFromApi({
+          response: [game],
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "games" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
+            ERTL.fireEvent(ERTL.screen.getByText(gameTime(game)), "pressIn")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).toEqual({ semantic: ["tertiarySystemBackground"] })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).toEqual("white")
+              })
+            }
+
+            ERTL.fireEvent(ERTL.screen.getByText(gameTime(game)), "pressOut")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).not.toEqual({ semantic: ["tertiarySystemBackground"] })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).not.toEqual("white")
+              })
+            }
           },
         })
       })

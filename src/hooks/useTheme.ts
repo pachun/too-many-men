@@ -28,6 +28,13 @@ interface AppTheme extends ReactNavigationNative.Theme {
 
     // additions
     secondaryLabel: string
+    listItemTapHighlightColor: string
+    gameScoreBackgroundColor: {
+      Win: string
+      Loss: string
+      Tie: string
+      Unplayed: string
+    }
   }
 }
 
@@ -37,6 +44,16 @@ const lightTheme: AppTheme = {
     ...ReactNavigationNative.DefaultTheme.colors,
     primary: color({ ios: "systemPurple", other: "purple" }),
     secondaryLabel: color({ ios: "secondaryLabel", other: "gray" }),
+    listItemTapHighlightColor: color({
+      ios: "tertiarySystemBackground",
+      other: "white",
+    }),
+    gameScoreBackgroundColor: {
+      Win: color({ ios: "systemGreen", other: "green" }),
+      Loss: color({ ios: "systemRed", other: "red" }),
+      Tie: color({ ios: "systemGray", other: "gray" }),
+      Unplayed: "transparent",
+    },
   },
 }
 
@@ -46,6 +63,16 @@ const darkTheme: AppTheme = {
     ...ReactNavigationNative.DarkTheme.colors,
     primary: color({ ios: "systemPurple", other: "purple" }),
     secondaryLabel: color({ ios: "secondaryLabel", other: "gray" }),
+    listItemTapHighlightColor: color({
+      ios: "tertiarySystemBackground",
+      other: "black",
+    }),
+    gameScoreBackgroundColor: {
+      Win: color({ ios: "systemGreen", other: "green" }),
+      Loss: color({ ios: "systemRed", other: "red" }),
+      Tie: color({ ios: "systemGray", other: "gray" }),
+      Unplayed: "transparent",
+    },
   },
 }
 
