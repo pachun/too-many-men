@@ -43,8 +43,11 @@ const GameListItemDescription = ({
         <ReactNative.Text
           style={{ fontSize: 14, color: theme.colors.secondaryLabel }}
         >
-          {game.rink ? `${game.rink} ` : ""}
-          {game.is_home_team ? "Home" : "Away"}{" "}
+          <ReactNative.Text>{game.rink ? `${game.rink}` : ""}</ReactNative.Text>
+          {game.rink && <ReactNative.Text> </ReactNative.Text>}
+          <ReactNative.Text>
+            {game.is_home_team ? "Home" : "Away"}
+          </ReactNative.Text>
         </ReactNative.Text>
       </ReactNative.View>
     </ReactNative.View>

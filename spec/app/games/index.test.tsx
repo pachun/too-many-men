@@ -6,8 +6,11 @@ import gameFactory from "../../specHelpers/factories/game"
 import mockGamesFromApi from "../../specHelpers/mockGamesFromApi"
 import pullToRefresh from "../../specHelpers/pullToRefresh"
 
-const gameDate = (game: Game): string =>
-  DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
+const gameDay = (game: Game): string =>
+  DateFNS.format(DateFNS.parseISO(game.played_at), "d")
+
+const gameMonth = (game: Game): string =>
+  DateFNS.format(DateFNS.parseISO(game.played_at), "MMM")
 
 const gameDateWithWeekday = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
@@ -52,9 +55,11 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText(gameDate(games[0]))
+            expect(ERTL.screen).toShowText(gameMonth(games[0]))
+            expect(ERTL.screen).toShowText(gameDay(games[0]))
             expect(ERTL.screen).toShowText(gameTime(games[0]))
-            expect(ERTL.screen).toShowText(gameDate(games[1]))
+            expect(ERTL.screen).toShowText(gameMonth(games[1]))
+            expect(ERTL.screen).toShowText(gameDay(games[1]))
             expect(ERTL.screen).toShowText(gameTime(games[1]))
           })
         },
@@ -136,10 +141,8 @@ describe("viewing the games tab", () => {
             const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
 
             await ERTL.waitFor(() => {
-              expect(ERTL.within(gameListItems[0])).toShowText("v Scott's Tots")
-              expect(ERTL.within(gameListItems[1])).toShowText(
-                "v The Einsteins",
-              )
+              expect(ERTL.within(gameListItems[0])).toShowText("Scott's Tots")
+              expect(ERTL.within(gameListItems[1])).toShowText("The Einsteins")
             })
           },
         })
@@ -147,7 +150,7 @@ describe("viewing the games tab", () => {
     })
 
     describe("when the game has a score populated", () => {
-      it("shows the games scores in (green, red, and gray) for (wins, losses and ties), respectively", async () => {
+      it("shows the games scores and outcomes (win, loss, tie)", async () => {
         const games = [
           gameFactory({
             played_at: "2024-02-09T02:30:00Z",
@@ -178,29 +181,14 @@ describe("viewing the games tab", () => {
             const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
 
             await ERTL.waitFor(() => {
-              expect(ERTL.within(gameListItems[0])).toShowText("2 - 1 W")
-              expect(ERTL.within(gameListItems[1])).toShowText("0 - 3 L")
-              expect(ERTL.within(gameListItems[2])).toShowText("0 - 0 T")
+              expect(ERTL.within(gameListItems[0])).toShowText("W")
+              expect(ERTL.within(gameListItems[0])).toShowText("2-1")
 
-              const winLabelColor = ERTL.within(gameListItems[0]).getByText(
-                "2 - 1 W",
-              ).props.style.color
-              const lossLabelColor = ERTL.within(gameListItems[1]).getByText(
-                "0 - 3 L",
-              ).props.style.color
-              const tieLabelColor = ERTL.within(gameListItems[2]).getByText(
-                "0 - 0 T",
-              ).props.style.color
+              expect(ERTL.within(gameListItems[1])).toShowText("L")
+              expect(ERTL.within(gameListItems[1])).toShowText("0-3")
 
-              if (ReactNative.Platform.OS === "ios") {
-                expect(winLabelColor).toEqual({ semantic: ["systemGreen"] })
-                expect(lossLabelColor).toEqual({ semantic: ["systemRed"] })
-                expect(tieLabelColor).toEqual({ semantic: ["systemGray"] })
-              } else {
-                expect(winLabelColor).toEqual("green")
-                expect(lossLabelColor).toEqual("red")
-                expect(tieLabelColor).toEqual("gray")
-              }
+              expect(ERTL.within(gameListItems[2])).toShowText("T")
+              expect(ERTL.within(gameListItems[2])).toShowText("0-0")
             })
           },
         })
@@ -225,7 +213,7 @@ describe("viewing the games tab", () => {
             })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).not.toShowText(`v undefined`)
+              expect(ERTL.screen).not.toShowText("undefined")
             })
           },
         })
@@ -248,13 +236,15 @@ describe("viewing the games tab", () => {
 
           const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
 
+          expect(ERTL.within(gameListItems[0])).toShowText(gameDay(earlierGame))
           expect(ERTL.within(gameListItems[0])).toShowText(
-            gameDate(earlierGame),
+            gameMonth(earlierGame),
           )
           expect(ERTL.within(gameListItems[0])).toShowText(
             gameTime(earlierGame),
           )
-          expect(ERTL.within(gameListItems[1])).toShowText(gameDate(laterGame))
+          expect(ERTL.within(gameListItems[1])).toShowText(gameDay(laterGame))
+          expect(ERTL.within(gameListItems[1])).toShowText(gameMonth(laterGame))
           expect(ERTL.within(gameListItems[1])).toShowText(gameTime(laterGame))
         },
       })
@@ -289,7 +279,7 @@ describe("viewing the games tab", () => {
               expect(ERTL.screen).not.toShowTestId("Loading Spinner")
             })
 
-            ERTL.fireEvent.press(ERTL.screen.getByText(gameDate(game)))
+            ERTL.fireEvent.press(ERTL.screen.getByText(gameTime(game)))
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).toHavePathname("/games/1")
@@ -520,7 +510,8 @@ describe("viewing the games tab", () => {
               ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
               await ERTL.waitFor(() => {
-                expect(ERTL.screen).toShowText(gameDate(game))
+                expect(ERTL.screen).toShowText(gameDay(game))
+                expect(ERTL.screen).toShowText(gameMonth(game))
                 expect(ERTL.screen).toShowText(gameTime(game))
               })
             },
@@ -543,9 +534,11 @@ describe("viewing the games tab", () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText(gameDate(originalGames[0]))
+            expect(ERTL.screen).toShowText(gameDay(originalGames[0]))
+            expect(ERTL.screen).toShowText(gameMonth(originalGames[0]))
             expect(ERTL.screen).toShowText(gameTime(originalGames[0]))
-            expect(ERTL.screen).toShowText(gameDate(originalGames[1]))
+            expect(ERTL.screen).toShowText(gameDay(originalGames[1]))
+            expect(ERTL.screen).toShowText(gameMonth(originalGames[1]))
             expect(ERTL.screen).toShowText(gameTime(originalGames[1]))
           })
         },
@@ -562,9 +555,11 @@ describe("viewing the games tab", () => {
           await pullToRefresh("Game List")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText(gameDate(refreshedGames[0]))
+            expect(ERTL.screen).toShowText(gameDay(refreshedGames[0]))
+            expect(ERTL.screen).toShowText(gameMonth(refreshedGames[0]))
             expect(ERTL.screen).toShowText(gameTime(refreshedGames[0]))
-            expect(ERTL.screen).toShowText(gameDate(refreshedGames[1]))
+            expect(ERTL.screen).toShowText(gameDay(refreshedGames[1]))
+            expect(ERTL.screen).toShowText(gameMonth(refreshedGames[1]))
             expect(ERTL.screen).toShowText(gameTime(refreshedGames[1]))
           })
         },
@@ -584,9 +579,11 @@ describe("viewing the games tab", () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText(gameDate(games[0]))
+              expect(ERTL.screen).toShowText(gameDay(games[0]))
+              expect(ERTL.screen).toShowText(gameMonth(games[0]))
               expect(ERTL.screen).toShowText(gameTime(games[0]))
-              expect(ERTL.screen).toShowText(gameDate(games[1]))
+              expect(ERTL.screen).toShowText(gameDay(games[1]))
+              expect(ERTL.screen).toShowText(gameMonth(games[1]))
               expect(ERTL.screen).toShowText(gameTime(games[1]))
             })
           },
@@ -618,9 +615,11 @@ describe("viewing the games tab", () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText(gameDate(games[0]))
+              expect(ERTL.screen).toShowText(gameDay(games[0]))
+              expect(ERTL.screen).toShowText(gameMonth(games[0]))
               expect(ERTL.screen).toShowText(gameTime(games[0]))
-              expect(ERTL.screen).toShowText(gameDate(games[1]))
+              expect(ERTL.screen).toShowText(gameDay(games[1]))
+              expect(ERTL.screen).toShowText(gameMonth(games[1]))
               expect(ERTL.screen).toShowText(gameTime(games[1]))
             })
           },
@@ -632,9 +631,11 @@ describe("viewing the games tab", () => {
             await pullToRefresh("Game List")
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText(gameDate(games[0]))
+              expect(ERTL.screen).toShowText(gameDay(games[0]))
+              expect(ERTL.screen).toShowText(gameMonth(games[0]))
               expect(ERTL.screen).toShowText(gameTime(games[0]))
-              expect(ERTL.screen).toShowText(gameDate(games[1]))
+              expect(ERTL.screen).toShowText(gameDay(games[1]))
+              expect(ERTL.screen).toShowText(gameMonth(games[1]))
               expect(ERTL.screen).toShowText(gameTime(games[1]))
             })
           },
