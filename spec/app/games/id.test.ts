@@ -14,10 +14,18 @@ const gameDateWithWeekday = (game: Game): string =>
 //   DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
 
 const gamePlayedAtValue = ({
-  minutesInFuture,
+  minutesInFuture = 0,
+  secondsInFuture = 0,
 }: {
-  minutesInFuture: number
-}): string => DateFNS.formatISO(DateFNS.addMinutes(new Date(), minutesInFuture))
+  minutesInFuture?: number
+  secondsInFuture?: number
+}): string =>
+  DateFNS.formatISO(
+    DateFNS.addMinutes(
+      DateFNS.addSeconds(new Date(), secondsInFuture),
+      minutesInFuture,
+    ),
+  )
 
 describe("viewing a game", () => {
   afterEach(async () => {
@@ -272,6 +280,43 @@ describe("viewing a game", () => {
               expect(ERTL.screen).toShowText("Maybe")
             })
           },
+        })
+      })
+
+      describe("when the game starts", () => {
+        it("removes the Are You Going To This Game? question", async () => {
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", "3")
+
+          const game = gameFactory({
+            id: 3,
+            played_at: gamePlayedAtValue({ secondsInFuture: 1 }),
+          })
+
+          await mockGameFromApi({
+            gameId: 3,
+            response: game,
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                expect(ERTL.screen).toShowText("Are you going to this game?")
+                expect(ERTL.screen).toShowText("Yes")
+                expect(ERTL.screen).toShowText("No")
+                expect(ERTL.screen).toShowText("Maybe")
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowText(
+                  "Are you going to this game?",
+                )
+                expect(ERTL.screen).not.toShowText("Yes")
+                expect(ERTL.screen).not.toShowText("No")
+                expect(ERTL.screen).not.toShowText("Maybe")
+              })
+            },
+          })
         })
       })
 
@@ -965,6 +1010,63 @@ describe("viewing a game", () => {
                     ERTL.screen.getByTestId("Maybe Radio Button").props.style
                       .backgroundColor,
                   ).toEqual("yellow")
+                }
+              },
+            })
+          })
+        })
+
+        describe("when leaving the games details screen and entering another games details screen", () => {
+          it("does not change the Maybe selection on the details screen of the other game", async () => {
+            await AsyncStorage.setItem("API Token", "Faked API Token")
+            await AsyncStorage.setItem("User ID", "1")
+
+            const games = [
+              gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
+              }),
+              gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 60 }),
+              }),
+            ]
+
+            await mockGamesFromApi({
+              response: games,
+              test: async () => {
+                ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(
+                  ERTL.screen.getAllByTestId("Game List Item")[0],
+                )
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).toShowText("Maybe")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+
+                ERTL.fireEvent.press(
+                  ERTL.screen.getAllByTestId("Game List Item")[1],
+                )
+
+                if (ReactNative.Platform.OS === "ios") {
+                  await ERTL.waitFor(() => {
+                    expect(
+                      ERTL.screen.getByTestId("Maybe Radio Button").props.style
+                        .backgroundColor,
+                    ).not.toEqual({ semantic: ["systemYellow"] })
+                  })
+                } else {
+                  expect(
+                    ERTL.screen.getByTestId("Maybe Radio Button").props.style
+                      .backgroundColor,
+                  ).not.toEqual("yellow")
                 }
               },
             })

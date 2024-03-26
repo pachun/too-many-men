@@ -9,7 +9,10 @@ const useStateSyncedWithAsyncStorage = <T>(
 
   const setThingInStateAndAsyncStorage = async (thing: T): Promise<void> => {
     setThingInState(thing)
-    await AsyncStorage.setItem(asyncStorageKey, (thing || "").toString())
+    await AsyncStorage.setItem(
+      asyncStorageKey,
+      (thing as string | number).toString(),
+    )
   }
 
   React.useEffect(() => {
