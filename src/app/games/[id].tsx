@@ -8,10 +8,9 @@ import LabeledValue from "components/LabeledValue"
 import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
 import GameAttendanceList from "components/GameAttendanceList"
 import VerticalSpacing from "components/VerticalSpacing"
+import BackButtonWithTestId from "components/BackButonWithTestId"
 
 const Game = (): React.ReactElement => {
-  const router = ExpoRouter.useRouter()
-
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
 
   const game = useTheCachedGameFirstOrGetTheGameFromTheApi(gameId)
@@ -33,13 +32,7 @@ const Game = (): React.ReactElement => {
       <ExpoRouter.Stack.Screen
         options={{
           title: dateLabel,
-          headerLeft: () => (
-            <ReactNative.Button
-              title="Games"
-              testID="Back Button"
-              onPress={() => router.back()}
-            />
-          ),
+          headerLeft: () => <BackButtonWithTestId title="Games" />,
         }}
       />
       <ReactNative.ScrollView style={{ flex: 1 }}>

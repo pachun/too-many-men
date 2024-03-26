@@ -1,5 +1,4 @@
 import * as ERTL from "expo-router/testing-library"
-import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import gameFactory from "../../specHelpers/factories/game"

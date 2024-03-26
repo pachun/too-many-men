@@ -6,6 +6,7 @@ import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedPlayerFirstOrGetThePlayerFromTheApi from "hooks/useTheCachedPlayerFirstOrGetThePlayerFromTheApi"
 import PlayerAuthenticationFlow from "components/PlayerAuthenticationFlow"
 import LabeledValue from "components/LabeledValue"
+import BackButtonWithTestId from "components/BackButonWithTestId"
 
 const Player = (): React.ReactElement => {
   const { id: playerId } = ExpoRouter.useLocalSearchParams()
@@ -27,7 +28,12 @@ const Player = (): React.ReactElement => {
 
   return player ? (
     <>
-      <ExpoRouter.Stack.Screen options={{ title: navigationBarTitleLabel }} />
+      <ExpoRouter.Stack.Screen
+        options={{
+          title: navigationBarTitleLabel,
+          headerLeft: () => <BackButtonWithTestId title="Team" />,
+        }}
+      />
       <ReactNative.View style={{ flex: 1 }}>
         {player.phone_number && (
           <LabeledValue label="Phone" value={formattedPhoneNumberLabel} />
