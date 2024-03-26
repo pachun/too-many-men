@@ -6,6 +6,7 @@ import gameFactory from "../../specHelpers/factories/game"
 import mockGameFromApi from "../../specHelpers/mockGameFromApi"
 import type { Game } from "types/Game"
 import mockGamesFromApi from "../../specHelpers/mockGamesFromApi"
+import color from "helpers/color"
 
 const gameDateWithWeekday = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
@@ -365,19 +366,12 @@ describe("viewing a game", () => {
                 ).toShowTestId("Checkmark Icon")
               })
 
-              if (ReactNative.Platform.OS === "ios") {
-                await ERTL.waitFor(() => {
-                  expect(
-                    ERTL.screen.getByTestId("Yes Radio Button").props.style
-                      .backgroundColor,
-                  ).toEqual({ semantic: ["systemGreen"] })
-                })
-              } else {
+              await ERTL.waitFor(() => {
                 expect(
                   ERTL.screen.getByTestId("Yes Radio Button").props.style
                     .backgroundColor,
-                ).toEqual("green")
-              }
+                ).toEqual(color("green"))
+              })
             },
           })
         })
@@ -423,19 +417,12 @@ describe("viewing a game", () => {
               ERTL.userEvent.setup().press(ERTL.screen.getByText("No"))
               ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe"))
 
-              if (ReactNative.Platform.OS === "ios") {
-                await ERTL.waitFor(() => {
-                  expect(
-                    ERTL.screen.getByTestId("Yes Radio Button").props.style
-                      .backgroundColor,
-                  ).toEqual({ semantic: ["systemGreen"] })
-                })
-              } else {
+              await ERTL.waitFor(() => {
                 expect(
                   ERTL.screen.getByTestId("Yes Radio Button").props.style
                     .backgroundColor,
-                ).toEqual("green")
-              }
+                ).toEqual(color("green"))
+              })
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
@@ -476,19 +463,10 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
 
-                if (ReactNative.Platform.OS === "ios") {
-                  await ERTL.waitFor(() => {
-                    expect(
-                      ERTL.screen.getByTestId("Yes Radio Button").props.style
-                        .backgroundColor,
-                    ).toEqual({ semantic: ["systemGreen"] })
-                  })
-                } else {
-                  expect(
-                    ERTL.screen.getByTestId("Yes Radio Button").props.style
-                      .backgroundColor,
-                  ).toEqual("green")
-                }
+                expect(
+                  ERTL.screen.getByTestId("Yes Radio Button").props.style
+                    .backgroundColor,
+                ).toEqual(color("green"))
               },
             })
           })
@@ -533,19 +511,10 @@ describe("viewing a game", () => {
                   ERTL.screen.getAllByTestId("Game List Item")[1],
                 )
 
-                if (ReactNative.Platform.OS === "ios") {
-                  await ERTL.waitFor(() => {
-                    expect(
-                      ERTL.screen.getByTestId("Yes Radio Button").props.style
-                        .backgroundColor,
-                    ).not.toEqual({ semantic: ["systemGreen"] })
-                  })
-                } else {
-                  expect(
-                    ERTL.screen.getByTestId("Yes Radio Button").props.style
-                      .backgroundColor,
-                  ).not.toEqual("green")
-                }
+                expect(
+                  ERTL.screen.getByTestId("Yes Radio Button").props.style
+                    .backgroundColor,
+                ).not.toEqual(color("green"))
               },
             })
           })
@@ -719,19 +688,10 @@ describe("viewing a game", () => {
                 ).toShowTestId("X Icon")
               })
 
-              if (ReactNative.Platform.OS === "ios") {
-                await ERTL.waitFor(() => {
-                  expect(
-                    ERTL.screen.getByTestId("No Radio Button").props.style
-                      .backgroundColor,
-                  ).toEqual({ semantic: ["systemRed"] })
-                })
-              } else {
-                expect(
-                  ERTL.screen.getByTestId("No Radio Button").props.style
-                    .backgroundColor,
-                ).toEqual("red")
-              }
+              expect(
+                ERTL.screen.getByTestId("No Radio Button").props.style
+                  .backgroundColor,
+              ).toEqual(color("red"))
             },
           })
         })
@@ -768,19 +728,10 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
 
-                if (ReactNative.Platform.OS === "ios") {
-                  await ERTL.waitFor(() => {
-                    expect(
-                      ERTL.screen.getByTestId("No Radio Button").props.style
-                        .backgroundColor,
-                    ).toEqual({ semantic: ["systemRed"] })
-                  })
-                } else {
-                  expect(
-                    ERTL.screen.getByTestId("No Radio Button").props.style
-                      .backgroundColor,
-                  ).toEqual("red")
-                }
+                expect(
+                  ERTL.screen.getByTestId("No Radio Button").props.style
+                    .backgroundColor,
+                ).toEqual(color("red"))
               },
             })
           })
@@ -825,19 +776,10 @@ describe("viewing a game", () => {
                   ERTL.screen.getAllByTestId("Game List Item")[1],
                 )
 
-                if (ReactNative.Platform.OS === "ios") {
-                  await ERTL.waitFor(() => {
-                    expect(
-                      ERTL.screen.getByTestId("No Radio Button").props.style
-                        .backgroundColor,
-                    ).not.toEqual({ semantic: ["systemRed"] })
-                  })
-                } else {
-                  expect(
-                    ERTL.screen.getByTestId("No Radio Button").props.style
-                      .backgroundColor,
-                  ).not.toEqual("red")
-                }
+                expect(
+                  ERTL.screen.getByTestId("No Radio Button").props.style
+                    .backgroundColor,
+                ).not.toEqual(color("red"))
               },
             })
           })
@@ -1011,19 +953,10 @@ describe("viewing a game", () => {
                 ).toShowTestId("? Icon")
               })
 
-              if (ReactNative.Platform.OS === "ios") {
-                await ERTL.waitFor(() => {
-                  expect(
-                    ERTL.screen.getByTestId("Maybe Radio Button").props.style
-                      .backgroundColor,
-                  ).toEqual({ semantic: ["systemYellow"] })
-                })
-              } else {
-                expect(
-                  ERTL.screen.getByTestId("Maybe Radio Button").props.style
-                    .backgroundColor,
-                ).toEqual("yellow")
-              }
+              expect(
+                ERTL.screen.getByTestId("Maybe Radio Button").props.style
+                  .backgroundColor,
+              ).toEqual(color("yellow"))
             },
           })
         })
@@ -1060,19 +993,10 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
 
-                if (ReactNative.Platform.OS === "ios") {
-                  await ERTL.waitFor(() => {
-                    expect(
-                      ERTL.screen.getByTestId("Maybe Radio Button").props.style
-                        .backgroundColor,
-                    ).toEqual({ semantic: ["systemYellow"] })
-                  })
-                } else {
-                  expect(
-                    ERTL.screen.getByTestId("Maybe Radio Button").props.style
-                      .backgroundColor,
-                  ).toEqual("yellow")
-                }
+                expect(
+                  ERTL.screen.getByTestId("Maybe Radio Button").props.style
+                    .backgroundColor,
+                ).toEqual(color("yellow"))
               },
             })
           })
@@ -1117,19 +1041,10 @@ describe("viewing a game", () => {
                   ERTL.screen.getAllByTestId("Game List Item")[1],
                 )
 
-                if (ReactNative.Platform.OS === "ios") {
-                  await ERTL.waitFor(() => {
-                    expect(
-                      ERTL.screen.getByTestId("Maybe Radio Button").props.style
-                        .backgroundColor,
-                    ).not.toEqual({ semantic: ["systemYellow"] })
-                  })
-                } else {
-                  expect(
-                    ERTL.screen.getByTestId("Maybe Radio Button").props.style
-                      .backgroundColor,
-                  ).not.toEqual("yellow")
-                }
+                expect(
+                  ERTL.screen.getByTestId("Maybe Radio Button").props.style
+                    .backgroundColor,
+                ).not.toEqual(color("yellow"))
               },
             })
           })
