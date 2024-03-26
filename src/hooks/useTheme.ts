@@ -2,18 +2,8 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as ReactNavigationNative from "@react-navigation/native"
 import type { ColorScheme } from "types/ColorScheme"
-
-export const color = ({
-  ios,
-  other,
-}: {
-  ios: string
-  other: string
-}): string => {
-  return ReactNative.Platform.OS === "ios"
-    ? (ReactNative.PlatformColor(ios) as unknown as string)
-    : other
-}
+import iosSystemColorWithOtherPlatformAlternative from "helpers/iosSystemColorWithOtherPlatformAlternative"
+import color from "helpers/color"
 
 export interface AppTheme extends ReactNavigationNative.Theme {
   // https://reactnavigation.org/docs/themes/#basic-usage
@@ -49,21 +39,24 @@ const lightTheme: AppTheme = {
   ...ReactNavigationNative.DefaultTheme,
   colors: {
     ...ReactNavigationNative.DefaultTheme.colors,
-    primary: color({ ios: "systemPurple", other: "purple" }),
-    secondaryLabel: color({ ios: "secondaryLabel", other: "gray" }),
-    listItemTapHighlightColor: color({
+    primary: color("purple"),
+    secondaryLabel: iosSystemColorWithOtherPlatformAlternative({
+      ios: "secondaryLabel",
+      otherPlatforms: "gray", // TODO: unsure about this android color
+    }),
+    listItemTapHighlightColor: iosSystemColorWithOtherPlatformAlternative({
       ios: "tertiarySystemBackground",
-      other: "white",
+      otherPlatforms: "white", // TODO: unsure about this android color
     }),
     gameScoreBackgroundColor: {
-      Win: color({ ios: "systemGreen", other: "green" }),
-      Loss: color({ ios: "systemRed", other: "red" }),
-      Tie: color({ ios: "systemGray", other: "gray" }),
+      Win: color("green"),
+      Loss: color("red"),
+      Tie: color("gray"),
       Unplayed: "transparent",
     },
-    foregroundItemBackgroundColor: color({
+    foregroundItemBackgroundColor: iosSystemColorWithOtherPlatformAlternative({
       ios: "tertiarySystemBackground",
-      other: "transparent", // TODO: discover this when testing on android
+      otherPlatforms: "transparent", // TODO: discover this when testing on android
     }),
   },
   foregroundItemWidth: "92%",
@@ -78,21 +71,24 @@ const darkTheme: AppTheme = {
   ...ReactNavigationNative.DarkTheme,
   colors: {
     ...ReactNavigationNative.DarkTheme.colors,
-    primary: color({ ios: "systemPurple", other: "purple" }),
-    secondaryLabel: color({ ios: "secondaryLabel", other: "gray" }),
-    listItemTapHighlightColor: color({
+    primary: color("purple"),
+    secondaryLabel: iosSystemColorWithOtherPlatformAlternative({
+      ios: "secondaryLabel",
+      otherPlatforms: "gray", // TODO: check this on android
+    }),
+    listItemTapHighlightColor: iosSystemColorWithOtherPlatformAlternative({
       ios: "tertiarySystemBackground",
-      other: "black",
+      otherPlatforms: "black", // TODO: check this on android
     }),
     gameScoreBackgroundColor: {
-      Win: color({ ios: "systemGreen", other: "green" }),
-      Loss: color({ ios: "systemRed", other: "red" }),
-      Tie: color({ ios: "systemGray", other: "gray" }),
+      Win: color("green"),
+      Loss: color("red"),
+      Tie: color("gray"),
       Unplayed: "transparent",
     },
-    foregroundItemBackgroundColor: color({
+    foregroundItemBackgroundColor: iosSystemColorWithOtherPlatformAlternative({
       ios: "tertiarySystemBackground",
-      other: "transparent", // TODO: discover this when testing on android
+      otherPlatforms: "transparent", // TODO: discover this when testing on android
     }),
   },
   foregroundItemWidth: "92%",
@@ -103,7 +99,7 @@ const darkTheme: AppTheme = {
   fontSize: 20,
 }
 
-// We don't test other color schemes; it doesn't seem worth the effort.
+// We don't test otherPlatforms color schemes; it doesn't seem worth the effort.
 // By default, only light is tested.
 //* c8 ignore start */
 const themeFromColorScheme = (colorScheme: ColorScheme): AppTheme => {

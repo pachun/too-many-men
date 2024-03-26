@@ -3,7 +3,6 @@ import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import RadioButton from "components/RadioButton"
 import useIsSignedIn from "hooks/useIsSignedIn"
-import { color } from "hooks/useTheme" // put color in its own helper file AppPlatformColor or something
 import useRefreshableGames from "hooks/useRefreshableGames"
 import useEffectEverySecond from "hooks/useEffectEverySecond"
 import setUserRespondedYesToAttendingGame from "updaters/setUserRespondedYesToAttendingGame"
@@ -14,6 +13,7 @@ import useUserId from "hooks/useUserId"
 import ForegroundItem from "./ForegroundItem"
 import AppText from "./AppText"
 import VerticalSpacing from "./VerticalSpacing"
+import color from "helpers/color"
 
 const isTheGameInTheFuture = (game: Game): boolean => {
   const currentTime = new Date()
@@ -110,19 +110,19 @@ const AreYouGoingToThisGame = ({
           style={{ flexDirection: "row", justifyContent: "space-between" }}
         >
           <RadioButton
-            color={color({ ios: "systemGreen", other: "green" })}
+            color={color("green")}
             label="Yes"
             selected={areYouGoingToThisGameAnswer === "Yes"}
             onPress={() => updateAreYouGoingToThisGame("Yes")}
           />
           <RadioButton
-            color={color({ ios: "systemRed", other: "red" })}
+            color={color("red")}
             label="No"
             selected={areYouGoingToThisGameAnswer === "No"}
             onPress={() => updateAreYouGoingToThisGame("No")}
           />
           <RadioButton
-            color={color({ ios: "systemYellow", other: "yellow" })}
+            color={color("yellow")}
             label="Maybe"
             selected={areYouGoingToThisGameAnswer === "Maybe"}
             onPress={() => updateAreYouGoingToThisGame("Maybe")}
