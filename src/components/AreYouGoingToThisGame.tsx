@@ -1,28 +1,18 @@
 import React from "react"
-import useTheme from "hooks/useTheme"
+import useTheme, { color } from "hooks/useTheme"
 import * as ReactNative from "react-native"
 import RadioButton from "./RadioButton"
 
 interface AreYouGoingToThisGameProps {
   onChange: (yesNoOrMaybe: "Yes" | "No" | "Maybe") => void
+  value: "Yes" | "No" | "Maybe" | undefined
 }
 
 const AreYouGoingToThisGame = ({
   onChange,
+  value,
 }: AreYouGoingToThisGameProps): React.ReactElement => {
   const theme = useTheme()
-
-  const [selected, setSelected] = React.useState<
-    "Yes" | "No" | "Maybe" | undefined
-  >()
-
-  const onSelection = React.useCallback(
-    (selection: "Yes" | "No" | "Maybe") => () => {
-      setSelected(selection)
-      onChange(selection)
-    },
-    [onChange],
-  )
 
   return (
     <ReactNative.View style={{ width: "100%", alignItems: "center" }}>
@@ -49,22 +39,22 @@ const AreYouGoingToThisGame = ({
           style={{ flexDirection: "row", justifyContent: "space-between" }}
         >
           <RadioButton
-            color="green"
+            color={color({ ios: "systemGreen", other: "green" })}
             label="Yes"
-            selected={selected === "Yes"}
-            onPress={onSelection("Yes")}
+            selected={value === "Yes"}
+            onPress={() => onChange("Yes")}
           />
           <RadioButton
-            color="red"
+            color={color({ ios: "systemRed", other: "red" })}
             label="No"
-            selected={selected === "No"}
-            onPress={onSelection("No")}
+            selected={value === "No"}
+            onPress={() => onChange("No")}
           />
           <RadioButton
-            color="yellow"
+            color={color({ ios: "systemYellow", other: "yellow" })}
             label="Maybe"
-            selected={selected === "Maybe"}
-            onPress={onSelection("Maybe")}
+            selected={value === "Maybe"}
+            onPress={() => onChange("Maybe")}
           />
         </ReactNative.View>
       </ReactNative.View>

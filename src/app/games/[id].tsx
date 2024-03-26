@@ -15,6 +15,8 @@ import setUserRespondedNoToAttendingGame from "updaters/setUserRespondedNoToAtte
 import setUserRespondedMaybeToAttendingGame from "updaters/setUserRespondedMaybeToAttendingGame"
 
 const Game = (): React.ReactElement => {
+  const router = ExpoRouter.useRouter()
+
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
 
   const game = useTheCachedGameFirstOrGetTheGameFromTheApi(gameId)
@@ -38,18 +40,49 @@ const Game = (): React.ReactElement => {
   const shouldShowThe_AreYouGoingToThisGame_Question =
     useShouldShowThe_AreYouGoingToThisGame_Question(game)
 
-  const onPlayerAttendanceUpdate = React.useCallback(
+  const areYouGoingToThisGameAnswer = React.useMemo(():
+    | "Yes"
+    | "No"
+    | "Maybe"
+    | undefined => {
+    if (
+      userId &&
+      game?.ids_of_players_who_responded_yes_to_attending.includes(userId)
+    ) {
+      return "Yes"
+    } else if (
+      userId &&
+      game?.ids_of_players_who_responded_no_to_attending.includes(userId)
+    ) {
+      return "No"
+    } else if (
+      userId &&
+      game?.ids_of_players_who_responded_maybe_to_attending.includes(userId)
+    ) {
+      return "Maybe"
+    }
+    return undefined
+  }, [
+    userId,
+    game?.ids_of_players_who_responded_yes_to_attending,
+    game?.ids_of_players_who_responded_no_to_attending,
+    game?.ids_of_players_who_responded_maybe_to_attending,
+  ])
+
+  const updateAreYouGoingToThisGame = React.useCallback(
     (playerAttendance: "Yes" | "No" | "Maybe") => {
       switch (playerAttendance) {
         case "Yes":
-          setRefreshableGames(setUserRespondedYesToAttendingGame(userId, game))
+          setRefreshableGames(
+            setUserRespondedYesToAttendingGame(userId!, game!),
+          )
           break
         case "No":
-          setRefreshableGames(setUserRespondedNoToAttendingGame(userId, game))
+          setRefreshableGames(setUserRespondedNoToAttendingGame(userId!, game!))
           break
         case "Maybe":
           setRefreshableGames(
-            setUserRespondedMaybeToAttendingGame(userId, game),
+            setUserRespondedMaybeToAttendingGame(userId!, game!),
           )
           break
       }
@@ -59,12 +92,26 @@ const Game = (): React.ReactElement => {
 
   return game ? (
     <>
-      <ExpoRouter.Stack.Screen options={{ title: dateLabel }} />
+      <ExpoRouter.Stack.Screen
+        options={{
+          title: dateLabel,
+          headerLeft: () => (
+            <ReactNative.Button
+              title="Games"
+              testID="Go Back"
+              onPress={() => router.back()}
+            />
+          ),
+        }}
+      />
       <ReactNative.ScrollView style={{ flex: 1 }}>
         {shouldShowThe_AreYouGoingToThisGame_Question && (
           <>
             <ReactNative.View style={{ height: 20 }} />
-            <AreYouGoingToThisGame onChange={onPlayerAttendanceUpdate} />
+            <AreYouGoingToThisGame
+              onChange={updateAreYouGoingToThisGame}
+              value={areYouGoingToThisGameAnswer}
+            />
           </>
         )}
         <ReactNative.View style={{ height: 20 }} />
