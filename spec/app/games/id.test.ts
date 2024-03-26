@@ -472,7 +472,7 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
 
                 ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
 
@@ -527,7 +527,7 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
 
                 ERTL.fireEvent.press(
                   ERTL.screen.getAllByTestId("Game List Item")[1],
@@ -764,7 +764,7 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("No"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
 
                 ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
 
@@ -819,7 +819,7 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("No"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
 
                 ERTL.fireEvent.press(
                   ERTL.screen.getAllByTestId("Game List Item")[1],
@@ -1056,7 +1056,7 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
 
                 ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
 
@@ -1111,7 +1111,7 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
 
                 ERTL.fireEvent.press(
                   ERTL.screen.getAllByTestId("Game List Item")[1],

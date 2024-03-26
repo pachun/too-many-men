@@ -36,7 +36,7 @@ const Game = (): React.ReactElement => {
           headerLeft: () => (
             <ReactNative.Button
               title="Games"
-              testID="Go Back"
+              testID="Back Button"
               onPress={() => router.back()}
             />
           ),
