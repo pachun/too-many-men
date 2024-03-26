@@ -10,9 +10,7 @@ const Games = (): React.ReactElement => {
 
   return (
     <>
-      <ExpoRouter.Stack.Screen
-        options={{ title: "Games", headerBackAccessibilityLabel: "Go back" }}
-      />
+      <ExpoRouter.Stack.Screen options={{ title: "Games" }} />
       <RefreshableResourceList<Game>
         resourceApiPath="/games"
         refreshableResources={refreshableGames}

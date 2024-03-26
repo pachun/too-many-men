@@ -29,13 +29,12 @@ const Player = (): React.ReactElement => {
     <>
       <ExpoRouter.Stack.Screen options={{ title: navigationBarTitleLabel }} />
       <ReactNative.View style={{ flex: 1 }}>
-        <ReactNative.View style={{ height: 20 }} />
         {player.phone_number && (
           <LabeledValue label="Phone" value={formattedPhoneNumberLabel} />
         )}
-        <ReactNative.View style={{ height: 20 }} />
-        <LabeledValue label="Jersey" value={formattedJerseyNumberLabel} />
-        <ReactNative.View style={{ height: 20 }} />
+        {player.jersey_number && (
+          <LabeledValue label="Jersey" value={formattedJerseyNumberLabel} />
+        )}
         <PlayerAuthenticationFlow player={player} />
       </ReactNative.View>
     </>

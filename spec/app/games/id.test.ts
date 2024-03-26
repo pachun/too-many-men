@@ -382,6 +382,68 @@ describe("viewing a game", () => {
           })
         })
 
+        it("shows a mini loading spinner and disables the Yes, No, Maybe radio buttons while the request is in flight", async () => {
+          const playerId = 3
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: 1,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+              {
+                id: 2,
+                first_name: "Dwight",
+                last_name: "Schrute",
+              },
+            ],
+          })
+
+          await mockGameFromApi({
+            gameId: 1,
+            response: game,
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes"))
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
+              })
+
+              ERTL.userEvent.setup().press(ERTL.screen.getByText("No"))
+              ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe"))
+
+              if (ReactNative.Platform.OS === "ios") {
+                await ERTL.waitFor(() => {
+                  expect(
+                    ERTL.screen.getByTestId("Yes Radio Button").props.style
+                      .backgroundColor,
+                  ).toEqual({ semantic: ["systemGreen"] })
+                })
+              } else {
+                expect(
+                  ERTL.screen.getByTestId("Yes Radio Button").props.style
+                    .backgroundColor,
+                ).toEqual("green")
+              }
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+              })
+            },
+          })
+        })
+
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the Yes selection", async () => {
             await AsyncStorage.setItem("API Token", "Faked API Token")

@@ -3,7 +3,6 @@ import * as ReactNative from "react-native"
 import * as Animatable from "react-native-animatable"
 import * as Haptics from "expo-haptics"
 import useTheme from "hooks/useTheme"
-import { color as colorForPlatform } from "hooks/useTheme"
 
 interface RadioButtonProps {
   color: string

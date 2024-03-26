@@ -1,5 +1,5 @@
-import useTheme from "hooks/useTheme"
-import * as ReactNative from "react-native"
+import AppText from "components/AppText"
+import ForegroundItem from "./ForegroundItem"
 
 interface LabeledValueProps {
   label: string
@@ -10,39 +10,16 @@ const LabeledValue = ({
   label,
   value,
 }: LabeledValueProps): React.ReactElement => {
-  const theme = useTheme()
-
   return (
-    <ReactNative.View style={{ width: "100%", alignItems: "center" }}>
-      <ReactNative.View
-        style={{
-          width: "96%",
-          paddingLeft: 10,
-          paddingRight: 10,
-          paddingTop: 20,
-          paddingBottom: 20,
-          borderRadius: 5,
-          backgroundColor: ReactNative.PlatformColor(
-            "tertiarySystemBackground",
-          ),
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <ReactNative.Text style={{ color: theme.colors.text, fontSize: 20 }}>
-          {label}
-        </ReactNative.Text>
-        <ReactNative.Text
-          style={{
-            color: theme.colors.text,
-            fontSize: 20,
-            fontWeight: "bold",
-          }}
-        >
-          {value}
-        </ReactNative.Text>
-      </ReactNative.View>
-    </ReactNative.View>
+    <ForegroundItem
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }}
+    >
+      <AppText>{label}</AppText>
+      <AppText bold>{value}</AppText>
+    </ForegroundItem>
   )
 }
 

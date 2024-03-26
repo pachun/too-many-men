@@ -3,6 +3,9 @@ import * as ReactNative from "react-native"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
 import GameAttendanceListItem from "./GameAttendanceListItem"
+import VerticalSpacing from "./VerticalSpacing"
+import ForegroundItem from "./ForegroundItem"
+import AppText from "./AppText"
 
 const ListSeparator = (): React.ReactElement => {
   const theme = useTheme()
@@ -30,46 +33,27 @@ interface GameAttendanceListProps {
 const GameAttendanceList = ({
   game,
 }: GameAttendanceListProps): React.ReactElement => {
-  const theme = useTheme()
-
   const players = React.useMemo(() => game.players, [game.players])
 
   const isLastPlayer = (index: number): boolean => index === players.length - 1
 
   return (
-    <ReactNative.View style={{ width: "100%", alignItems: "center" }}>
-      <ReactNative.View
-        style={{
-          width: "96%",
-          paddingLeft: 10,
-          paddingRight: 10,
-          paddingTop: 20,
-          paddingBottom: 20,
-          borderRadius: 5,
-          backgroundColor: ReactNative.PlatformColor(
-            "tertiarySystemBackground",
+    <ForegroundItem>
+      <AppText bold style={{ textAlign: "right" }}>
+        Attendance
+      </AppText>
+      <VerticalSpacing />
+      <>
+        {players.map(
+          (player, index): React.ReactElement => (
+            <ReactNative.View key={player.id}>
+              <GameAttendanceListItem player={player} game={game} />
+              {isLastPlayer(index) ? null : <ListSeparator />}
+            </ReactNative.View>
           ),
-        }}
-      >
-        <ReactNative.Text
-          style={{
-            fontSize: 20,
-            textAlign: "right",
-            color: theme.colors.text,
-            fontWeight: "bold",
-            marginBottom: 20,
-          }}
-        >
-          Attendance
-        </ReactNative.Text>
-        {players.map((player, index) => (
-          <ReactNative.View key={player.id}>
-            <GameAttendanceListItem player={player} game={game} />
-            {isLastPlayer(index) ? null : <ListSeparator />}
-          </ReactNative.View>
-        ))}
-      </ReactNative.View>
-    </ReactNative.View>
+        )}
+      </>
+    </ForegroundItem>
   )
 }
 

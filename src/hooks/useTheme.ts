@@ -15,7 +15,7 @@ export const color = ({
     : other
 }
 
-interface AppTheme extends ReactNavigationNative.Theme {
+export interface AppTheme extends ReactNavigationNative.Theme {
   // https://reactnavigation.org/docs/themes/#basic-usage
   dark: boolean
   colors: {
@@ -35,7 +35,14 @@ interface AppTheme extends ReactNavigationNative.Theme {
       Tie: string
       Unplayed: string
     }
+    foregroundItemBackgroundColor: string
   }
+  foregroundItemWidth: "92%"
+  foregroundItemHorizontalPadding: 15
+  foregroundItemVerticalPadding: 20
+  foregroundItemVerticalMargin: 20
+  foregroundItemBorderRadius: 5
+  fontSize: 20
 }
 
 const lightTheme: AppTheme = {
@@ -54,7 +61,17 @@ const lightTheme: AppTheme = {
       Tie: color({ ios: "systemGray", other: "gray" }),
       Unplayed: "transparent",
     },
+    foregroundItemBackgroundColor: color({
+      ios: "tertiarySystemBackground",
+      other: "transparent", // TODO: discover this when testing on android
+    }),
   },
+  foregroundItemWidth: "92%",
+  foregroundItemHorizontalPadding: 15,
+  foregroundItemVerticalPadding: 20,
+  foregroundItemVerticalMargin: 20,
+  foregroundItemBorderRadius: 5,
+  fontSize: 20,
 }
 
 const darkTheme: AppTheme = {
@@ -73,7 +90,17 @@ const darkTheme: AppTheme = {
       Tie: color({ ios: "systemGray", other: "gray" }),
       Unplayed: "transparent",
     },
+    foregroundItemBackgroundColor: color({
+      ios: "tertiarySystemBackground",
+      other: "transparent", // TODO: discover this when testing on android
+    }),
   },
+  foregroundItemWidth: "92%",
+  foregroundItemHorizontalPadding: 15,
+  foregroundItemVerticalPadding: 20,
+  foregroundItemVerticalMargin: 20,
+  foregroundItemBorderRadius: 5,
+  fontSize: 20,
 }
 
 // We don't test other color schemes; it doesn't seem worth the effort.

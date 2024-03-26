@@ -6,13 +6,8 @@ import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameFirstOrGetTheGameFromTheApi"
 import LabeledValue from "components/LabeledValue"
 import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
-import useShouldShowThe_AreYouGoingToThisGame_Question from "hooks/useShouldShowThe_AreYouGoingToThisGame_Question"
 import GameAttendanceList from "components/GameAttendanceList"
-import useRefreshableGames from "hooks/useRefreshableGames"
-import useUserId from "hooks/useUserId"
-import setUserRespondedYesToAttendingGame from "updaters/setUserRespondedYesToAttendingGame"
-import setUserRespondedNoToAttendingGame from "updaters/setUserRespondedNoToAttendingGame"
-import setUserRespondedMaybeToAttendingGame from "updaters/setUserRespondedMaybeToAttendingGame"
+import VerticalSpacing from "components/VerticalSpacing"
 
 const Game = (): React.ReactElement => {
   const router = ExpoRouter.useRouter()
@@ -20,10 +15,6 @@ const Game = (): React.ReactElement => {
   const { id: gameId } = ExpoRouter.useLocalSearchParams()
 
   const game = useTheCachedGameFirstOrGetTheGameFromTheApi(gameId)
-
-  const { setRefreshableGames } = useRefreshableGames()
-
-  const { userId } = useUserId()
 
   const dateLabel = React.useMemo((): string => {
     return game?.played_at
@@ -36,59 +27,6 @@ const Game = (): React.ReactElement => {
       ? DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
       : ""
   }, [game])
-
-  const shouldShowThe_AreYouGoingToThisGame_Question =
-    useShouldShowThe_AreYouGoingToThisGame_Question(game)
-
-  const areYouGoingToThisGameAnswer = React.useMemo(():
-    | "Yes"
-    | "No"
-    | "Maybe"
-    | undefined => {
-    if (
-      userId &&
-      game?.ids_of_players_who_responded_yes_to_attending.includes(userId)
-    ) {
-      return "Yes"
-    } else if (
-      userId &&
-      game?.ids_of_players_who_responded_no_to_attending.includes(userId)
-    ) {
-      return "No"
-    } else if (
-      userId &&
-      game?.ids_of_players_who_responded_maybe_to_attending.includes(userId)
-    ) {
-      return "Maybe"
-    }
-    return undefined
-  }, [
-    userId,
-    game?.ids_of_players_who_responded_yes_to_attending,
-    game?.ids_of_players_who_responded_no_to_attending,
-    game?.ids_of_players_who_responded_maybe_to_attending,
-  ])
-
-  const updateAreYouGoingToThisGame = React.useCallback(
-    (playerAttendance: "Yes" | "No" | "Maybe") => {
-      switch (playerAttendance) {
-        case "Yes":
-          setRefreshableGames(
-            setUserRespondedYesToAttendingGame(userId!, game!),
-          )
-          break
-        case "No":
-          setRefreshableGames(setUserRespondedNoToAttendingGame(userId!, game!))
-          break
-        case "Maybe":
-          setRefreshableGames(
-            setUserRespondedMaybeToAttendingGame(userId!, game!),
-          )
-          break
-      }
-    },
-    [game, userId, setRefreshableGames],
-  )
 
   return game ? (
     <>
@@ -105,39 +43,19 @@ const Game = (): React.ReactElement => {
         }}
       />
       <ReactNative.ScrollView style={{ flex: 1 }}>
-        {shouldShowThe_AreYouGoingToThisGame_Question && (
-          <>
-            <ReactNative.View style={{ height: 20 }} />
-            <AreYouGoingToThisGame
-              onChange={updateAreYouGoingToThisGame}
-              value={areYouGoingToThisGameAnswer}
-            />
-          </>
-        )}
-        <ReactNative.View style={{ height: 20 }} />
+        <AreYouGoingToThisGame game={game} />
         <LabeledValue label="Day" value={dateLabel} />
-        <ReactNative.View style={{ height: 20 }} />
         <LabeledValue label="Time" value={timeLabel} />
-        {game.rink && (
-          <>
-            <ReactNative.View style={{ height: 20 }} />
-            <LabeledValue label="Rink" value={game.rink} />
-          </>
-        )}
+        {game.rink && <LabeledValue label="Rink" value={game.rink} />}
         {game.opposing_teams_name && (
-          <>
-            <ReactNative.View style={{ height: 20 }} />
-            <LabeledValue label="Opponent" value={game.opposing_teams_name} />
-          </>
+          <LabeledValue label="Opponent" value={game.opposing_teams_name} />
         )}
-        <ReactNative.View style={{ height: 20 }} />
         <LabeledValue
           label="Home or Away"
           value={game.is_home_team ? "Home" : "Away"}
         />
-        <ReactNative.View style={{ height: 20 }} />
         <GameAttendanceList game={game} />
-        <ReactNative.View style={{ height: 20 }} />
+        <VerticalSpacing />
       </ReactNative.ScrollView>
     </>
   ) : (
