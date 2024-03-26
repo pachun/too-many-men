@@ -387,6 +387,63 @@ describe("viewing a game", () => {
           })
         })
 
+        describe("when leaving the games details screen and entering another games details screen", () => {
+          it("does not change the Yes selection on the details screen of the other game", async () => {
+            await AsyncStorage.setItem("API Token", "Faked API Token")
+            await AsyncStorage.setItem("User ID", "1")
+
+            const games = [
+              gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
+              }),
+              gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 60 }),
+              }),
+            ]
+
+            await mockGamesFromApi({
+              response: games,
+              test: async () => {
+                ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(
+                  ERTL.screen.getAllByTestId("Game List Item")[0],
+                )
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).toShowText("Yes")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+
+                ERTL.fireEvent.press(
+                  ERTL.screen.getAllByTestId("Game List Item")[1],
+                )
+
+                if (ReactNative.Platform.OS === "ios") {
+                  await ERTL.waitFor(() => {
+                    expect(
+                      ERTL.screen.getByTestId("Yes Radio Button").props.style
+                        .backgroundColor,
+                    ).not.toEqual({ semantic: ["systemGreen"] })
+                  })
+                } else {
+                  expect(
+                    ERTL.screen.getByTestId("Yes Radio Button").props.style
+                      .backgroundColor,
+                  ).not.toEqual("green")
+                }
+              },
+            })
+          })
+        })
+
         describe("when No is tapped after tapping Yes", () => {
           it("removes the checkmark icon by the players name in the attendance list", async () => {
             const playerId = 3
@@ -616,6 +673,63 @@ describe("viewing a game", () => {
                     ERTL.screen.getByTestId("No Radio Button").props.style
                       .backgroundColor,
                   ).toEqual("red")
+                }
+              },
+            })
+          })
+        })
+
+        describe("when leaving the games details screen and entering another games details screen", () => {
+          it("does not change the No selection on the details screen of the other game", async () => {
+            await AsyncStorage.setItem("API Token", "Faked API Token")
+            await AsyncStorage.setItem("User ID", "1")
+
+            const games = [
+              gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
+              }),
+              gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 60 }),
+              }),
+            ]
+
+            await mockGamesFromApi({
+              response: games,
+              test: async () => {
+                ERTL.renderRouter("src/app", { initialUrl: "/games" })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(
+                  ERTL.screen.getAllByTestId("Game List Item")[0],
+                )
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).toShowText("No")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+
+                ERTL.fireEvent.press(ERTL.screen.getByTestId("Go Back"))
+
+                ERTL.fireEvent.press(
+                  ERTL.screen.getAllByTestId("Game List Item")[1],
+                )
+
+                if (ReactNative.Platform.OS === "ios") {
+                  await ERTL.waitFor(() => {
+                    expect(
+                      ERTL.screen.getByTestId("No Radio Button").props.style
+                        .backgroundColor,
+                    ).not.toEqual({ semantic: ["systemRed"] })
+                  })
+                } else {
+                  expect(
+                    ERTL.screen.getByTestId("No Radio Button").props.style
+                      .backgroundColor,
+                  ).not.toEqual("red")
                 }
               },
             })
