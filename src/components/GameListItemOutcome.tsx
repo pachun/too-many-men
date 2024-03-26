@@ -41,7 +41,7 @@ const GameListItemOutcome = ({
       <ReactNative.View
         style={{
           backgroundColor: gameScoreColor,
-          width: 60,
+          width: 66,
           borderRadius: 5,
           alignItems: "center",
           justifyContent: "center",
