@@ -2215,6 +2215,53 @@ describe("viewing a game", () => {
           })
         })
 
+        describe("when Maybe is tapped a second time in a row", () => {
+          it("does not send a duplicate API request", async () => {
+            const player = playerFactory({})
+
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
+
+            const game = gameFactory({
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [player],
+            })
+
+            await mockApi({
+              mockedRequests: [
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(
+                  game,
+                  playerApiToken,
+                  "Maybe",
+                ),
+              ],
+              test: async () => {
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+              },
+            })
+          })
+        })
+
         describe("when Yes is tapped after tapping Maybe", () => {
           it("removes the ? icon by the players name in the attendance list", async () => {
             const player = playerFactory({})

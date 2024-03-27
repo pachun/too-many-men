@@ -173,37 +173,39 @@ const AreYouGoingToThisGame = ({
           await (async (): Promise<void> => {
             const usersPreviousResponseToAttendingGame =
               getUsersResponseToAttendingGame(userId!, game)
-            setRefreshableGames(
-              setUsersResponseToAttendingGame(userId!, game, "Maybe"),
-            )
-            setIsWaitingForApiResponse(true)
-            try {
-              await fetch(
-                `${Config.apiUrl}/games/${game.id}/player_attendance`,
-                {
-                  method: "POST",
-                  headers: {
-                    "ApiToken": apiToken!,
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Maybe" }),
-                },
-              )
-            } catch {
+            if (usersPreviousResponseToAttendingGame !== "Maybe") {
               setRefreshableGames(
-                setUsersResponseToAttendingGame(
-                  userId!,
-                  game,
-                  usersPreviousResponseToAttendingGame,
-                ),
+                setUsersResponseToAttendingGame(userId!, game, "Maybe"),
               )
-              showNotification({
-                type: "warning",
-                message: "Trouble Connecting to the Internet",
-                dismissAfter: 3,
-              })
+              setIsWaitingForApiResponse(true)
+              try {
+                await fetch(
+                  `${Config.apiUrl}/games/${game.id}/player_attendance`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "ApiToken": apiToken!,
+                      "Content-Type": "Application/JSON",
+                    },
+                    body: JSON.stringify({ attending: "Maybe" }),
+                  },
+                )
+              } catch {
+                setRefreshableGames(
+                  setUsersResponseToAttendingGame(
+                    userId!,
+                    game,
+                    usersPreviousResponseToAttendingGame,
+                  ),
+                )
+                showNotification({
+                  type: "warning",
+                  message: "Trouble Connecting to the Internet",
+                  dismissAfter: 3,
+                })
+              }
+              setIsWaitingForApiResponse(false)
             }
-            setIsWaitingForApiResponse(false)
           })()
           break
         case "Unanswered":
