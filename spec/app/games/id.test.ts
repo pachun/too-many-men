@@ -798,7 +798,7 @@ describe("viewing a game", () => {
               })
             })
 
-            it("unselects the Yes radio button and reselects the No radio button", async () => {
+            it("unselects the No radio button and reselects the Yes radio button", async () => {
               const player = playerFactory({})
 
               const { playerApiToken } = await mockLoggedInPlayer({
@@ -2428,7 +2428,7 @@ describe("viewing a game", () => {
               })
             })
 
-            it("unselects the Yes radio button and reselects the Maybe radio button", async () => {
+            it("unselects the No radio button and reselects the Maybe radio button", async () => {
               const player = playerFactory({})
 
               const { playerApiToken } = await mockLoggedInPlayer({
