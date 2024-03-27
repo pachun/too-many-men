@@ -39,7 +39,7 @@ const lightTheme: AppTheme = {
   ...ReactNavigationNative.DefaultTheme,
   colors: {
     ...ReactNavigationNative.DefaultTheme.colors,
-    primary: color("purple"),
+    primary: color("blue"),
     secondaryLabel: iosSystemColorWithOtherPlatformAlternative({
       ios: "secondaryLabel",
       otherPlatforms: "gray", // TODO: unsure about this android color
@@ -71,7 +71,7 @@ const darkTheme: AppTheme = {
   ...ReactNavigationNative.DarkTheme,
   colors: {
     ...ReactNavigationNative.DarkTheme.colors,
-    primary: color("purple"),
+    primary: color("blue"),
     secondaryLabel: iosSystemColorWithOtherPlatformAlternative({
       ios: "secondaryLabel",
       otherPlatforms: "gray", // TODO: check this on android
