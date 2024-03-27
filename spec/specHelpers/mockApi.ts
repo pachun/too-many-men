@@ -152,7 +152,7 @@ const mockApi = async ({
     urlsOfApiRequests = [...urlsOfApiRequests, request.url]
   })
 
-  mockedRequests.forEach(mockedRequest => {
+  mockedRequests.reverse().forEach(mockedRequest => {
     server.use(
       MSW.http[mockedRequest.method](
         url(mockedRequest),
