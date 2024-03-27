@@ -1,6 +1,6 @@
 import type { Player } from "types/Player"
 
-let numberOfPlayers = 0
+let numberOfPlayers = 1
 
 const playerFactory = (partialPlayer?: Partial<Player>): Player => {
   const player: Player = {
