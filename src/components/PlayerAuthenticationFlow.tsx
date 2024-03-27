@@ -82,6 +82,7 @@ const PlayerAuthenticationFlow = ({
     setUserId,
   ])
 
+  // TODO: Need a web version of Dialog; it uses RN.PlatformColor so it does not work on web
   return (
     <>
       {!isSignedIn && (
@@ -91,32 +92,36 @@ const PlayerAuthenticationFlow = ({
           onPress={sendTextMessageConfirmationCode}
         />
       )}
-      <Dialog.Container visible={confirmationCodeInputIsVisible}>
-        <Dialog.Title>Texted You 😘</Dialog.Title>
-        <Animatable.View
-          ref={
-            viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered
-          }
-        >
-          <Dialog.CodeInput
-            autoFocus
-            codeLength={completeConfirmationCodeLength}
-            value={confirmationCode}
-            onChangeText={setConfirmationCode}
-            testID="Confirmation Code Input"
+      {ReactNative.Platform.OS !== "web" && (
+        <Dialog.Container visible={confirmationCodeInputIsVisible}>
+          <Dialog.Title>Texted You 😘</Dialog.Title>
+          <Animatable.View
+            ref={
+              viewRefThatAnimatesTheConfirmationCodeInputPopupWhenIncorrectCodesAreEntered
+            }
+          >
+            <Dialog.CodeInput
+              autoFocus
+              codeLength={completeConfirmationCodeLength}
+              value={confirmationCode}
+              onChangeText={setConfirmationCode}
+              testID="Confirmation Code Input"
+            />
+          </Animatable.View>
+          <Dialog.Button
+            label="Cancel"
+            onPress={removeConfirmationCodeInputPopup}
           />
-        </Animatable.View>
-        <Dialog.Button
-          label="Cancel"
-          onPress={removeConfirmationCodeInputPopup}
-        />
-        <Dialog.Button
-          testID="OK Button"
-          label="OK"
-          onPress={checkConfirmationCodeCorrectness}
-          disabled={confirmationCode.length !== completeConfirmationCodeLength}
-        />
-      </Dialog.Container>
+          <Dialog.Button
+            testID="OK Button"
+            label="OK"
+            onPress={checkConfirmationCodeCorrectness}
+            disabled={
+              confirmationCode.length !== completeConfirmationCodeLength
+            }
+          />
+        </Dialog.Container>
+      )}
     </>
   )
 }
