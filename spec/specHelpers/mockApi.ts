@@ -235,13 +235,12 @@ const failIfExpectedJsonBodyIsNotPresent = async ({
   const includedJsonBody = await request.json().catch(() => {})
 
   if (includedJsonBody || expectedJsonBody) {
-    expect(expectedJsonBody).toEqual(JSON.stringify(includedJsonBody))
     if (expectedJsonBody != JSON.stringify(includedJsonBody)) {
       breakTestOnFailureWithMessage(
         incorrectJsonBodyFailureMessage(
           url,
           expectedJsonBody,
-          includedJsonBody,
+          JSON.stringify(includedJsonBody),
         ),
       )
     }
