@@ -16,10 +16,8 @@ const setUserRespondedYesToAttendingGame =
       currentGame => {
         if (currentGame.id === game.id) {
           const idsOfPlayersWhoRespondedYesToAttendingWithoutDuplicates = [
-            ...new Set([
-              ...game.ids_of_players_who_responded_yes_to_attending,
-              userId,
-            ]),
+            ...game.ids_of_players_who_responded_yes_to_attending,
+            userId,
           ]
           const idsOfPlayersWhoRespondedNoToAttending =
             game.ids_of_players_who_responded_no_to_attending.filter(

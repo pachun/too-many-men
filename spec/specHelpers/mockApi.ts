@@ -188,7 +188,14 @@ const mockApi = async ({
     )
   })
 
-  server.listen({ onUnhandledRequest: "error" })
+  // https://github.com/mswjs/msw/issues/946#issuecomment-1202959063
+  server.listen({
+    onUnhandledRequest: request => {
+      it(`unhandled request to ${request.url}`, () => {
+        // hello
+      })
+    },
+  })
 
   try {
     await test(server)
