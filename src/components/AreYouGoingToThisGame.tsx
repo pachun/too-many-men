@@ -149,7 +149,7 @@ const AreYouGoingToThisGame = ({
           break
       }
     },
-    [game, apiToken, userId, setRefreshableGames],
+    [game, apiToken, userId, setRefreshableGames, showNotification],
   )
 
   if (shouldShowThe_AreYouGoingToThisGame_Question) {
