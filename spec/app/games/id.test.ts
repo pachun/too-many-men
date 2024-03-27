@@ -5,7 +5,10 @@ import gameFactory from "../../specHelpers/factories/game"
 import mockGameFromApi from "../../specHelpers/mockGameFromApi"
 import type { Game } from "types/Game"
 import color from "helpers/color"
-import mockApi from "../../specHelpers/mockApi"
+import mockApi, {
+  mockGetGame,
+  mockedCreateOrUpdatePlayerAttendanceRequest,
+} from "../../specHelpers/mockApi"
 
 const gameDateWithWeekday = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
@@ -33,9 +36,8 @@ describe("viewing a game", () => {
     it("shows a loading spinner", async () => {
       const game = gameFactory({ id: 1 })
 
-      await mockGameFromApi({
-        gameId: 1,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
 
@@ -49,9 +51,8 @@ describe("viewing a game", () => {
     it("does not show a navigation bar title", async () => {
       const game = gameFactory({ id: 1 })
 
-      await mockGameFromApi({
-        gameId: 1,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
 
@@ -67,9 +68,8 @@ describe("viewing a game", () => {
     it("hides the loading spinner", async () => {
       const game = gameFactory({ id: 1 })
 
-      await mockGameFromApi({
-        gameId: 1,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
 
@@ -86,9 +86,8 @@ describe("viewing a game", () => {
         played_at: "2024-02-09T02:30:00Z",
       })
 
-      await mockGameFromApi({
-        gameId: 1,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
 
@@ -107,9 +106,8 @@ describe("viewing a game", () => {
         played_at: "2024-02-09T02:30:00Z",
       })
 
-      await mockGameFromApi({
-        gameId: 2,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/2" })
 
@@ -126,9 +124,8 @@ describe("viewing a game", () => {
         played_at: "2024-02-09T02:30:00Z",
       })
 
-      await mockGameFromApi({
-        gameId: 3,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -145,9 +142,8 @@ describe("viewing a game", () => {
         rink: "Rink C",
       })
 
-      await mockGameFromApi({
-        gameId: 3,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -164,9 +160,8 @@ describe("viewing a game", () => {
         opposing_teams_name: "Scott's Tots",
       })
 
-      await mockGameFromApi({
-        gameId: 3,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -183,9 +178,8 @@ describe("viewing a game", () => {
         is_home_team: true,
       })
 
-      await mockGameFromApi({
-        gameId: 3,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -202,9 +196,8 @@ describe("viewing a game", () => {
         is_home_team: false,
       })
 
-      await mockGameFromApi({
-        gameId: 3,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -237,9 +230,8 @@ describe("viewing a game", () => {
         ],
       })
 
-      await mockGameFromApi({
-        gameId: 3,
-        response: game,
+      await mockApi({
+        mockedRequests: [mockGetGame(game)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -263,9 +255,8 @@ describe("viewing a game", () => {
           played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
         })
 
-        await mockGameFromApi({
-          gameId: 3,
-          response: game,
+        await mockApi({
+          mockedRequests: [mockGetGame(game)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -290,9 +281,8 @@ describe("viewing a game", () => {
             played_at: gamePlayedAtValue({ secondsInFuture: 1 }),
           })
 
-          await mockGameFromApi({
-            gameId: 3,
-            response: game,
+          await mockApi({
+            mockedRequests: [mockGetGame(game)],
             test: async () => {
               ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -321,8 +311,9 @@ describe("viewing a game", () => {
         it("selects the Yes radio button and shows a checkmark icon by the players name in the attendance list", async () => {
           const gameId = 1
           const playerId = 3
+          const apiToken = "Faked API Token"
 
-          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("API Token", apiToken)
           await AsyncStorage.setItem("User ID", playerId.toString())
 
           const game = gameFactory({
@@ -345,16 +336,11 @@ describe("viewing a game", () => {
                 params: { id: gameId },
                 response: game,
               },
-              {
-                method: "post",
-                route: "/games/[id]/player_attendance",
-                params: { id: gameId },
-                headers: {
-                  "ApiToken": "Faked API Token",
-                  "Content-Type": "Application/JSON",
-                },
-                body: JSON.stringify({ attending: "Yes" }),
-              },
+              mockedCreateOrUpdatePlayerAttendanceRequest(
+                game,
+                apiToken,
+                "Yes",
+              ),
             ],
             test: async () => {
               ERTL.renderRouter("src/app", { initialUrl: "/games/1" })

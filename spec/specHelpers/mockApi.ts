@@ -14,6 +14,22 @@ export interface MockedCreateOrUpdatePlayerAttendanceRequest {
   response?: "Network Error" | undefined
 }
 
+export const mockedCreateOrUpdatePlayerAttendanceRequest = (
+  game: Game,
+  apiToken: string,
+  response: "Yes" | "No" | "Maybe",
+  error?: boolean,
+): MockedCreateOrUpdatePlayerAttendanceRequest => {
+  return {
+    method: "post",
+    route: "/games/[id]/player_attendance",
+    params: { id: game.id },
+    headers: { "ApiToken": apiToken, "Content-Type": "Application/JSON" },
+    body: JSON.stringify({ attending: response }),
+    response: error ? "Network Error" : undefined,
+  }
+}
+
 export interface MockedCheckPlayersTextMessageConfirmationCodeRequest {
   method: "post"
   route: "/players/[id]/check_text_message_confirmation_code"
@@ -35,6 +51,18 @@ export interface MockedGetGameRequest {
   route: "/games/[id]"
   params: { id: number }
   response: MockedGetGameRequestResponse
+}
+
+export const mockGetGame = (
+  game: Game,
+  error?: boolean,
+): MockedGetGameRequest => {
+  return {
+    method: "get",
+    route: "/games/[id]",
+    params: { id: game.id },
+    response: error ? "Network Error" : game,
+  }
 }
 
 export type MockedGetPlayerRequestResponse = Player | "Network Error"
