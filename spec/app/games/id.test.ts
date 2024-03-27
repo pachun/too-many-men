@@ -683,7 +683,48 @@ describe("viewing a game", () => {
           })
         })
 
-        // when yes is tapped again after tapping yes - it does not send another request to the server
+        describe("when Yes is tapped a second time in a row", () => {
+          it("does not send a duplicate API request", async () => {
+            const player = playerFactory({})
+
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
+
+            const game = gameFactory({
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [player],
+            })
+
+            await mockApi({
+              mockedRequests: [
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Yes"),
+              ],
+              test: async () => {
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+              },
+            })
+          })
+        })
 
         describe("when No is tapped after tapping Yes", () => {
           it("removes the checkmark icon by the players name in the attendance list", async () => {
@@ -1401,6 +1442,49 @@ describe("viewing a game", () => {
                   ERTL.screen.getByTestId("No Radio Button").props.style
                     .backgroundColor,
                 ).not.toEqual(color("red"))
+              },
+            })
+          })
+        })
+
+        describe("when No is tapped a second time in a row", () => {
+          it("does not send a duplicate API request", async () => {
+            const player = playerFactory({})
+
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
+
+            const game = gameFactory({
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [player],
+            })
+
+            await mockApi({
+              mockedRequests: [
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "No"),
+              ],
+              test: async () => {
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
               },
             })
           })
