@@ -55,7 +55,7 @@ export interface MockedGetGameRequest {
 
 export const mockGetGame = (
   game: Game,
-  error?: boolean,
+  error?: "Network Error",
 ): MockedGetGameRequest => {
   return {
     method: "get",
@@ -85,6 +85,17 @@ export interface MockedGetGamesRequest {
   method: "get"
   route: "/games"
   response: MockedGetGamesRequestResponse
+}
+
+export const mockGetGames = (
+  games: Game[],
+  error?: "Network Error",
+): MockedGetGamesRequest => {
+  return {
+    method: "get",
+    route: "/games",
+    response: error ? "Network Error" : games,
+  }
 }
 
 export type MockedRequest =

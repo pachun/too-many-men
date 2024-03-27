@@ -7,6 +7,7 @@ import color from "helpers/color"
 import mockApi, {
   mockGetGame,
   mockCreateOrUpdatePlayerAttendance,
+  mockGetGames,
 } from "../../specHelpers/mockApi"
 import mockLoggedInPlayer from "../../specHelpers/mockLoggedInPlayer"
 import playerFactory from "../../specHelpers/factories/player"
@@ -504,21 +505,8 @@ describe("viewing a game", () => {
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games",
-                  response: [game],
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: game.id },
-                  headers: {
-                    "ApiToken": playerApiToken,
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Yes" }),
-                },
+                mockGetGames([game]),
+                mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Yes"),
               ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: "/games" })
