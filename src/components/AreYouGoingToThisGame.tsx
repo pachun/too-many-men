@@ -110,11 +110,31 @@ const AreYouGoingToThisGame = ({
           break
         case "No":
           setRefreshableGames(setUserRespondedNoToAttendingGame(userId!, game!))
+          setIsWaitingForApiResponse(true)
+          await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {
+            method: "POST",
+            headers: {
+              "ApiToken": apiToken!,
+              "Content-Type": "Application/JSON",
+            },
+            body: JSON.stringify({ attending: "No" }),
+          })
+          setIsWaitingForApiResponse(false)
           break
         case "Maybe":
           setRefreshableGames(
             setUserRespondedMaybeToAttendingGame(userId!, game!),
           )
+          setIsWaitingForApiResponse(true)
+          await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {
+            method: "POST",
+            headers: {
+              "ApiToken": apiToken!,
+              "Content-Type": "Application/JSON",
+            },
+            body: JSON.stringify({ attending: "Maybe" }),
+          })
+          setIsWaitingForApiResponse(false)
           break
       }
     },

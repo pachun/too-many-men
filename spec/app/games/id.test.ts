@@ -377,7 +377,7 @@ describe("viewing a game", () => {
           })
         })
 
-        it("shows a mini loading spinner", async () => {
+        it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
           const playerId = 3
           const gameId = 1
           await AsyncStorage.setItem("API Token", "Faked API Token")
@@ -391,11 +391,6 @@ describe("viewing a game", () => {
                 id: playerId,
                 first_name: "Michael",
                 last_name: "Scott",
-              },
-              {
-                id: 2,
-                first_name: "Dwight",
-                last_name: "Schrute",
               },
             ],
           })
@@ -441,7 +436,69 @@ describe("viewing a game", () => {
           })
         })
 
-        // disables the attendance buttons while the api request is ongoing
+        it("disables the attendance buttons while the attendance API request is ongoing", async () => {
+          const playerId = 3
+          const gameId = 1
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: gameId,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+            ],
+          })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/games/[id]",
+                params: { id: gameId },
+                response: game,
+              },
+              {
+                method: "post",
+                route: "/games/[id]/player_attendance",
+                params: { id: gameId },
+                headers: {
+                  "ApiToken": "Faked API Token",
+                  "Content-Type": "Application/JSON",
+                },
+                body: JSON.stringify({ attending: "Yes" }),
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+              ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+              ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+              })
+
+              expect(
+                ERTL.screen.getByTestId("Yes Radio Button").props.style
+                  .backgroundColor,
+              ).toEqual(color("green"))
+            },
+          })
+        })
 
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the Yes selection", async () => {
@@ -708,6 +765,129 @@ describe("viewing a game", () => {
           })
         })
 
+        it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
+          const playerId = 3
+          const gameId = 1
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: gameId,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+            ],
+          })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/games/[id]",
+                params: { id: gameId },
+                response: game,
+              },
+              {
+                method: "post",
+                route: "/games/[id]/player_attendance",
+                params: { id: gameId },
+                headers: {
+                  "ApiToken": "Faked API Token",
+                  "Content-Type": "Application/JSON",
+                },
+                body: JSON.stringify({ attending: "No" }),
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+
+              ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+              })
+            },
+          })
+        })
+
+        it("disables the attendance buttons while the attendance API request is ongoing", async () => {
+          const playerId = 3
+          const gameId = 1
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: gameId,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+            ],
+          })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/games/[id]",
+                params: { id: gameId },
+                response: game,
+              },
+              {
+                method: "post",
+                route: "/games/[id]/player_attendance",
+                params: { id: gameId },
+                headers: {
+                  "ApiToken": "Faked API Token",
+                  "Content-Type": "Application/JSON",
+                },
+                body: JSON.stringify({ attending: "No" }),
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+              ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+              ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+              })
+
+              expect(
+                ERTL.screen.getByTestId("No Radio Button").props.style
+                  .backgroundColor,
+              ).toEqual(color("red"))
+            },
+          })
+        })
+
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the No selection", async () => {
             await AsyncStorage.setItem("API Token", "Faked API Token")
@@ -963,6 +1143,129 @@ describe("viewing a game", () => {
                     ),
                   ),
                 ).toShowTestId("? Icon")
+              })
+
+              expect(
+                ERTL.screen.getByTestId("Maybe Radio Button").props.style
+                  .backgroundColor,
+              ).toEqual(color("yellow"))
+            },
+          })
+        })
+
+        it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
+          const playerId = 3
+          const gameId = 1
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: gameId,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+            ],
+          })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/games/[id]",
+                params: { id: gameId },
+                response: game,
+              },
+              {
+                method: "post",
+                route: "/games/[id]/player_attendance",
+                params: { id: gameId },
+                headers: {
+                  "ApiToken": "Faked API Token",
+                  "Content-Type": "Application/JSON",
+                },
+                body: JSON.stringify({ attending: "Maybe" }),
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+
+              ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+              })
+            },
+          })
+        })
+
+        it("disables the attendance buttons while the attendance API request is ongoing", async () => {
+          const playerId = 3
+          const gameId = 1
+          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("User ID", playerId.toString())
+
+          const game = gameFactory({
+            id: gameId,
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [
+              {
+                id: playerId,
+                first_name: "Michael",
+                last_name: "Scott",
+              },
+            ],
+          })
+
+          await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/games/[id]",
+                params: { id: gameId },
+                response: game,
+              },
+              {
+                method: "post",
+                route: "/games/[id]/player_attendance",
+                params: { id: gameId },
+                headers: {
+                  "ApiToken": "Faked API Token",
+                  "Content-Type": "Application/JSON",
+                },
+                body: JSON.stringify({ attending: "Maybe" }),
+              },
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+              ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+              ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
+              })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
               })
 
               expect(
