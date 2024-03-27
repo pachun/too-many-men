@@ -329,12 +329,7 @@ describe("viewing a game", () => {
 
           await mockApi({
             mockedRequests: [
-              {
-                method: "get",
-                route: "/games/[id]",
-                params: { id: gameId },
-                response: game,
-              },
+              mockGetGame(game),
               mockCreateOrUpdatePlayerAttendance(game, apiToken, "Yes"),
             ],
             test: async () => {
