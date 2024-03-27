@@ -529,50 +529,50 @@ describe("viewing a game", () => {
             })
           })
 
-          // it("unselects the Yes radio button to reflect that the request failed", async () => {
-          //   const player = playerFactory({})
-          //
-          //   const { playerApiToken } = await mockLoggedInPlayer({
-          //     playerId: player.id,
-          //   })
-          //
-          //   const game = gameFactory({
-          //     played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-          //     players: [player],
-          //   })
-          //
-          //   await mockApi({
-          //     mockedRequests: [
-          //       mockGetGame(game),
-          //       mockCreateOrUpdatePlayerAttendance(
-          //         game,
-          //         playerApiToken,
-          //         "Yes",
-          //         "Network Error",
-          //       ),
-          //     ],
-          //     test: async () => {
-          //       ERTL.renderRouter("src/app", {
-          //         initialUrl: `/games/${game.id}`,
-          //       })
-          //
-          //       await ERTL.waitFor(() => {
-          //         expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-          //       })
-          //
-          //       ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
-          //
-          //       await ERTL.waitFor(() => {
-          //         expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
-          //       })
-          //
-          //       expect(
-          //         ERTL.screen.getByTestId("Yes Radio Button").props.style
-          //           .backgroundColor,
-          //       ).toEqual(undefined)
-          //     },
-          //   })
-          // })
+          it("unselects the Yes radio button to reflect that the network request failed", async () => {
+            const player = playerFactory({})
+
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
+
+            const game = gameFactory({
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [player],
+            })
+
+            await mockApi({
+              mockedRequests: [
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(
+                  game,
+                  playerApiToken,
+                  "Yes",
+                  "Network Error",
+                ),
+              ],
+              test: async () => {
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                })
+
+                expect(
+                  ERTL.screen.getByTestId("Yes Radio Button").props.style
+                    .backgroundColor,
+                ).toEqual(undefined)
+              },
+            })
+          })
         })
 
         describe("when leaving and returning to the game details screen", () => {
@@ -687,6 +687,8 @@ describe("viewing a game", () => {
           })
         })
 
+        // when yes is tapped again after tapping yes - it does not send another request to the server
+
         describe("when No is tapped after tapping Yes", () => {
           it("removes the checkmark icon by the players name in the attendance list", async () => {
             const player = playerFactory({})
@@ -739,6 +741,126 @@ describe("viewing a game", () => {
                   ).not.toShowTestId("Checkmark Icon")
                 })
               },
+            })
+          })
+
+          describe("when the attendance API request fails", () => {
+            it("shows a Trouble Connecting to the Internet message", async () => {
+              const player = playerFactory({})
+
+              const { playerApiToken } = await mockLoggedInPlayer({
+                playerId: player.id,
+              })
+
+              const game = gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+                players: [player],
+              })
+
+              await mockApi({
+                mockedRequests: [
+                  mockGetGame(game),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "Yes",
+                  ),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "No",
+                    "Network Error",
+                  ),
+                ],
+                test: async () => {
+                  ERTL.renderRouter("src/app", {
+                    initialUrl: `/games/${game.id}`,
+                  })
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).toShowText(
+                      "Trouble Connecting to the Internet",
+                    )
+                  })
+                },
+              })
+            })
+
+            it("unselects the Yes radio button and reselects the No radio button to reflect that the network request failed", async () => {
+              const player = playerFactory({})
+
+              const { playerApiToken } = await mockLoggedInPlayer({
+                playerId: player.id,
+              })
+
+              const game = gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+                players: [player],
+              })
+
+              await mockApi({
+                mockedRequests: [
+                  mockGetGame(game),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "Yes",
+                  ),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "No",
+                    "Network Error",
+                  ),
+                ],
+                test: async () => {
+                  ERTL.renderRouter("src/app", {
+                    initialUrl: `/games/${game.id}`,
+                  })
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("No"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  expect(
+                    ERTL.screen.getByTestId("No Radio Button").props.style
+                      .backgroundColor,
+                  ).toEqual(undefined)
+
+                  expect(
+                    ERTL.screen.getByTestId("Yes Radio Button").props.style
+                      .backgroundColor,
+                  ).toEqual(color("green"))
+                },
+              })
             })
           })
         })
@@ -799,6 +921,126 @@ describe("viewing a game", () => {
                   ).not.toShowTestId("Checkmark Icon")
                 })
               },
+            })
+          })
+
+          describe("when the attendance API request fails", () => {
+            it("shows a Trouble Connecting to the Internet message", async () => {
+              const player = playerFactory({})
+
+              const { playerApiToken } = await mockLoggedInPlayer({
+                playerId: player.id,
+              })
+
+              const game = gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+                players: [player],
+              })
+
+              await mockApi({
+                mockedRequests: [
+                  mockGetGame(game),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "Yes",
+                  ),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "Maybe",
+                    "Network Error",
+                  ),
+                ],
+                test: async () => {
+                  ERTL.renderRouter("src/app", {
+                    initialUrl: `/games/${game.id}`,
+                  })
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).toShowText(
+                      "Trouble Connecting to the Internet",
+                    )
+                  })
+                },
+              })
+            })
+
+            it("unselects the Maybe radio button and reselects the Yes radio button to reflect that the network request failed", async () => {
+              const player = playerFactory({})
+
+              const { playerApiToken } = await mockLoggedInPlayer({
+                playerId: player.id,
+              })
+
+              const game = gameFactory({
+                played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+                players: [player],
+              })
+
+              await mockApi({
+                mockedRequests: [
+                  mockGetGame(game),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "Yes",
+                  ),
+                  mockCreateOrUpdatePlayerAttendance(
+                    game,
+                    playerApiToken,
+                    "Maybe",
+                    "Network Error",
+                  ),
+                ],
+                test: async () => {
+                  ERTL.renderRouter("src/app", {
+                    initialUrl: `/games/${game.id}`,
+                  })
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+                  await ERTL.waitFor(() => {
+                    expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                  })
+
+                  expect(
+                    ERTL.screen.getByTestId("Maybe Radio Button").props.style
+                      .backgroundColor,
+                  ).toEqual(undefined)
+
+                  expect(
+                    ERTL.screen.getByTestId("Yes Radio Button").props.style
+                      .backgroundColor,
+                  ).toEqual(color("green"))
+                },
+              })
             })
           })
         })
