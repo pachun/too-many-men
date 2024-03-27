@@ -1207,88 +1207,46 @@ describe("viewing a game", () => {
                 ).toEqual(color("red"))
               },
             })
-
-            // const gameId = 1
-            // const playerId = 3
-            //
-            // await AsyncStorage.setItem("API Token", "Faked API Token")
-            // await AsyncStorage.setItem("User ID", playerId.toString())
-            //
-            // const games = [
-            //   gameFactory({
-            //     id: gameId,
-            //     played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
-            //   }),
-            // ]
-            //
-            // await mockApi({
-            //   mockedRequests: [
-            //     {
-            //       method: "get",
-            //       route: "/games",
-            //       response: games,
-            //     },
-            //     {
-            //       method: "post",
-            //       route: "/games/[id]/player_attendance",
-            //       params: { id: gameId },
-            //       headers: {
-            //         "ApiToken": "Faked API Token",
-            //         "Content-Type": "Application/JSON",
-            //       },
-            //       body: JSON.stringify({ attending: "No" }),
-            //     },
-            //   ],
-            //   test: async () => {
-            //     ERTL.renderRouter("src/app", { initialUrl: "/games" })
-            //
-            //     await ERTL.waitFor(() => {
-            //       expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-            //     })
-            //
-            //     ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
-            //
-            //     await ERTL.waitFor(() => {
-            //       expect(ERTL.screen).toShowText("No")
-            //     })
-            //
-            //     ERTL.fireEvent.press(ERTL.screen.getByText("No"))
-            //
-            //     await ERTL.waitFor(() => {
-            //       ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
-            //     })
-            //
-            //     await ERTL.waitFor(() => {
-            //       ERTL.fireEvent.press(
-            //         ERTL.screen.getByTestId("Game List Item"),
-            //       )
-            //     })
-            //
-            //     expect(
-            //       ERTL.screen.getByTestId("No Radio Button").props.style
-            //         .backgroundColor,
-            //     ).toEqual(color("red"))
-            //   },
-            // })
           })
         })
 
         describe("when leaving the games details screen and entering another games details screen", () => {
           it("does not change the No selection on the details screen of the other game", async () => {
+            const gameId = 1
+            const playerId = 3
+
             await AsyncStorage.setItem("API Token", "Faked API Token")
-            await AsyncStorage.setItem("User ID", "1")
+            await AsyncStorage.setItem("User ID", playerId.toString())
 
             const games = [
               gameFactory({
+                id: gameId,
                 played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
               }),
               gameFactory({
+                id: 2,
                 played_at: gamePlayedAtValue({ minutesInFuture: 60 }),
               }),
             ]
 
-            await mockGamesFromApi({
-              response: games,
+            await mockApi({
+              mockedRequests: [
+                {
+                  method: "get",
+                  route: "/games",
+                  response: games,
+                },
+                {
+                  method: "post",
+                  route: "/games/[id]/player_attendance",
+                  params: { id: gameId },
+                  headers: {
+                    "ApiToken": "Faked API Token",
+                    "Content-Type": "Application/JSON",
+                  },
+                  body: JSON.stringify({ attending: "No" }),
+                },
+              ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -1296,9 +1254,11 @@ describe("viewing a game", () => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
                 })
 
-                ERTL.fireEvent.press(
-                  ERTL.screen.getAllByTestId("Game List Item")[0],
-                )
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(
+                    ERTL.screen.getAllByTestId("Game List Item")[0],
+                  )
+                })
 
                 await ERTL.waitFor(() => {
                   expect(ERTL.screen).toShowText("No")
@@ -1306,11 +1266,15 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("No"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+                })
 
-                ERTL.fireEvent.press(
-                  ERTL.screen.getAllByTestId("Game List Item")[1],
-                )
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(
+                    ERTL.screen.getAllByTestId("Game List Item")[1],
+                  )
+                })
 
                 expect(
                   ERTL.screen.getByTestId("No Radio Button").props.style
