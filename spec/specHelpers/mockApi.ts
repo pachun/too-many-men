@@ -128,6 +128,20 @@ const failIfExpectedHeadersAreNotPresent = ({
   }
 }
 
+const failIfExpectedJsonBodyIsNotPresent = async ({
+  request,
+  expectedJsonBody,
+}: {
+  request: MSW.StrictRequest<MSW.DefaultBodyType>
+  expectedJsonBody: string | undefined
+}): Promise<void> => {
+  const includedJsonBody = await request.json().catch(() => {})
+
+  if (includedJsonBody || expectedJsonBody) {
+    expect(expectedJsonBody).toEqual(JSON.stringify(includedJsonBody))
+  }
+}
+
 const mockApi = async ({
   server = MSW_NODE.setupServer(),
   mockedRequests,
@@ -142,7 +156,7 @@ const mockApi = async ({
     server.use(
       MSW.http[mockedRequest.method](
         url(mockedRequest),
-        ({ request }) => {
+        async ({ request }) => {
           if (mockedRequest.response === "Network Error") {
             return MSW.HttpResponse.error()
           } else {
@@ -158,6 +172,11 @@ const mockApi = async ({
               includedHeaders: request.headers,
               // @ts-ignore
               expectedHeaders: mockedRequest.headers,
+            })
+
+            await failIfExpectedJsonBodyIsNotPresent({
+              request: request,
+              expectedJsonBody: mockedRequest.body,
             })
 
             return MSW.HttpResponse.json(mockedRequest.response)

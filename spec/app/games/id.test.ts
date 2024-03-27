@@ -412,12 +412,11 @@ describe("viewing a game", () => {
                 method: "post",
                 route: "/games/[id]/player_attendance",
                 params: { id: gameId },
-                // needs to match on these
                 headers: {
                   "ApiToken": "Faked API Token",
                   "Content-Type": "Application/JSON",
                 },
-                body: JSON.stringify({ attendance: "Yes" }),
+                body: JSON.stringify({ attending: "Yes" }),
               },
             ],
             test: async () => {
