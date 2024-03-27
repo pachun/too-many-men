@@ -64,21 +64,7 @@
           "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
           "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
         ],
-        "setupFiles": [
-          "./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"
-        ]
-      },
-      {
-        "preset": "jest-expo/android",
-        "setupFilesAfterEnv": [
-          "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
-        ],
-        "setupFiles": [
-          "./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"
-        ]
+        "setupFiles": ["./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"]
       }
     ],
     "transformIgnorePatterns": [
@@ -87,11 +73,7 @@
     "verbose": true,
     "passWithNoTests": true,
     "coverageProvider": "v8",
-    "collectCoverageFrom": [
-      "./src/**",
-      "!src/Config.ts",
-      "!src/types/**"
-    ],
+    "collectCoverageFrom": ["./src/**", "!src/Config.ts", "!src/types/**"],
     "coverageThreshold": {
       "global": {
         "lines": 100,

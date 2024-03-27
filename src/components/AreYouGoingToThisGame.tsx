@@ -14,6 +14,9 @@ import ForegroundItem from "./ForegroundItem"
 import AppText from "./AppText"
 import VerticalSpacing from "./VerticalSpacing"
 import color from "helpers/color"
+import useTheme from "hooks/useTheme"
+import Config from "Config"
+import useApiToken from "hooks/useApiToken"
 
 const isTheGameInTheFuture = (game: Game): boolean => {
   const currentTime = new Date()
@@ -33,7 +36,11 @@ interface AreYouGoingToThisGameProps {
 const AreYouGoingToThisGame = ({
   game,
 }: AreYouGoingToThisGameProps): React.ReactElement => {
+  const theme = useTheme()
+
   const { userId } = useUserId()
+
+  const { apiToken } = useApiToken()
 
   const [theGameIsInTheFuture, setTheGameIsInTheFuture] = React.useState(
     isTheGameInTheFuture(game),
@@ -80,13 +87,26 @@ const AreYouGoingToThisGame = ({
       game.ids_of_players_who_responded_maybe_to_attending,
     ])
 
+  const [isWaitingForApiResponse, setIsWaitingForApiResponse] =
+    React.useState(false)
+
   const updateAreYouGoingToThisGame = React.useCallback(
-    (playerAttendance: AreYouGoingToThisGameSelection) => {
+    async (playerAttendance: AreYouGoingToThisGameSelection) => {
       switch (playerAttendance) {
         case "Yes":
           setRefreshableGames(
             setUserRespondedYesToAttendingGame(userId!, game!),
           )
+          setIsWaitingForApiResponse(true)
+          await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {
+            method: "POST",
+            headers: {
+              "ApiToken": apiToken!,
+              "Content-Type": "Application/JSON",
+            },
+            body: JSON.stringify({ attending: "Yes" }),
+          })
+          setIsWaitingForApiResponse(false)
           break
         case "No":
           setRefreshableGames(setUserRespondedNoToAttendingGame(userId!, game!))
@@ -98,13 +118,27 @@ const AreYouGoingToThisGame = ({
           break
       }
     },
-    [game, userId, setRefreshableGames],
+    [game, apiToken, userId, setRefreshableGames],
   )
+
+  React.useEffect(() => {
+    console.debug(`isWaitingForApiResponse: ${isWaitingForApiResponse}`)
+  }, [isWaitingForApiResponse])
 
   if (shouldShowThe_AreYouGoingToThisGame_Question) {
     return (
       <ForegroundItem>
-        <AppText bold>Are you going to this game?</AppText>
+        <ReactNative.View
+          style={{ flexDirection: "row", justifyContent: "space-between" }}
+        >
+          <AppText bold>Are you going to this game?</AppText>
+          {isWaitingForApiResponse && (
+            <ReactNative.ActivityIndicator
+              color={theme.colors.secondaryLabel}
+              testID="Mini Loading Spinner"
+            />
+          )}
+        </ReactNative.View>
         <VerticalSpacing />
         <ReactNative.View
           style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -112,18 +146,21 @@ const AreYouGoingToThisGame = ({
           <RadioButton
             color={color("green")}
             label="Yes"
+            disabled={isWaitingForApiResponse}
             selected={areYouGoingToThisGameAnswer === "Yes"}
             onPress={() => updateAreYouGoingToThisGame("Yes")}
           />
           <RadioButton
             color={color("red")}
             label="No"
+            disabled={isWaitingForApiResponse}
             selected={areYouGoingToThisGameAnswer === "No"}
             onPress={() => updateAreYouGoingToThisGame("No")}
           />
           <RadioButton
             color={color("yellow")}
             label="Maybe"
+            disabled={isWaitingForApiResponse}
             selected={areYouGoingToThisGameAnswer === "Maybe"}
             onPress={() => updateAreYouGoingToThisGame("Maybe")}
           />

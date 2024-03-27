@@ -6,6 +6,8 @@ import mockGameFromApi from "../../specHelpers/mockGameFromApi"
 import type { Game } from "types/Game"
 import mockGamesFromApi from "../../specHelpers/mockGamesFromApi"
 import color from "helpers/color"
+import Config from "Config"
+import mockApi from "../../specHelpers/mockApi"
 
 const gameDateWithWeekday = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
@@ -377,11 +379,12 @@ describe("viewing a game", () => {
 
         it("shows a mini loading spinner and disables the Yes, No, Maybe radio buttons while the request is in flight", async () => {
           const playerId = 3
+          const gameId = 1
           await AsyncStorage.setItem("API Token", "Faked API Token")
           await AsyncStorage.setItem("User ID", playerId.toString())
 
           const game = gameFactory({
-            id: 1,
+            id: gameId,
             played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
             players: [
               {
@@ -397,24 +400,47 @@ describe("viewing a game", () => {
             ],
           })
 
-          await mockGameFromApi({
-            gameId: 1,
-            response: game,
+          const urlsOfApiRequests = await mockApi({
+            mockedRequests: [
+              {
+                method: "get",
+                route: "/games/[id]",
+                params: { id: gameId },
+                response: game,
+              },
+              {
+                method: "post",
+                route: "/games/[id]/player_attendance",
+                params: { id: gameId },
+                headers: { ApiToken: "Faked API Token" },
+              },
+            ],
             test: async () => {
-              ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).not.toShowTestId("Loading Spinner")
               })
 
-              ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes"))
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+              })
+
+              await ERTL.act(() =>
+                ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes")),
+              )
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
               })
 
-              ERTL.userEvent.setup().press(ERTL.screen.getByText("No"))
-              ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe"))
+              await ERTL.act(() =>
+                ERTL.userEvent.setup().press(ERTL.screen.getByText("No")),
+              )
+
+              await ERTL.act(() =>
+                ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe")),
+              )
 
               await ERTL.waitFor(() => {
                 expect(
@@ -428,6 +454,10 @@ describe("viewing a game", () => {
               })
             },
           })
+
+          expect(urlsOfApiRequests).toInclude(
+            `${Config.apiUrl}/games/${gameId}/player_attendance`,
+          )
         })
 
         describe("when leaving and returning to the game details screen", () => {

@@ -22,7 +22,7 @@ const Layout = (): React.ReactElement => {
 
   // Here for development convenience; We often want to reset the
   // authentication state.
-  //
+
   // React.useEffect(() => {
   //   AsyncStorage.setItem("API Token", "")
   //   AsyncStorage.setItem("User ID", "")

@@ -5,6 +5,14 @@ import type { Player } from "types/Player"
 import type { Game } from "types/Game"
 import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/CheckTextMessageConfirmationCodeRequestResponse"
 
+export interface MockedPlayerAttendanceRequest {
+  method: "post"
+  route: "/games/[id]/player_attendance"
+  params: { id: number }
+  headers: { ApiToken: string }
+  response?: object
+}
+
 export interface MockedCheckPlayersTextMessageConfirmationCodeRequest {
   method: "post"
   route: "/players/[id]/check_text_message_confirmation_code"
@@ -57,6 +65,7 @@ export type MockedRequest =
   | MockedGameRequest
   | MockedSendPlayersTextMessageConfirmationCodeRequest
   | MockedCheckPlayersTextMessageConfirmationCodeRequest
+  | MockedPlayerAttendanceRequest
 export type Test = (server: MSW_NODE.SetupServer) => Promise<void>
 
 interface MockApiArguments {
@@ -117,6 +126,7 @@ const mockApi = async ({
               })
               return MSW.HttpResponse.json(mockedRequest.response)
             } else {
+              console.log(`returning for ${mockedRequest.route}`)
               return MSW.HttpResponse.json(mockedRequest.response)
             }
           }

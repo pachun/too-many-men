@@ -7,6 +7,7 @@ import useTheme from "hooks/useTheme"
 interface RadioButtonProps {
   color: string
   label: string
+  disabled: boolean
   selected: boolean
   onPress: () => void
 }
@@ -14,6 +15,7 @@ interface RadioButtonProps {
 const RadioButton = ({
   color,
   label,
+  disabled,
   selected,
   onPress: onPressFromParentComponent,
 }: RadioButtonProps): React.ReactElement => {
@@ -22,11 +24,13 @@ const RadioButton = ({
   const buttonRef = React.useRef<Animatable.View>(null)
 
   const onPress = (): void => {
-    onPressFromParentComponent()
-    if (buttonRef.current) {
-      // @ts-ignore
-      buttonRef.current.pulse(100)
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    if (!disabled) {
+      onPressFromParentComponent()
+      if (buttonRef.current) {
+        // @ts-ignore
+        buttonRef.current.pulse(100)
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+      }
     }
   }
 
