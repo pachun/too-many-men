@@ -1,6 +1,9 @@
 import * as MSW_NODE from "msw/node"
 import mockApi from "../specHelpers/mockApi"
-import type { MockedPlayerRequestResponse, Test } from "../specHelpers/mockApi"
+import type {
+  MockedGetPlayerRequestResponse,
+  Test,
+} from "../specHelpers/mockApi"
 import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/CheckTextMessageConfirmationCodeRequestResponse"
 
 const mockPlayerAndTextMessageConfirmationCodeFromApi = async ({
@@ -13,7 +16,7 @@ const mockPlayerAndTextMessageConfirmationCodeFromApi = async ({
   playerId: number
   confirmationCode?: string
   checkTextMessageConfirmationCodeRequestResponse?: CheckTextMessageConfirmationCodeRequestResponse
-  response: MockedPlayerRequestResponse
+  response: MockedGetPlayerRequestResponse
   test: Test
 }): Promise<string[]> => {
   return await mockApi({

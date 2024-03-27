@@ -1,5 +1,8 @@
 import mockApi from "../specHelpers/mockApi"
-import type { MockedPlayerRequestResponse, Test } from "../specHelpers/mockApi"
+import type {
+  MockedGetPlayerRequestResponse,
+  Test,
+} from "../specHelpers/mockApi"
 
 import * as MSW_NODE from "msw/node"
 
@@ -11,7 +14,7 @@ const mockPlayerFromApi = async ({
 }: {
   server?: MSW_NODE.SetupServer
   playerId: number
-  response: MockedPlayerRequestResponse
+  response: MockedGetPlayerRequestResponse
   test: Test
 }): Promise<void> => {
   await mockApi({

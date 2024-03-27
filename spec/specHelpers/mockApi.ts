@@ -5,7 +5,7 @@ import type { Player } from "types/Player"
 import type { Game } from "types/Game"
 import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/CheckTextMessageConfirmationCodeRequestResponse"
 
-export interface MockedPlayerAttendanceRequest {
+export interface MockedCreateOrUpdatePlayerAttendanceRequest {
   method: "post"
   route: "/games/[id]/player_attendance"
   params: { id: number }
@@ -29,44 +29,44 @@ export interface MockedSendPlayersTextMessageConfirmationCodeRequest {
   response: undefined
 }
 
-export type MockedGameRequestResponse = Game | "Network Error"
-export interface MockedGameRequest {
+export type MockedGetGameRequestResponse = Game | "Network Error"
+export interface MockedGetGameRequest {
   method: "get"
   route: "/games/[id]"
   params: { id: number }
-  response: MockedGameRequestResponse
+  response: MockedGetGameRequestResponse
 }
 
-export type MockedPlayerRequestResponse = Player | "Network Error"
-export interface MockedPlayerRequest {
+export type MockedGetPlayerRequestResponse = Player | "Network Error"
+export interface MockedGetPlayerRequest {
   method: "get"
   route: "/players/[id]"
   params: { id: number }
-  response: MockedPlayerRequestResponse
+  response: MockedGetPlayerRequestResponse
 }
 
-export type MockedPlayersRequestResponse = Player[] | "Network Error"
-export interface MockedPlayersRequest {
+export type MockedGetPlayersRequestResponse = Player[] | "Network Error"
+export interface MockedGetPlayersRequest {
   method: "get"
   route: "/players"
-  response: MockedPlayersRequestResponse
+  response: MockedGetPlayersRequestResponse
 }
 
-export type MockedGamesRequestResponse = Game[] | "Network Error"
-export interface MockedGamesRequest {
+export type MockedGetGamesRequestResponse = Game[] | "Network Error"
+export interface MockedGetGamesRequest {
   method: "get"
   route: "/games"
-  response: MockedGamesRequestResponse
+  response: MockedGetGamesRequestResponse
 }
 
 export type MockedRequest =
-  | MockedPlayersRequest
-  | MockedPlayerRequest
-  | MockedGamesRequest
-  | MockedGameRequest
+  | MockedGetPlayersRequest
+  | MockedGetPlayerRequest
+  | MockedGetGamesRequest
+  | MockedGetGameRequest
   | MockedSendPlayersTextMessageConfirmationCodeRequest
   | MockedCheckPlayersTextMessageConfirmationCodeRequest
-  | MockedPlayerAttendanceRequest
+  | MockedCreateOrUpdatePlayerAttendanceRequest
 export type Test = (server: MSW_NODE.SetupServer) => Promise<void>
 
 interface MockApiArguments {
@@ -193,9 +193,7 @@ const mockApi = async ({
     onUnhandledRequest: request => {
       const unhandledRequestError = (unhandledRequestUrl: string): string =>
         `THIS IS NOT ERRORING BECAUSE YOU NESTED TESTS; A REQUEST WAS MADE TO ${unhandledRequestUrl} WHICH WAS NOT PROVISIONED FOR WITH MSW`
-      it(unhandledRequestError(request.url), () => {
-        // hello
-      })
+      it(unhandledRequestError(request.url), () => {})
     },
   })
 
