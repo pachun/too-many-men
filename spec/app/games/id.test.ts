@@ -1287,12 +1287,14 @@ describe("viewing a game", () => {
 
         describe("when Yes is tapped after tapping No", () => {
           it("removes the X icon by the players name in the attendance list", async () => {
+            const gameId = 1
             const playerId = 3
+
             await AsyncStorage.setItem("API Token", "Faked API Token")
             await AsyncStorage.setItem("User ID", playerId.toString())
 
             const game = gameFactory({
-              id: 1,
+              id: gameId,
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [
                 {
@@ -1300,17 +1302,38 @@ describe("viewing a game", () => {
                   first_name: "Michael",
                   last_name: "Scott",
                 },
-                {
-                  id: 2,
-                  first_name: "Dwight",
-                  last_name: "Schrute",
-                },
               ],
             })
 
-            await mockGameFromApi({
-              gameId: 1,
-              response: game,
+            await mockApi({
+              mockedRequests: [
+                {
+                  method: "get",
+                  route: "/games/[id]",
+                  params: { id: gameId },
+                  response: game,
+                },
+                {
+                  method: "post",
+                  route: "/games/[id]/player_attendance",
+                  params: { id: gameId },
+                  headers: {
+                    "ApiToken": "Faked API Token",
+                    "Content-Type": "Application/JSON",
+                  },
+                  body: JSON.stringify({ attending: "No" }),
+                },
+                {
+                  method: "post",
+                  route: "/games/[id]/player_attendance",
+                  params: { id: gameId },
+                  headers: {
+                    "ApiToken": "Faked API Token",
+                    "Content-Type": "Application/JSON",
+                  },
+                  body: JSON.stringify({ attending: "Yes" }),
+                },
+              ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
 
@@ -1318,7 +1341,7 @@ describe("viewing a game", () => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
                 })
 
-                ERTL.userEvent.setup().press(ERTL.screen.getByText("No"))
+                ERTL.fireEvent.press(ERTL.screen.getByText("No"))
 
                 await ERTL.waitFor(() => {
                   expect(
@@ -1330,7 +1353,7 @@ describe("viewing a game", () => {
                   ).toShowTestId("X Icon")
                 })
 
-                ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes"))
+                ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
 
                 await ERTL.waitFor(() => {
                   expect(
@@ -1348,12 +1371,14 @@ describe("viewing a game", () => {
 
         describe("when Maybe is tapped after tapping No", () => {
           it("removes the X icon by the players name in the attendance list", async () => {
+            const gameId = 1
             const playerId = 3
+
             await AsyncStorage.setItem("API Token", "Faked API Token")
             await AsyncStorage.setItem("User ID", playerId.toString())
 
             const game = gameFactory({
-              id: 1,
+              id: gameId,
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [
                 {
@@ -1361,17 +1386,38 @@ describe("viewing a game", () => {
                   first_name: "Michael",
                   last_name: "Scott",
                 },
-                {
-                  id: 2,
-                  first_name: "Dwight",
-                  last_name: "Schrute",
-                },
               ],
             })
 
-            await mockGameFromApi({
-              gameId: 1,
-              response: game,
+            await mockApi({
+              mockedRequests: [
+                {
+                  method: "get",
+                  route: "/games/[id]",
+                  params: { id: gameId },
+                  response: game,
+                },
+                {
+                  method: "post",
+                  route: "/games/[id]/player_attendance",
+                  params: { id: gameId },
+                  headers: {
+                    "ApiToken": "Faked API Token",
+                    "Content-Type": "Application/JSON",
+                  },
+                  body: JSON.stringify({ attending: "No" }),
+                },
+                {
+                  method: "post",
+                  route: "/games/[id]/player_attendance",
+                  params: { id: gameId },
+                  headers: {
+                    "ApiToken": "Faked API Token",
+                    "Content-Type": "Application/JSON",
+                  },
+                  body: JSON.stringify({ attending: "Maybe" }),
+                },
+              ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
 
@@ -1379,7 +1425,7 @@ describe("viewing a game", () => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
                 })
 
-                ERTL.userEvent.setup().press(ERTL.screen.getByText("No"))
+                ERTL.fireEvent.press(ERTL.screen.getByText("No"))
 
                 await ERTL.waitFor(() => {
                   expect(
@@ -1391,7 +1437,7 @@ describe("viewing a game", () => {
                   ).toShowTestId("X Icon")
                 })
 
-                ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe"))
+                ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
 
                 await ERTL.waitFor(() => {
                   expect(
@@ -1404,6 +1450,62 @@ describe("viewing a game", () => {
                 })
               },
             })
+            // const playerId = 3
+            // await AsyncStorage.setItem("API Token", "Faked API Token")
+            // await AsyncStorage.setItem("User ID", playerId.toString())
+            //
+            // const game = gameFactory({
+            //   id: 1,
+            //   played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            //   players: [
+            //     {
+            //       id: playerId,
+            //       first_name: "Michael",
+            //       last_name: "Scott",
+            //     },
+            //     {
+            //       id: 2,
+            //       first_name: "Dwight",
+            //       last_name: "Schrute",
+            //     },
+            //   ],
+            // })
+            //
+            // await mockGameFromApi({
+            //   gameId: 1,
+            //   response: game,
+            //   test: async () => {
+            //     ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+            //
+            //     await ERTL.waitFor(() => {
+            //       expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            //     })
+            //
+            //     ERTL.userEvent.setup().press(ERTL.screen.getByText("No"))
+            //
+            //     await ERTL.waitFor(() => {
+            //       expect(
+            //         ERTL.within(
+            //           ERTL.screen.getByTestId(
+            //             `Player ${playerId} Attendance List Item`,
+            //           ),
+            //         ),
+            //       ).toShowTestId("X Icon")
+            //     })
+            //
+            //     ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe"))
+            //
+            //     await ERTL.waitFor(() => {
+            //       expect(
+            //         ERTL.within(
+            //           ERTL.screen.getByTestId(
+            //             `Player ${playerId} Attendance List Item`,
+            //           ),
+            //         ),
+            //       ).not.toShowTestId("X Icon")
+            //     })
+            //   },
+            // })
           })
         })
       })
