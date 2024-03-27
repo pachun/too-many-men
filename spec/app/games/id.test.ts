@@ -558,16 +558,11 @@ describe("viewing a game", () => {
             await mockApi({
               mockedRequests: [
                 mockGetGames(games),
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: games[0].id },
-                  headers: {
-                    "ApiToken": playerApiToken,
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Yes" }),
-                },
+                mockCreateOrUpdatePlayerAttendance(
+                  games[0],
+                  playerApiToken,
+                  "Yes",
+                ),
               ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: "/games" })
