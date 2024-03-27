@@ -544,36 +544,26 @@ describe("viewing a game", () => {
 
         describe("when leaving the games details screen and entering another games details screen", () => {
           it("does not change the Yes selection on the details screen of the other game", async () => {
-            const gameId = 1
-            const playerId = 3
-
-            await AsyncStorage.setItem("API Token", "Faked API Token")
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({})
 
             const games = [
               gameFactory({
-                id: gameId,
                 played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
               }),
               gameFactory({
-                id: 2,
                 played_at: gamePlayedAtValue({ minutesInFuture: 60 }),
               }),
             ]
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games",
-                  response: games,
-                },
+                mockGetGames(games),
                 {
                   method: "post",
                   route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
+                  params: { id: games[0].id },
                   headers: {
-                    "ApiToken": "Faked API Token",
+                    "ApiToken": playerApiToken,
                     "Content-Type": "Application/JSON",
                   },
                   body: JSON.stringify({ attending: "Yes" }),

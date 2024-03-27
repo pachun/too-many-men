@@ -135,49 +135,116 @@ const url = (mockedRequest: MockedRequest): string => {
   )
 }
 
+const incorrectUrlParamFailureMessage = (
+  url: string,
+  expectedUrlParamKey: string,
+  expectedUrlParam: string,
+  receivedHeader: string | null,
+): string =>
+  `A request to ${url} has an incorrect ${expectedUrlParamKey} url param\nexpected: "${expectedUrlParam}"\nreceived: "${receivedHeader}"`
+
 const failIfExpectedSearchParamsAreNotPresent = ({
   includedSearchParams,
   expectedSearchParams,
+  breakTestOnFailureWithMessage,
+  url,
 }: {
   includedSearchParams: URLSearchParams
   expectedSearchParams: Record<string, string> | undefined
+  breakTestOnFailureWithMessage: (message: string) => void
+  url: string
 }): void => {
   if (expectedSearchParams) {
-    Object.keys(expectedSearchParams).forEach(expectedSearchParam => {
-      expect(includedSearchParams.get(expectedSearchParam)).toEqual(
-        expectedSearchParams[expectedSearchParam],
+    Object.keys(expectedSearchParams).forEach(expectedSearchParamKey => {
+      expect(includedSearchParams.get(expectedSearchParamKey)).toEqual(
+        expectedSearchParams[expectedSearchParamKey],
       )
+      if (
+        includedSearchParams.get(expectedSearchParamKey) !=
+        expectedSearchParams[expectedSearchParamKey]
+      ) {
+        breakTestOnFailureWithMessage(
+          incorrectUrlParamFailureMessage(
+            url,
+            expectedSearchParamKey,
+            expectedSearchParams[expectedSearchParamKey],
+            includedSearchParams.get(expectedSearchParamKey),
+          ),
+        )
+      }
     })
   }
 }
+
+const incorrectHeaderFailureMessage = (
+  url: string,
+  expectedHeaderKey: string,
+  expectedHeader: string,
+  receivedHeader: string | null,
+): string =>
+  `A request to ${url} has an incorrect ${expectedHeaderKey} header\nexpected: "${expectedHeader}"\nreceived: "${receivedHeader}"`
 
 const failIfExpectedHeadersAreNotPresent = ({
   includedHeaders,
   expectedHeaders,
+  breakTestOnFailureWithMessage,
+  url,
 }: {
   includedHeaders: Headers
   expectedHeaders: Record<string, string> | undefined
+  breakTestOnFailureWithMessage: (message: string) => void
+  url: string
 }): void => {
   if (expectedHeaders) {
-    Object.keys(expectedHeaders).forEach(expectedSearchParam => {
-      expect(includedHeaders.get(expectedSearchParam)).toEqual(
-        expectedHeaders[expectedSearchParam],
-      )
+    Object.keys(expectedHeaders).forEach(expectedHeaderKey => {
+      if (
+        includedHeaders.get(expectedHeaderKey) !=
+        expectedHeaders[expectedHeaderKey]
+      ) {
+        breakTestOnFailureWithMessage(
+          incorrectHeaderFailureMessage(
+            url,
+            expectedHeaderKey,
+            expectedHeaders[expectedHeaderKey],
+            includedHeaders.get(expectedHeaderKey),
+          ),
+        )
+      }
     })
   }
 }
 
+const incorrectJsonBodyFailureMessage = (
+  url: string,
+  expectedJsonBody: string | undefined,
+  receivedJsonBody: void | MSW.DefaultBodyType,
+): string =>
+  `A request to ${url} has an incorrect json body\nexpected: "${expectedJsonBody}"\nreceived: "${receivedJsonBody}"`
+
 const failIfExpectedJsonBodyIsNotPresent = async ({
   request,
   expectedJsonBody,
+  breakTestOnFailureWithMessage,
+  url,
 }: {
   request: MSW.StrictRequest<MSW.DefaultBodyType>
   expectedJsonBody: string | undefined
+  breakTestOnFailureWithMessage: (message: string) => void
+  url: string
 }): Promise<void> => {
   const includedJsonBody = await request.json().catch(() => {})
 
   if (includedJsonBody || expectedJsonBody) {
     expect(expectedJsonBody).toEqual(JSON.stringify(includedJsonBody))
+    if (expectedJsonBody != JSON.stringify(includedJsonBody)) {
+      breakTestOnFailureWithMessage(
+        incorrectJsonBodyFailureMessage(
+          url,
+          expectedJsonBody,
+          includedJsonBody,
+        ),
+      )
+    }
   }
 }
 
@@ -186,6 +253,11 @@ const mockApi = async ({
   mockedRequests,
   test,
 }: MockApiArguments): Promise<string[]> => {
+  // https://github.com/mswjs/msw/issues/946#issuecomment-1202959063
+  const breakTestOnFailureWithMessage = (message: string): void => {
+    it(`\n\n\nTHIS TEST NOT BREAKING BECAUSE YOU NESTED TESTS. IT FAILED BECAUSE:\n\n${message}\n\n\n`, () => {})
+  }
+
   let urlsOfApiRequests: string[] = []
   server.events.on("request:match", ({ request }) => {
     urlsOfApiRequests = [...urlsOfApiRequests, request.url]
@@ -202,18 +274,24 @@ const mockApi = async ({
             includedSearchParams: url.searchParams,
             // @ts-ignore
             expectedSearchParams: mockedRequest.searchParams,
+            breakTestOnFailureWithMessage,
+            url: request.url,
           })
 
           failIfExpectedHeadersAreNotPresent({
             includedHeaders: request.headers,
             // @ts-ignore
             expectedHeaders: mockedRequest.headers,
+            breakTestOnFailureWithMessage,
+            url: request.url,
           })
 
           await failIfExpectedJsonBodyIsNotPresent({
             request: request,
             // @ts-ignore
             expectedJsonBody: mockedRequest.body,
+            breakTestOnFailureWithMessage,
+            url: request.url,
           })
 
           if (mockedRequest.response === "Network Error") {
@@ -227,12 +305,11 @@ const mockApi = async ({
     )
   })
 
-  // https://github.com/mswjs/msw/issues/946#issuecomment-1202959063
   server.listen({
     onUnhandledRequest: request => {
-      const unhandledRequestError = (unhandledRequestUrl: string): string =>
-        `THIS IS NOT ERRORING BECAUSE YOU NESTED TESTS; A REQUEST WAS MADE TO ${unhandledRequestUrl} WHICH WAS NOT PROVISIONED FOR WITH MSW`
-      it(unhandledRequestError(request.url), () => {})
+      breakTestOnFailureWithMessage(
+        `A REQUEST WAS MADE TO ${request.url} WHICH WAS NOT PROVISIONED FOR WITH MSW`,
+      )
     },
   })
 
