@@ -235,6 +235,54 @@ describe("viewing a game", () => {
       })
     })
 
+    describe("when the game has already started or is in the past", () => {
+      it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
+        await mockLoggedInPlayer({})
+
+        const game = gameFactory({
+          played_at: gamePlayedAtValue({ minutesInFuture: -1 }),
+        })
+
+        await mockApi({
+          mockedRequests: [mockGetGame(game)],
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              expect(ERTL.screen).not.toShowText("Are you going to this game?")
+              expect(ERTL.screen).not.toShowText("Yes")
+              expect(ERTL.screen).not.toShowText("No")
+              expect(ERTL.screen).not.toShowText("Maybe")
+            })
+          },
+        })
+      })
+    })
+
+    describe("when the game is in the future and the user is not authenticated", () => {
+      it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
+        const game = gameFactory({
+          played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+        })
+
+        await mockApi({
+          mockedRequests: [mockGetGame(game)],
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              expect(ERTL.screen).not.toShowText("Are you going to this game?")
+              expect(ERTL.screen).not.toShowText("Yes")
+              expect(ERTL.screen).not.toShowText("No")
+              expect(ERTL.screen).not.toShowText("Maybe")
+            })
+          },
+        })
+      })
+    })
+
     describe("when the game is in the future and the player is authenticated", () => {
       it("shows an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
         await mockLoggedInPlayer({})
@@ -1580,56 +1628,6 @@ describe("viewing a game", () => {
               },
             })
           })
-        })
-      })
-    })
-
-    describe("when the game has already started or is in the past", () => {
-      it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
-        await AsyncStorage.setItem("API Token", "Faked API Token")
-
-        const game = gameFactory({
-          id: 3,
-          played_at: gamePlayedAtValue({ minutesInFuture: -1 }),
-        })
-
-        await mockApi({
-          mockedRequests: [mockGetGame(game)],
-          test: async () => {
-            ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
-
-            await ERTL.waitFor(() => {
-              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-              expect(ERTL.screen).not.toShowText("Are you going to this game?")
-              expect(ERTL.screen).not.toShowText("Yes")
-              expect(ERTL.screen).not.toShowText("No")
-              expect(ERTL.screen).not.toShowText("Maybe")
-            })
-          },
-        })
-      })
-    })
-
-    describe("when the game is in the future and the user is not authenticated", () => {
-      it("does not show an Are You Going To This Game? question with Yes, No, and Maybe options", async () => {
-        const game = gameFactory({
-          id: 3,
-          played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-        })
-
-        await mockApi({
-          mockedRequests: [mockGetGame(game)],
-          test: async () => {
-            ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
-
-            await ERTL.waitFor(() => {
-              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-              expect(ERTL.screen).not.toShowText("Are you going to this game?")
-              expect(ERTL.screen).not.toShowText("Yes")
-              expect(ERTL.screen).not.toShowText("No")
-              expect(ERTL.screen).not.toShowText("Maybe")
-            })
-          },
         })
       })
     })
