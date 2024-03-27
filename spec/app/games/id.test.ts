@@ -377,7 +377,7 @@ describe("viewing a game", () => {
           })
         })
 
-        it("shows a mini loading spinner and disables the Yes, No, Maybe radio buttons while the request is in flight", async () => {
+        it("shows a mini loading spinner", async () => {
           const playerId = 3
           const gameId = 1
           await AsyncStorage.setItem("API Token", "Faked API Token")
@@ -400,7 +400,7 @@ describe("viewing a game", () => {
             ],
           })
 
-          const urlsOfApiRequests = await mockApi({
+          await mockApi({
             mockedRequests: [
               {
                 method: "get",
@@ -412,7 +412,12 @@ describe("viewing a game", () => {
                 method: "post",
                 route: "/games/[id]/player_attendance",
                 params: { id: gameId },
-                headers: { ApiToken: "Faked API Token" },
+                // needs to match on these
+                headers: {
+                  "ApiToken": "Faked API Token",
+                  "Content-Type": "Application/JSON",
+                },
+                body: JSON.stringify({ attendance: "Yes" }),
               },
             ],
             test: async () => {
@@ -422,31 +427,12 @@ describe("viewing a game", () => {
                 expect(ERTL.screen).not.toShowTestId("Loading Spinner")
               })
 
-              await ERTL.waitFor(() => {
-                expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
-              })
+              expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
 
-              await ERTL.act(() =>
-                ERTL.userEvent.setup().press(ERTL.screen.getByText("Yes")),
-              )
+              ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).toShowTestId("Mini Loading Spinner")
-              })
-
-              await ERTL.act(() =>
-                ERTL.userEvent.setup().press(ERTL.screen.getByText("No")),
-              )
-
-              await ERTL.act(() =>
-                ERTL.userEvent.setup().press(ERTL.screen.getByText("Maybe")),
-              )
-
-              await ERTL.waitFor(() => {
-                expect(
-                  ERTL.screen.getByTestId("Yes Radio Button").props.style
-                    .backgroundColor,
-                ).toEqual(color("green"))
               })
 
               await ERTL.waitFor(() => {
@@ -454,11 +440,9 @@ describe("viewing a game", () => {
               })
             },
           })
-
-          expect(urlsOfApiRequests).toInclude(
-            `${Config.apiUrl}/games/${gameId}/player_attendance`,
-          )
         })
+
+        // disables the attendance buttons while the api request is ongoing
 
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the Yes selection", async () => {

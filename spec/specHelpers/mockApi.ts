@@ -9,7 +9,8 @@ export interface MockedPlayerAttendanceRequest {
   method: "post"
   route: "/games/[id]/player_attendance"
   params: { id: number }
-  headers: { ApiToken: string }
+  headers: { "ApiToken": string; "Content-Type": "Application/JSON" }
+  body: string
   response?: object
 }
 
@@ -95,6 +96,38 @@ const url = (mockedRequest: MockedRequest): string => {
   )
 }
 
+const failIfExpectedSearchParamsAreNotPresent = ({
+  includedSearchParams,
+  expectedSearchParams,
+}: {
+  includedSearchParams: URLSearchParams
+  expectedSearchParams: Record<string, string> | undefined
+}): void => {
+  if (expectedSearchParams) {
+    Object.keys(expectedSearchParams).forEach(expectedSearchParam => {
+      expect(includedSearchParams.get(expectedSearchParam)).toEqual(
+        expectedSearchParams[expectedSearchParam],
+      )
+    })
+  }
+}
+
+const failIfExpectedHeadersAreNotPresent = ({
+  includedHeaders,
+  expectedHeaders,
+}: {
+  includedHeaders: Headers
+  expectedHeaders: Record<string, string> | undefined
+}): void => {
+  if (expectedHeaders) {
+    Object.keys(expectedHeaders).forEach(expectedSearchParam => {
+      expect(includedHeaders.get(expectedSearchParam)).toEqual(
+        expectedHeaders[expectedSearchParam],
+      )
+    })
+  }
+}
+
 const mockApi = async ({
   server = MSW_NODE.setupServer(),
   mockedRequests,
@@ -109,26 +142,25 @@ const mockApi = async ({
     server.use(
       MSW.http[mockedRequest.method](
         url(mockedRequest),
-        // @ts-ignore
         ({ request }) => {
           if (mockedRequest.response === "Network Error") {
             return MSW.HttpResponse.error()
           } else {
-            // @ts-ignore
-            if (mockedRequest.searchParams) {
-              const url = new URL(request.url)
+            const url = new URL(request.url)
+
+            failIfExpectedSearchParamsAreNotPresent({
+              includedSearchParams: url.searchParams,
               // @ts-ignore
-              Object.keys(mockedRequest.searchParams).forEach(searchParam => {
-                expect(url.searchParams.get(searchParam)).toEqual(
-                  // @ts-ignore
-                  mockedRequest.searchParams[searchParam],
-                )
-              })
-              return MSW.HttpResponse.json(mockedRequest.response)
-            } else {
-              console.log(`returning for ${mockedRequest.route}`)
-              return MSW.HttpResponse.json(mockedRequest.response)
-            }
+              expectedSearchParams: mockedRequest.searchParams,
+            })
+
+            failIfExpectedHeadersAreNotPresent({
+              includedHeaders: request.headers,
+              // @ts-ignore
+              expectedHeaders: mockedRequest.headers,
+            })
+
+            return MSW.HttpResponse.json(mockedRequest.response)
           }
         },
         { once: true },

@@ -121,10 +121,6 @@ const AreYouGoingToThisGame = ({
     [game, apiToken, userId, setRefreshableGames],
   )
 
-  React.useEffect(() => {
-    console.debug(`isWaitingForApiResponse: ${isWaitingForApiResponse}`)
-  }, [isWaitingForApiResponse])
-
   if (shouldShowThe_AreYouGoingToThisGame_Question) {
     return (
       <ForegroundItem>
