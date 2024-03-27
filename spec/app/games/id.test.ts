@@ -488,33 +488,33 @@ describe("viewing a game", () => {
 
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the Yes selection", async () => {
-            const gameId = 1
-            const playerId = 3
-            const apiToken = "Faked API Token"
+            const player = playerFactory({
+              first_name: "Michael",
+              last_name: "Scott",
+            })
 
-            await AsyncStorage.setItem("API Token", apiToken)
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
 
-            const games = [
-              gameFactory({
-                id: gameId,
-                played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
-              }),
-            ]
+            const game = gameFactory({
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [player],
+            })
 
             await mockApi({
               mockedRequests: [
                 {
                   method: "get",
                   route: "/games",
-                  response: games,
+                  response: [game],
                 },
                 {
                   method: "post",
                   route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
+                  params: { id: game.id },
                   headers: {
-                    "ApiToken": "Faked API Token",
+                    "ApiToken": playerApiToken,
                     "Content-Type": "Application/JSON",
                   },
                   body: JSON.stringify({ attending: "Yes" }),
