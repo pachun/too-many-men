@@ -690,9 +690,15 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+                })
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(
+                    ERTL.screen.getByTestId("Game List Item"),
+                  )
+                })
 
                 expect(
                   ERTL.screen.getByTestId("Yes Radio Button").props.style
@@ -748,9 +754,11 @@ describe("viewing a game", () => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
                 })
 
-                ERTL.fireEvent.press(
-                  ERTL.screen.getAllByTestId("Game List Item")[0],
-                )
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(
+                    ERTL.screen.getAllByTestId("Game List Item")[0],
+                  )
+                })
 
                 await ERTL.waitFor(() => {
                   expect(ERTL.screen).toShowText("Yes")
@@ -758,11 +766,15 @@ describe("viewing a game", () => {
 
                 ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
 
-                ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+                })
 
-                ERTL.fireEvent.press(
-                  ERTL.screen.getAllByTestId("Game List Item")[1],
-                )
+                await ERTL.waitFor(() => {
+                  ERTL.fireEvent.press(
+                    ERTL.screen.getAllByTestId("Game List Item")[1],
+                  )
+                })
 
                 expect(
                   ERTL.screen.getByTestId("Yes Radio Button").props.style
@@ -787,11 +799,6 @@ describe("viewing a game", () => {
                   id: playerId,
                   first_name: "Michael",
                   last_name: "Scott",
-                },
-                {
-                  id: 2,
-                  first_name: "Dwight",
-                  last_name: "Schrute",
                 },
               ],
             })

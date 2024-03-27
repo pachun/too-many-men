@@ -191,7 +191,9 @@ const mockApi = async ({
   // https://github.com/mswjs/msw/issues/946#issuecomment-1202959063
   server.listen({
     onUnhandledRequest: request => {
-      it(`unhandled request to ${request.url}`, () => {
+      const unhandledRequestError = (unhandledRequestUrl: string): string =>
+        `THIS IS NOT ERRORING BECAUSE YOU NESTED TESTS; A REQUEST WAS MADE TO ${unhandledRequestUrl} WHICH WAS NOT PROVISIONED FOR WITH MSW`
+      it(unhandledRequestError(request.url), () => {
         // hello
       })
     },
