@@ -170,7 +170,7 @@ const AreYouGoingToThisGame = ({
             const usersPreviousResponseToAttendingGame =
               getUsersResponseToAttendingGame(userId!, game)
             setRefreshableGames(
-              setUsersResponseToAttendingGame(userId!, game, "No"),
+              setUsersResponseToAttendingGame(userId!, game, "Maybe"),
             )
             setIsWaitingForApiResponse(true)
             try {
