@@ -14,6 +14,7 @@ const BackButtonWithTestId = ({
 
   return (
     <ReactNative.Pressable
+      hitSlop={50}
       testID="Back Button"
       onPress={() => router.back()}
       style={{ flexDirection: "row", alignItems: "flex-end" }}
