@@ -364,8 +364,9 @@ describe("viewing a game", () => {
         it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
           const gameId = 1
           const playerId = 3
+          const apiToken = "Faked API Token"
 
-          await AsyncStorage.setItem("API Token", "Faked API Token")
+          await AsyncStorage.setItem("API Token", apiToken)
           await AsyncStorage.setItem("User ID", playerId.toString())
 
           const game = gameFactory({
@@ -382,22 +383,8 @@ describe("viewing a game", () => {
 
           await mockApi({
             mockedRequests: [
-              {
-                method: "get",
-                route: "/games/[id]",
-                params: { id: gameId },
-                response: game,
-              },
-              {
-                method: "post",
-                route: "/games/[id]/player_attendance",
-                params: { id: gameId },
-                headers: {
-                  "ApiToken": "Faked API Token",
-                  "Content-Type": "Application/JSON",
-                },
-                body: JSON.stringify({ attending: "Yes" }),
-              },
+              mockGetGame(game),
+              mockCreateOrUpdatePlayerAttendance(game, apiToken, "Yes"),
             ],
             test: async () => {
               ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
