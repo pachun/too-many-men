@@ -36,7 +36,7 @@ describe("viewing a game", () => {
 
   describe("while the game is loaded from the api", () => {
     it("shows a loading spinner", async () => {
-      const game = gameFactory({ id: 1 })
+      const game = gameFactory({})
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
@@ -51,7 +51,7 @@ describe("viewing a game", () => {
     })
 
     it("does not show a navigation bar title", async () => {
-      const game = gameFactory({ id: 1 })
+      const game = gameFactory({})
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
@@ -68,7 +68,7 @@ describe("viewing a game", () => {
 
   describe("when the game is done loading from the api", () => {
     it("hides the loading spinner", async () => {
-      const game = gameFactory({ id: 1 })
+      const game = gameFactory({})
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
@@ -83,10 +83,7 @@ describe("viewing a game", () => {
     })
 
     it("sets the navigation bar title to the games date", async () => {
-      const game = gameFactory({
-        id: 1,
-        played_at: "2024-02-09T02:30:00Z",
-      })
+      const game = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
@@ -103,15 +100,12 @@ describe("viewing a game", () => {
     })
 
     it("shows the games date", async () => {
-      const game = gameFactory({
-        id: 2,
-        played_at: "2024-02-09T02:30:00Z",
-      })
+      const game = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
         test: async () => {
-          ERTL.renderRouter("src/app", { initialUrl: "/games/2" })
+          ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
           await ERTL.waitFor(() => {
             expect(ERTL.screen).toShowText("Thursday, Feb 8")
@@ -121,15 +115,12 @@ describe("viewing a game", () => {
     })
 
     it("shows the games time", async () => {
-      const game = gameFactory({
-        id: 3,
-        played_at: "2024-02-09T02:30:00Z",
-      })
+      const game = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
         test: async () => {
-          ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+          ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
           await ERTL.waitFor(() => {
             expect(ERTL.screen).toShowText("9:30 PM")
@@ -139,15 +130,12 @@ describe("viewing a game", () => {
     })
 
     it("shows the games rink", async () => {
-      const game = gameFactory({
-        id: 3,
-        rink: "Rink C",
-      })
+      const game = gameFactory({ rink: "Rink C" })
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
         test: async () => {
-          ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+          ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
           await ERTL.waitFor(() => {
             expect(ERTL.screen).toShowText("Rink C")
@@ -157,15 +145,12 @@ describe("viewing a game", () => {
     })
 
     it("shows the games opponent", async () => {
-      const game = gameFactory({
-        id: 3,
-        opposing_teams_name: "Scott's Tots",
-      })
+      const game = gameFactory({ opposing_teams_name: "Scott's Tots" })
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
         test: async () => {
-          ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+          ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
           await ERTL.waitFor(() => {
             expect(ERTL.screen).toShowText("Scott's Tots")
@@ -175,15 +160,12 @@ describe("viewing a game", () => {
     })
 
     it("indicates when the team is the home team", async () => {
-      const game = gameFactory({
-        id: 3,
-        is_home_team: true,
-      })
+      const game = gameFactory({ is_home_team: true })
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
         test: async () => {
-          ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+          ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
           await ERTL.waitFor(() => {
             expect(ERTL.screen).toShowText("Home")
@@ -193,15 +175,12 @@ describe("viewing a game", () => {
     })
 
     it("indicates when the team is the away team", async () => {
-      const game = gameFactory({
-        id: 3,
-        is_home_team: false,
-      })
+      const game = gameFactory({ is_home_team: false })
 
       await mockApi({
         mockedRequests: [mockGetGame(game)],
         test: async () => {
-          ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
+          ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
           await ERTL.waitFor(() => {
             expect(ERTL.screen).toShowText("Away")
@@ -212,7 +191,6 @@ describe("viewing a game", () => {
 
     it("shows a list of the games players (for attendance tracking purposes)", async () => {
       const game = gameFactory({
-        id: 3,
         players: [
           { first_name: "Toby", last_name: "Flenderson" },
           { first_name: "Kelly", last_name: "Kapoor" },
@@ -343,10 +321,7 @@ describe("viewing a game", () => {
 
       describe("when Yes is tapped", () => {
         it("selects the Yes radio button", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -382,10 +357,7 @@ describe("viewing a game", () => {
         })
 
         it("shows a checkmark icon by the players name in the attendance list", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -424,10 +396,7 @@ describe("viewing a game", () => {
         })
 
         it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -466,10 +435,7 @@ describe("viewing a game", () => {
         })
 
         it("disables the attendance buttons while the attendance API request is ongoing", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -514,10 +480,7 @@ describe("viewing a game", () => {
 
         describe("when the attendance API request fails", () => {
           it("shows a Trouble Connecting to the Internet message", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -569,10 +532,7 @@ describe("viewing a game", () => {
 
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the Yes selection", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -684,10 +644,7 @@ describe("viewing a game", () => {
 
         describe("when No is tapped after tapping Yes", () => {
           it("removes the checkmark icon by the players name in the attendance list", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -743,10 +700,7 @@ describe("viewing a game", () => {
 
         describe("when Maybe is tapped after tapping Yes", () => {
           it("removes the checkmark icon by the players name in the attendance list", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -807,10 +761,7 @@ describe("viewing a game", () => {
 
       describe("when No is tapped", () => {
         it("selects the No radio button", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -846,10 +797,7 @@ describe("viewing a game", () => {
         })
 
         it("shows an X icon by the players name in the attendance list", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -888,10 +836,7 @@ describe("viewing a game", () => {
         })
 
         it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -930,10 +875,7 @@ describe("viewing a game", () => {
         })
 
         it("disables the attendance buttons while the attendance API request is ongoing", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -978,10 +920,7 @@ describe("viewing a game", () => {
 
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the No selection", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -1093,10 +1032,7 @@ describe("viewing a game", () => {
 
         describe("when Yes is tapped after tapping No", () => {
           it("removes the X icon by the players name in the attendance list", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -1152,10 +1088,7 @@ describe("viewing a game", () => {
 
         describe("when Maybe is tapped after tapping No", () => {
           it("removes the X icon by the players name in the attendance list", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -1216,10 +1149,7 @@ describe("viewing a game", () => {
 
       describe("when Maybe is tapped", () => {
         it("selects the Maybe radio button", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -1255,10 +1185,7 @@ describe("viewing a game", () => {
         })
 
         it("shows a ? icon by the players name in the attendance list", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -1297,10 +1224,7 @@ describe("viewing a game", () => {
         })
 
         it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -1339,10 +1263,7 @@ describe("viewing a game", () => {
         })
 
         it("disables the attendance buttons while the attendance API request is ongoing", async () => {
-          const player = playerFactory({
-            first_name: "Michael",
-            last_name: "Scott",
-          })
+          const player = playerFactory({})
 
           const { playerApiToken } = await mockLoggedInPlayer({
             playerId: player.id,
@@ -1387,10 +1308,7 @@ describe("viewing a game", () => {
 
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the Maybe selection", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -1506,10 +1424,7 @@ describe("viewing a game", () => {
 
         describe("when Yes is tapped after tapping Maybe", () => {
           it("removes the ? icon by the players name in the attendance list", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
@@ -1569,10 +1484,7 @@ describe("viewing a game", () => {
 
         describe("when No is tapped after tapping Maybe", () => {
           it("removes the X icon by the players name in the attendance list", async () => {
-            const player = playerFactory({
-              first_name: "Michael",
-              last_name: "Scott",
-            })
+            const player = playerFactory({})
 
             const { playerApiToken } = await mockLoggedInPlayer({
               playerId: player.id,
