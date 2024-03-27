@@ -464,8 +464,9 @@ describe("viewing a game", () => {
           it("shows a Trouble Connecting to the Internet message", async () => {
             const gameId = 1
             const playerId = 3
+            const apiToken = "Faked API Token"
 
-            await AsyncStorage.setItem("API Token", "Faked API Token")
+            await AsyncStorage.setItem("API Token", apiToken)
             await AsyncStorage.setItem("User ID", playerId.toString())
 
             const game = gameFactory({
@@ -482,23 +483,8 @@ describe("viewing a game", () => {
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games/[id]",
-                  params: { id: gameId },
-                  response: game,
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Yes" }),
-                  response: "Network Error",
-                },
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(game, apiToken, "Yes", true),
               ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
