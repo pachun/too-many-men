@@ -11,7 +11,7 @@ export interface MockedPlayerAttendanceRequest {
   params: { id: number }
   headers: { "ApiToken": string; "Content-Type": "Application/JSON" }
   body: string
-  response?: object
+  response?: "Network Error" | undefined
 }
 
 export interface MockedCheckPlayersTextMessageConfirmationCodeRequest {
@@ -157,28 +157,29 @@ const mockApi = async ({
       MSW.http[mockedRequest.method](
         url(mockedRequest),
         async ({ request }) => {
+          const url = new URL(request.url)
+
+          failIfExpectedSearchParamsAreNotPresent({
+            includedSearchParams: url.searchParams,
+            // @ts-ignore
+            expectedSearchParams: mockedRequest.searchParams,
+          })
+
+          failIfExpectedHeadersAreNotPresent({
+            includedHeaders: request.headers,
+            // @ts-ignore
+            expectedHeaders: mockedRequest.headers,
+          })
+
+          await failIfExpectedJsonBodyIsNotPresent({
+            request: request,
+            // @ts-ignore
+            expectedJsonBody: mockedRequest.body,
+          })
+
           if (mockedRequest.response === "Network Error") {
             return MSW.HttpResponse.error()
           } else {
-            const url = new URL(request.url)
-
-            failIfExpectedSearchParamsAreNotPresent({
-              includedSearchParams: url.searchParams,
-              // @ts-ignore
-              expectedSearchParams: mockedRequest.searchParams,
-            })
-
-            failIfExpectedHeadersAreNotPresent({
-              includedHeaders: request.headers,
-              // @ts-ignore
-              expectedHeaders: mockedRequest.headers,
-            })
-
-            await failIfExpectedJsonBodyIsNotPresent({
-              request: request,
-              expectedJsonBody: mockedRequest.body,
-            })
-
             return MSW.HttpResponse.json(mockedRequest.response)
           }
         },

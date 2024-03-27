@@ -6,7 +6,6 @@ import mockGameFromApi from "../../specHelpers/mockGameFromApi"
 import type { Game } from "types/Game"
 import mockGamesFromApi from "../../specHelpers/mockGamesFromApi"
 import color from "helpers/color"
-import Config from "Config"
 import mockApi from "../../specHelpers/mockApi"
 
 const gameDateWithWeekday = (game: Game): string =>
@@ -497,6 +496,135 @@ describe("viewing a game", () => {
                   .backgroundColor,
               ).toEqual(color("green"))
             },
+          })
+        })
+
+        describe("when the attendance API request fails", () => {
+          it("shows a Trouble Connecting to the Internet message", async () => {
+            const playerId = 3
+            const gameId = 1
+            await AsyncStorage.setItem("API Token", "Faked API Token")
+            await AsyncStorage.setItem("User ID", playerId.toString())
+
+            const game = gameFactory({
+              id: gameId,
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [
+                {
+                  id: playerId,
+                  first_name: "Michael",
+                  last_name: "Scott",
+                },
+              ],
+            })
+
+            await mockApi({
+              mockedRequests: [
+                {
+                  method: "get",
+                  route: "/games/[id]",
+                  params: { id: gameId },
+                  response: game,
+                },
+                {
+                  method: "post",
+                  route: "/games/[id]/player_attendance",
+                  params: { id: gameId },
+                  headers: {
+                    "ApiToken": "Faked API Token",
+                    "Content-Type": "Application/JSON",
+                  },
+                  body: JSON.stringify({ attending: "Yes" }),
+                  response: "Network Error",
+                },
+              ],
+              test: async () => {
+                ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).toShowText(
+                    "Trouble Connecting to the Internet",
+                  )
+                })
+              },
+            })
+          })
+
+          it("unsets the players selected attendance option", async () => {
+            const playerId = 3
+            const gameId = 1
+            await AsyncStorage.setItem("API Token", "Faked API Token")
+            await AsyncStorage.setItem("User ID", playerId.toString())
+
+            const game = gameFactory({
+              id: gameId,
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [
+                {
+                  id: playerId,
+                  first_name: "Michael",
+                  last_name: "Scott",
+                },
+              ],
+            })
+
+            await mockApi({
+              mockedRequests: [
+                {
+                  method: "get",
+                  route: "/games/[id]",
+                  params: { id: gameId },
+                  response: game,
+                },
+                {
+                  method: "post",
+                  route: "/games/[id]/player_attendance",
+                  params: { id: gameId },
+                  headers: {
+                    "ApiToken": "Faked API Token",
+                    "Content-Type": "Application/JSON",
+                  },
+                  body: JSON.stringify({ attending: "Yes" }),
+                  response: "Network Error",
+                },
+              ],
+              test: async () => {
+                ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+                })
+
+                ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                })
+
+                await ERTL.waitFor(() => {
+                  expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+                })
+
+                expect(
+                  ERTL.screen.getByTestId("Yes Radio Button").props.style
+                    .backgroundColor,
+                ).toEqual(undefined)
+              },
+            })
           })
         })
 

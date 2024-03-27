@@ -2,12 +2,12 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as Animatable from "react-native-animatable"
 import Dialog from "react-native-dialog"
-import NavigationHeaderToastNotification from "./NavigationHeaderToastNotification"
 import type { Player } from "types/Player"
 import Config from "Config"
 import useApiToken from "hooks/useApiToken"
 import useUserId from "hooks/useUserId"
 import useIsSignedIn from "hooks/useIsSignedIn"
+import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
 
 const completeConfirmationCodeLength = 6
 
@@ -18,9 +18,7 @@ interface PlayerAuthenticationFlowProps {
 const PlayerAuthenticationFlow = ({
   player,
 }: PlayerAuthenticationFlowProps): React.ReactElement => {
-  const { showNotification } = React.useContext(
-    NavigationHeaderToastNotification.Context,
-  )
+  const { showNotification } = useNavigationHeaderToastNotification()
 
   const [confirmationCodeInputIsVisible, setConfirmationCodeDialogIsVisible] =
     React.useState(false)

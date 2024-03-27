@@ -1,8 +1,8 @@
 import React from "react"
 import type { RefreshableRequest } from "types/RefreshableRequest"
-import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import Config from "Config"
 import { trackAptabaseEvent } from "helpers/aptabase"
+import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
 
 interface UseRefreshableResourcesReturnType<Resource> {
   loadResources: () => Promise<void>
@@ -20,9 +20,7 @@ const useRefreshableResources = <Resource>(
     [resourceApiPath],
   )
 
-  const { showNotification } = React.useContext(
-    NavigationHeaderToastNotification.Context,
-  )
+  const { showNotification } = useNavigationHeaderToastNotification()
 
   const loadResources = React.useCallback(async (): Promise<void> => {
     setRefreshableResources({ status: "Loading" })

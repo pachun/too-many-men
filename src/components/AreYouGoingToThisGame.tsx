@@ -17,6 +17,7 @@ import color from "helpers/color"
 import useTheme from "hooks/useTheme"
 import Config from "Config"
 import useApiToken from "hooks/useApiToken"
+import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
 
 const isTheGameInTheFuture = (game: Game): boolean => {
   const currentTime = new Date()
@@ -90,6 +91,8 @@ const AreYouGoingToThisGame = ({
   const [isWaitingForApiResponse, setIsWaitingForApiResponse] =
     React.useState(false)
 
+  const { showNotification } = useNavigationHeaderToastNotification()
+
   const updateAreYouGoingToThisGame = React.useCallback(
     async (playerAttendance: AreYouGoingToThisGameSelection) => {
       switch (playerAttendance) {
@@ -98,14 +101,22 @@ const AreYouGoingToThisGame = ({
             setUserRespondedYesToAttendingGame(userId!, game!),
           )
           setIsWaitingForApiResponse(true)
-          await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {
-            method: "POST",
-            headers: {
-              "ApiToken": apiToken!,
-              "Content-Type": "Application/JSON",
-            },
-            body: JSON.stringify({ attending: "Yes" }),
-          })
+          try {
+            await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {
+              method: "POST",
+              headers: {
+                "ApiToken": apiToken!,
+                "Content-Type": "Application/JSON",
+              },
+              body: JSON.stringify({ attending: "Yes" }),
+            })
+          } catch {
+            showNotification({
+              type: "warning",
+              message: "Trouble Connecting to the Internet",
+              dismissAfter: 3,
+            })
+          }
           setIsWaitingForApiResponse(false)
           break
         case "No":

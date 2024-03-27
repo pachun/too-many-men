@@ -32,7 +32,7 @@ type Type = "success" | "warning"
 type NotificationType = { type: Type; message: string; dismissAfter?: number }
 type DisplayedNotificationType = NotificationType | undefined
 
-interface NavigationHeaderToastNotificationContextType {
+export interface NavigationHeaderToastNotificationContextType {
   showNotification: ({ type, message, dismissAfter }: NotificationType) => void
   displayedNotification: DisplayedNotificationType
   dismissNotification: () => void
