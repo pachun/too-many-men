@@ -14,7 +14,7 @@ export interface MockedCreateOrUpdatePlayerAttendanceRequest {
   response?: "Network Error" | undefined
 }
 
-export const mockedCreateOrUpdatePlayerAttendanceRequest = (
+export const mockCreateOrUpdatePlayerAttendance = (
   game: Game,
   apiToken: string,
   response: "Yes" | "No" | "Maybe",

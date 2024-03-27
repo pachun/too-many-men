@@ -6,7 +6,7 @@ import type { Game } from "types/Game"
 import color from "helpers/color"
 import mockApi, {
   mockGetGame,
-  mockedCreateOrUpdatePlayerAttendanceRequest,
+  mockCreateOrUpdatePlayerAttendance,
 } from "../../specHelpers/mockApi"
 
 const gameDateWithWeekday = (game: Game): string =>
@@ -335,11 +335,7 @@ describe("viewing a game", () => {
                 params: { id: gameId },
                 response: game,
               },
-              mockedCreateOrUpdatePlayerAttendanceRequest(
-                game,
-                apiToken,
-                "Yes",
-              ),
+              mockCreateOrUpdatePlayerAttendance(game, apiToken, "Yes"),
             ],
             test: async () => {
               ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
