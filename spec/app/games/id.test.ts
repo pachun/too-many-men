@@ -1045,55 +1045,30 @@ describe("viewing a game", () => {
 
         describe("when Yes is tapped after tapping No", () => {
           it("removes the X icon by the players name in the attendance list", async () => {
-            const gameId = 1
-            const playerId = 3
+            const player = playerFactory({
+              first_name: "Michael",
+              last_name: "Scott",
+            })
 
-            await AsyncStorage.setItem("API Token", "Faked API Token")
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
 
             const game = gameFactory({
-              id: gameId,
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-              players: [
-                {
-                  id: playerId,
-                  first_name: "Michael",
-                  last_name: "Scott",
-                },
-              ],
+              players: [player],
             })
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games/[id]",
-                  params: { id: gameId },
-                  response: game,
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "No" }),
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Yes" }),
-                },
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "No"),
+                mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Yes"),
               ],
               test: async () => {
-                ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
 
                 await ERTL.waitFor(() => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
@@ -1105,7 +1080,7 @@ describe("viewing a game", () => {
                   expect(
                     ERTL.within(
                       ERTL.screen.getByTestId(
-                        `Player ${playerId} Attendance List Item`,
+                        `Player ${player.id} Attendance List Item`,
                       ),
                     ),
                   ).toShowTestId("X Icon")
@@ -1117,7 +1092,7 @@ describe("viewing a game", () => {
                   expect(
                     ERTL.within(
                       ERTL.screen.getByTestId(
-                        `Player ${playerId} Attendance List Item`,
+                        `Player ${player.id} Attendance List Item`,
                       ),
                     ),
                   ).not.toShowTestId("X Icon")
