@@ -16,17 +16,13 @@ import Config from "Config"
 import useApiToken from "hooks/useApiToken"
 import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
 import setUsersResponseToAttendingGame from "updaters/setUsersResponseToAttendingGame"
+import type { UsersResponseToAttendingGame } from "types/UsersResponseToAttendingGame"
 
 const isTheGameInTheFuture = (game: Game): boolean => {
   const currentTime = new Date()
   const gameTime = DateFNS.parseISO(game.played_at)
   return DateFNS.isBefore(currentTime, gameTime)
 }
-
-type AreYouGoingToThisGameSelection = "Yes" | "No" | "Maybe"
-type PossibleAreYouGoingToThisGameValues =
-  | AreYouGoingToThisGameSelection
-  | undefined
 
 interface AreYouGoingToThisGameProps {
   game: Game
@@ -61,7 +57,7 @@ const AreYouGoingToThisGame = ({
   const { setRefreshableGames } = useRefreshableGames()
 
   const areYouGoingToThisGameAnswer =
-    React.useMemo((): PossibleAreYouGoingToThisGameValues => {
+    React.useMemo((): UsersResponseToAttendingGame => {
       if (
         userId &&
         game.ids_of_players_who_responded_yes_to_attending.includes(userId)

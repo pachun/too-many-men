@@ -3,6 +3,7 @@ import type {
   RefreshableRequest,
   RefreshableRequestWithData,
 } from "types/RefreshableRequest"
+import type { UsersResponseToAttendingGame } from "types/UsersResponseToAttendingGame"
 
 const updateUserIds = ({
   existingUserIds,
@@ -24,7 +25,7 @@ const setUsersResponseToAttendingGame =
   (
     userId: number,
     game: Game,
-    response: "Yes" | "No" | "Maybe" | "Unanswered",
+    usersResponseToAttendingGame: UsersResponseToAttendingGame,
   ) =>
   (
     refreshableGamesWithData: RefreshableRequest<Game[]>,
@@ -43,17 +44,17 @@ const setUsersResponseToAttendingGame =
             ids_of_players_who_responded_yes_to_attending: updateUserIds({
               existingUserIds: yesUserIds,
               newUserId: userId,
-              shouldAddUserId: response === "Yes",
+              shouldAddUserId: usersResponseToAttendingGame === "Yes",
             }),
             ids_of_players_who_responded_no_to_attending: updateUserIds({
               existingUserIds: noUserIds,
               newUserId: userId,
-              shouldAddUserId: response === "No",
+              shouldAddUserId: usersResponseToAttendingGame === "No",
             }),
             ids_of_players_who_responded_maybe_to_attending: updateUserIds({
               existingUserIds: maybeUserIds,
               newUserId: userId,
-              shouldAddUserId: response === "Maybe",
+              shouldAddUserId: usersResponseToAttendingGame === "Maybe",
             }),
           }
         } else {
