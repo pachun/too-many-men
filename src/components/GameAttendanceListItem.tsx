@@ -4,6 +4,7 @@ import * as ExpoVectorIcons from "@expo/vector-icons"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
 import type { Player } from "types/Player"
+import color from "helpers/color"
 
 interface GameAttendanceListItemProps {
   game: Game
@@ -48,7 +49,7 @@ const GameAttendanceListItem = ({
           <ExpoVectorIcons.FontAwesome
             name="check"
             size={24}
-            color={ReactNative.PlatformColor("systemGreen")}
+            color={color("green")}
             testID="Checkmark Icon"
           />
         )}
@@ -56,7 +57,7 @@ const GameAttendanceListItem = ({
           <ExpoVectorIcons.FontAwesome
             name="close"
             size={24}
-            color={ReactNative.PlatformColor("systemRed")}
+            color={color("red")}
             testID="X Icon"
           />
         )}
@@ -64,7 +65,7 @@ const GameAttendanceListItem = ({
           <ExpoVectorIcons.FontAwesome
             name="question"
             size={24}
-            color={ReactNative.PlatformColor("systemYellow")}
+            color={color("yellow")}
             testID="? Icon"
           />
         )}
