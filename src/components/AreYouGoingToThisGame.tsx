@@ -5,9 +5,6 @@ import RadioButton from "components/RadioButton"
 import useIsSignedIn from "hooks/useIsSignedIn"
 import useRefreshableGames from "hooks/useRefreshableGames"
 import useEffectEverySecond from "hooks/useEffectEverySecond"
-import setUserRespondedYesToAttendingGame from "updaters/setUserRespondedYesToAttendingGame"
-import setUserRespondedNoToAttendingGame from "updaters/setUserRespondedNoToAttendingGame"
-import setUserRespondedMaybeToAttendingGame from "updaters/setUserRespondedMaybeToAttendingGame"
 import type { Game } from "types/Game"
 import useUserId from "hooks/useUserId"
 import ForegroundItem from "./ForegroundItem"
@@ -18,6 +15,7 @@ import useTheme from "hooks/useTheme"
 import Config from "Config"
 import useApiToken from "hooks/useApiToken"
 import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
+import setUsersResponseToAttendingGame from "updaters/setUsersResponseToAttendingGame"
 
 const isTheGameInTheFuture = (game: Game): boolean => {
   const currentTime = new Date()
@@ -98,7 +96,7 @@ const AreYouGoingToThisGame = ({
       switch (playerAttendance) {
         case "Yes":
           setRefreshableGames(
-            setUserRespondedYesToAttendingGame(userId!, game!),
+            setUsersResponseToAttendingGame(userId!, game, "Yes"),
           )
           setIsWaitingForApiResponse(true)
           try {
@@ -120,7 +118,9 @@ const AreYouGoingToThisGame = ({
           setIsWaitingForApiResponse(false)
           break
         case "No":
-          setRefreshableGames(setUserRespondedNoToAttendingGame(userId!, game!))
+          setRefreshableGames(
+            setUsersResponseToAttendingGame(userId!, game, "No"),
+          )
           setIsWaitingForApiResponse(true)
           await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {
             method: "POST",
@@ -134,7 +134,7 @@ const AreYouGoingToThisGame = ({
           break
         case "Maybe":
           setRefreshableGames(
-            setUserRespondedMaybeToAttendingGame(userId!, game!),
+            setUsersResponseToAttendingGame(userId!, game, "Maybe"),
           )
           setIsWaitingForApiResponse(true)
           await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {

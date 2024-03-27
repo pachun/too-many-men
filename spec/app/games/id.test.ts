@@ -528,6 +528,51 @@ describe("viewing a game", () => {
               },
             })
           })
+
+          // it("unselects the Yes radio button to reflect that the request failed", async () => {
+          //   const player = playerFactory({})
+          //
+          //   const { playerApiToken } = await mockLoggedInPlayer({
+          //     playerId: player.id,
+          //   })
+          //
+          //   const game = gameFactory({
+          //     played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+          //     players: [player],
+          //   })
+          //
+          //   await mockApi({
+          //     mockedRequests: [
+          //       mockGetGame(game),
+          //       mockCreateOrUpdatePlayerAttendance(
+          //         game,
+          //         playerApiToken,
+          //         "Yes",
+          //         "Network Error",
+          //       ),
+          //     ],
+          //     test: async () => {
+          //       ERTL.renderRouter("src/app", {
+          //         initialUrl: `/games/${game.id}`,
+          //       })
+          //
+          //       await ERTL.waitFor(() => {
+          //         expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+          //       })
+          //
+          //       ERTL.fireEvent.press(ERTL.screen.getByText("Yes"))
+          //
+          //       await ERTL.waitFor(() => {
+          //         expect(ERTL.screen).not.toShowTestId("Mini Loading Spinner")
+          //       })
+          //
+          //       expect(
+          //         ERTL.screen.getByTestId("Yes Radio Button").props.style
+          //           .backgroundColor,
+          //       ).toEqual(undefined)
+          //     },
+          //   })
+          // })
         })
 
         describe("when leaving and returning to the game details screen", () => {

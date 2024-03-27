@@ -37,6 +37,7 @@ const setUsersResponseToAttendingGame =
         if (currentGame.id === game.id) {
           const yesUserIds = game.ids_of_players_who_responded_yes_to_attending
           const noUserIds = game.ids_of_players_who_responded_no_to_attending
+          const maybeUserIds = game.ids_of_players_who_responded_no_to_attending
           return {
             ...game,
             ids_of_players_who_responded_yes_to_attending: updateUserIds({
@@ -48,6 +49,11 @@ const setUsersResponseToAttendingGame =
               existingUserIds: noUserIds,
               newUserId: userId,
               shouldAddUserId: response === "No",
+            }),
+            ids_of_players_who_responded_maybe_to_attending: updateUserIds({
+              existingUserIds: maybeUserIds,
+              newUserId: userId,
+              shouldAddUserId: response === "Maybe",
             }),
           }
         } else {
