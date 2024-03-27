@@ -74,7 +74,7 @@ const AreYouGoingToThisGame = ({
       ) {
         return "Maybe"
       }
-      return undefined
+      return "Unanswered"
     }, [
       userId,
       game.ids_of_players_who_responded_yes_to_attending,
@@ -88,7 +88,7 @@ const AreYouGoingToThisGame = ({
   const { showNotification } = useNavigationHeaderToastNotification()
 
   const updateAreYouGoingToThisGame = React.useCallback(
-    async (playerAttendance: AreYouGoingToThisGameSelection) => {
+    async (playerAttendance: UsersResponseToAttendingGame) => {
       switch (playerAttendance) {
         case "Yes":
           setRefreshableGames(
@@ -142,6 +142,8 @@ const AreYouGoingToThisGame = ({
             body: JSON.stringify({ attending: "Maybe" }),
           })
           setIsWaitingForApiResponse(false)
+          break
+        case "Unanswered":
           break
       }
     },
