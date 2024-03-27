@@ -18,7 +18,7 @@ export const mockCreateOrUpdatePlayerAttendance = (
   game: Game,
   apiToken: string,
   response: "Yes" | "No" | "Maybe",
-  error?: boolean,
+  error?: "Network Error",
 ): MockedCreateOrUpdatePlayerAttendanceRequest => {
   return {
     method: "post",

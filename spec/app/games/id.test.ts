@@ -433,32 +433,34 @@ describe("viewing a game", () => {
 
         describe("when the attendance API request fails", () => {
           it("shows a Trouble Connecting to the Internet message", async () => {
-            const gameId = 1
-            const playerId = 3
-            const apiToken = "Faked API Token"
+            const player = playerFactory({
+              first_name: "Michael",
+              last_name: "Scott",
+            })
 
-            await AsyncStorage.setItem("API Token", apiToken)
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
 
             const game = gameFactory({
-              id: gameId,
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-              players: [
-                {
-                  id: playerId,
-                  first_name: "Michael",
-                  last_name: "Scott",
-                },
-              ],
+              players: [player],
             })
 
             await mockApi({
               mockedRequests: [
                 mockGetGame(game),
-                mockCreateOrUpdatePlayerAttendance(game, apiToken, "Yes", true),
+                mockCreateOrUpdatePlayerAttendance(
+                  game,
+                  playerApiToken,
+                  "Yes",
+                  "Network Error",
+                ),
               ],
               test: async () => {
-                ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
 
                 await ERTL.waitFor(() => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
