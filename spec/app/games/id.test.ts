@@ -1167,62 +1167,34 @@ describe("viewing a game", () => {
       })
 
       describe("when Maybe is tapped", () => {
-        it("selects the Maybe radio button and shows a ? icon by the players name in the attendance list", async () => {
-          const gameId = 1
-          const playerId = 3
+        it("selects the Maybe radio button", async () => {
+          const player = playerFactory({
+            first_name: "Michael",
+            last_name: "Scott",
+          })
 
-          await AsyncStorage.setItem("API Token", "Faked API Token")
-          await AsyncStorage.setItem("User ID", playerId.toString())
+          const { playerApiToken } = await mockLoggedInPlayer({
+            playerId: player.id,
+          })
 
           const game = gameFactory({
-            id: gameId,
             played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-            players: [
-              {
-                id: playerId,
-                first_name: "Michael",
-                last_name: "Scott",
-              },
-            ],
+            players: [player],
           })
 
           await mockApi({
             mockedRequests: [
-              {
-                method: "get",
-                route: "/games/[id]",
-                params: { id: gameId },
-                response: game,
-              },
-              {
-                method: "post",
-                route: "/games/[id]/player_attendance",
-                params: { id: gameId },
-                headers: {
-                  "ApiToken": "Faked API Token",
-                  "Content-Type": "Application/JSON",
-                },
-                body: JSON.stringify({ attending: "Maybe" }),
-              },
+              mockGetGame(game),
+              mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Maybe"),
             ],
             test: async () => {
-              ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).not.toShowTestId("Loading Spinner")
               })
 
               ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
-
-              await ERTL.waitFor(() => {
-                expect(
-                  ERTL.within(
-                    ERTL.screen.getByTestId(
-                      `Player ${playerId} Attendance List Item`,
-                    ),
-                  ),
-                ).toShowTestId("? Icon")
-              })
 
               await ERTL.waitFor(() => {
                 expect(
@@ -1234,46 +1206,70 @@ describe("viewing a game", () => {
           })
         })
 
-        it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
-          const gameId = 1
-          const playerId = 3
+        it("shows a ? icon by the players name in the attendance list", async () => {
+          const player = playerFactory({
+            first_name: "Michael",
+            last_name: "Scott",
+          })
 
-          await AsyncStorage.setItem("API Token", "Faked API Token")
-          await AsyncStorage.setItem("User ID", playerId.toString())
+          const { playerApiToken } = await mockLoggedInPlayer({
+            playerId: player.id,
+          })
 
           const game = gameFactory({
-            id: gameId,
             played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-            players: [
-              {
-                id: playerId,
-                first_name: "Michael",
-                last_name: "Scott",
-              },
-            ],
+            players: [player],
           })
 
           await mockApi({
             mockedRequests: [
-              {
-                method: "get",
-                route: "/games/[id]",
-                params: { id: gameId },
-                response: game,
-              },
-              {
-                method: "post",
-                route: "/games/[id]/player_attendance",
-                params: { id: gameId },
-                headers: {
-                  "ApiToken": "Faked API Token",
-                  "Content-Type": "Application/JSON",
-                },
-                body: JSON.stringify({ attending: "Maybe" }),
-              },
+              mockGetGame(game),
+              mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Maybe"),
             ],
             test: async () => {
-              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
+
+              await ERTL.waitFor(() => {
+                expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+              })
+
+              ERTL.fireEvent.press(ERTL.screen.getByText("Maybe"))
+
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.within(
+                    ERTL.screen.getByTestId(
+                      `Player ${player.id} Attendance List Item`,
+                    ),
+                  ),
+                ).toShowTestId("? Icon")
+              })
+            },
+          })
+        })
+
+        it("shows a mini loading spinner while the attendance API request is ongoing", async () => {
+          const player = playerFactory({
+            first_name: "Michael",
+            last_name: "Scott",
+          })
+
+          const { playerApiToken } = await mockLoggedInPlayer({
+            playerId: player.id,
+          })
+
+          const game = gameFactory({
+            played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+            players: [player],
+          })
+
+          await mockApi({
+            mockedRequests: [
+              mockGetGame(game),
+              mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Maybe"),
+            ],
+            test: async () => {
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).not.toShowTestId("Loading Spinner")
@@ -1295,44 +1291,27 @@ describe("viewing a game", () => {
         })
 
         it("disables the attendance buttons while the attendance API request is ongoing", async () => {
-          const playerId = 3
-          const gameId = 1
-          await AsyncStorage.setItem("API Token", "Faked API Token")
-          await AsyncStorage.setItem("User ID", playerId.toString())
+          const player = playerFactory({
+            first_name: "Michael",
+            last_name: "Scott",
+          })
+
+          const { playerApiToken } = await mockLoggedInPlayer({
+            playerId: player.id,
+          })
 
           const game = gameFactory({
-            id: gameId,
             played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-            players: [
-              {
-                id: playerId,
-                first_name: "Michael",
-                last_name: "Scott",
-              },
-            ],
+            players: [player],
           })
 
           await mockApi({
             mockedRequests: [
-              {
-                method: "get",
-                route: "/games/[id]",
-                params: { id: gameId },
-                response: game,
-              },
-              {
-                method: "post",
-                route: "/games/[id]/player_attendance",
-                params: { id: gameId },
-                headers: {
-                  "ApiToken": "Faked API Token",
-                  "Content-Type": "Application/JSON",
-                },
-                body: JSON.stringify({ attending: "Maybe" }),
-              },
+              mockGetGame(game),
+              mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Maybe"),
             ],
             test: async () => {
-              ERTL.renderRouter("src/app", { initialUrl: `/games/${gameId}` })
+              ERTL.renderRouter("src/app", { initialUrl: `/games/${game.id}` })
 
               await ERTL.waitFor(() => {
                 expect(ERTL.screen).not.toShowTestId("Loading Spinner")
@@ -1360,36 +1339,28 @@ describe("viewing a game", () => {
 
         describe("when leaving and returning to the game details screen", () => {
           it("remembers the Maybe selection", async () => {
-            const gameId = 1
-            const playerId = 3
+            const player = playerFactory({
+              first_name: "Michael",
+              last_name: "Scott",
+            })
 
-            await AsyncStorage.setItem("API Token", "Faked API Token")
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
 
-            const games = [
-              gameFactory({
-                id: gameId,
-                played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
-              }),
-            ]
+            const game = gameFactory({
+              played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
+              players: [player],
+            })
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games",
-                  response: games,
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Maybe" }),
-                },
+                mockGetGames([game]),
+                mockCreateOrUpdatePlayerAttendance(
+                  game,
+                  playerApiToken,
+                  "Maybe",
+                ),
               ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: "/games" })
@@ -1427,40 +1398,25 @@ describe("viewing a game", () => {
 
         describe("when leaving the games details screen and entering another games details screen", () => {
           it("does not change the Maybe selection on the details screen of the other game", async () => {
-            const gameId = 1
-            const playerId = 3
-
-            await AsyncStorage.setItem("API Token", "Faked API Token")
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({})
 
             const games = [
               gameFactory({
-                id: gameId,
                 played_at: gamePlayedAtValue({ minutesInFuture: 30 }),
               }),
               gameFactory({
-                id: 2,
                 played_at: gamePlayedAtValue({ minutesInFuture: 60 }),
               }),
             ]
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games",
-                  response: games,
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Maybe" }),
-                },
+                mockGetGames(games),
+                mockCreateOrUpdatePlayerAttendance(
+                  games[0],
+                  playerApiToken,
+                  "Maybe",
+                ),
               ],
               test: async () => {
                 ERTL.renderRouter("src/app", { initialUrl: "/games" })
@@ -1502,55 +1458,34 @@ describe("viewing a game", () => {
 
         describe("when Yes is tapped after tapping Maybe", () => {
           it("removes the ? icon by the players name in the attendance list", async () => {
-            const gameId = 1
-            const playerId = 3
+            const player = playerFactory({
+              first_name: "Michael",
+              last_name: "Scott",
+            })
 
-            await AsyncStorage.setItem("API Token", "Faked API Token")
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
 
             const game = gameFactory({
-              id: gameId,
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-              players: [
-                {
-                  id: playerId,
-                  first_name: "Michael",
-                  last_name: "Scott",
-                },
-              ],
+              players: [player],
             })
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games/[id]",
-                  params: { id: gameId },
-                  response: game,
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Maybe" }),
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Yes" }),
-                },
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(
+                  game,
+                  playerApiToken,
+                  "Maybe",
+                ),
+                mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "Yes"),
               ],
               test: async () => {
-                ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
 
                 await ERTL.waitFor(() => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
@@ -1562,7 +1497,7 @@ describe("viewing a game", () => {
                   expect(
                     ERTL.within(
                       ERTL.screen.getByTestId(
-                        `Player ${playerId} Attendance List Item`,
+                        `Player ${player.id} Attendance List Item`,
                       ),
                     ),
                   ).toShowTestId("? Icon")
@@ -1574,7 +1509,7 @@ describe("viewing a game", () => {
                   expect(
                     ERTL.within(
                       ERTL.screen.getByTestId(
-                        `Player ${playerId} Attendance List Item`,
+                        `Player ${player.id} Attendance List Item`,
                       ),
                     ),
                   ).not.toShowTestId("? Icon")
@@ -1586,55 +1521,34 @@ describe("viewing a game", () => {
 
         describe("when No is tapped after tapping Maybe", () => {
           it("removes the X icon by the players name in the attendance list", async () => {
-            const gameId = 1
-            const playerId = 3
+            const player = playerFactory({
+              first_name: "Michael",
+              last_name: "Scott",
+            })
 
-            await AsyncStorage.setItem("API Token", "Faked API Token")
-            await AsyncStorage.setItem("User ID", playerId.toString())
+            const { playerApiToken } = await mockLoggedInPlayer({
+              playerId: player.id,
+            })
 
             const game = gameFactory({
-              id: gameId,
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
-              players: [
-                {
-                  id: playerId,
-                  first_name: "Michael",
-                  last_name: "Scott",
-                },
-              ],
+              players: [player],
             })
 
             await mockApi({
               mockedRequests: [
-                {
-                  method: "get",
-                  route: "/games/[id]",
-                  params: { id: gameId },
-                  response: game,
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "Maybe" }),
-                },
-                {
-                  method: "post",
-                  route: "/games/[id]/player_attendance",
-                  params: { id: gameId },
-                  headers: {
-                    "ApiToken": "Faked API Token",
-                    "Content-Type": "Application/JSON",
-                  },
-                  body: JSON.stringify({ attending: "No" }),
-                },
+                mockGetGame(game),
+                mockCreateOrUpdatePlayerAttendance(
+                  game,
+                  playerApiToken,
+                  "Maybe",
+                ),
+                mockCreateOrUpdatePlayerAttendance(game, playerApiToken, "No"),
               ],
               test: async () => {
-                ERTL.renderRouter("src/app", { initialUrl: "/games/1" })
+                ERTL.renderRouter("src/app", {
+                  initialUrl: `/games/${game.id}`,
+                })
 
                 await ERTL.waitFor(() => {
                   expect(ERTL.screen).not.toShowTestId("Loading Spinner")
@@ -1646,7 +1560,7 @@ describe("viewing a game", () => {
                   expect(
                     ERTL.within(
                       ERTL.screen.getByTestId(
-                        `Player ${playerId} Attendance List Item`,
+                        `Player ${player.id} Attendance List Item`,
                       ),
                     ),
                   ).toShowTestId("? Icon")
@@ -1658,7 +1572,7 @@ describe("viewing a game", () => {
                   expect(
                     ERTL.within(
                       ERTL.screen.getByTestId(
-                        `Player ${playerId} Attendance List Item`,
+                        `Player ${player.id} Attendance List Item`,
                       ),
                     ),
                   ).not.toShowTestId("? Icon")
