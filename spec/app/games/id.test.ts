@@ -2,7 +2,6 @@ import * as ERTL from "expo-router/testing-library"
 import * as DateFNS from "date-fns"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import gameFactory from "../../specHelpers/factories/game"
-import mockGameFromApi from "../../specHelpers/mockGameFromApi"
 import type { Game } from "types/Game"
 import color from "helpers/color"
 import mockApi, {
@@ -1952,9 +1951,8 @@ describe("viewing a game", () => {
           played_at: gamePlayedAtValue({ minutesInFuture: -1 }),
         })
 
-        await mockGameFromApi({
-          gameId: 3,
-          response: game,
+        await mockApi({
+          mockedRequests: [mockGetGame(game)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
@@ -1977,9 +1975,8 @@ describe("viewing a game", () => {
           played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
         })
 
-        await mockGameFromApi({
-          gameId: 3,
-          response: game,
+        await mockApi({
+          mockedRequests: [mockGetGame(game)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games/3" })
 
