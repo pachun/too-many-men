@@ -23,8 +23,8 @@ const ListItemSeparator = ({
       <ReactNative.View
         style={{
           flex: 1,
-          height: 0.25,
-          borderBottomWidth: 0.25,
+          height: ReactNative.Platform.OS === "android" ? 1 : 0.25,
+          borderBottomWidth: ReactNative.Platform.OS === "android" ? 1 : 0.25,
           borderBottomColor: theme.colors.border,
         }}
       />

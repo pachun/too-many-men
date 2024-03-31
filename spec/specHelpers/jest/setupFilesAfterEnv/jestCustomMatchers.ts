@@ -26,17 +26,19 @@ expect.extend({
     }
   },
   toHaveNavigationBarTitle: (component: RenderResult, title: string) => {
-    const pass =
-      component.UNSAFE_getByType(
+    const actualTitle = component
+      .UNSAFE_getAllByType(
         "RNSScreenStackHeaderConfig" as unknown as ComponentType<unknown>,
-      ).props.title === title
+      )
+      .at(-1).props.title
+    const pass = actualTitle === title
 
     return {
       pass,
       message: (): string =>
         pass
           ? `expected "${title}" not to be the navigation bar title`
-          : `expected "${title}" to be the navigation bar title`,
+          : `expected "${title}" to be the navigation bar title but got "${actualTitle}"`,
     }
   },
 })

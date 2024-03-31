@@ -6,7 +6,7 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoUpdates from "expo-updates"
 import useAppLifecycle from "hooks/useAppLifecycle"
-import { trackAptabaseEvent } from "aptabase"
+import { trackAptabaseEvent } from "helpers/aptabase"
 
 const ifThereIsAnOverTheAirUpdateDownloadItAndThenAskForPermissionToApplyItByRestartingTheApp =
   async (): Promise<void> => {

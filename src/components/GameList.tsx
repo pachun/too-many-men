@@ -1,9 +1,9 @@
 import React from "react"
 import * as ReactNative from "react-native"
 import type { Game } from "types/Game"
-import GameListItem, { paddingLeft } from "./GameListItem"
+import GameListItem, { paddingLeft } from "components/GameListItem"
 import * as DateFNS from "date-fns"
-import ListItemSeparator from "./ListItemSeparator"
+import ListItemSeparator from "components/ListItemSeparator"
 import type { ListComponentProps } from "types/ListComponent"
 
 type GameListProps = ListComponentProps<Game>

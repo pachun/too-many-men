@@ -2,12 +2,18 @@ import * as ERTL from "expo-router/testing-library"
 import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import type { Game } from "types/Game"
-import gameFactory from "../specHelpers/factories/game"
-import mockGamesFromApi from "../specHelpers/mockGamesFromApi"
-import pullToRefresh from "../specHelpers/pullToRefresh"
+import gameFactory from "../../specHelpers/factories/game"
+import pullToRefresh from "../../specHelpers/pullToRefresh"
+import mockApi, { mockGetGames } from "../../specHelpers/mockApi"
 
-const gameDate = (game: Game): string =>
-  DateFNS.format(DateFNS.parseISO(game.played_at), "MMM d")
+const gameDay = (game: Game): string =>
+  DateFNS.format(DateFNS.parseISO(game.played_at), "d")
+
+const gameMonth = (game: Game): string =>
+  DateFNS.format(DateFNS.parseISO(game.played_at), "MMM")
+
+const gameDateWithWeekday = (game: Game): string =>
+  DateFNS.format(DateFNS.parseISO(game.played_at), "EEEE, MMM d")
 
 const gameTime = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
@@ -17,14 +23,14 @@ describe("viewing the games tab", () => {
     ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
     await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("Games")
+      expect(ERTL.screen).toHaveNavigationBarTitle("Games")
     })
   })
 
   describe("when games are loading", () => {
     it("shows a loading spinner", async () => {
-      await mockGamesFromApi({
-        response: [],
+      await mockApi({
+        mockedRequests: [mockGetGames([])],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -43,15 +49,17 @@ describe("viewing the games tab", () => {
         gameFactory({ played_at: "2024-02-16T03:15:00Z" }),
       ]
 
-      await mockGamesFromApi({
-        response: games,
+      await mockApi({
+        mockedRequests: [mockGetGames(games)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText(gameDate(games[0]))
+            expect(ERTL.screen).toShowText(gameMonth(games[0]))
+            expect(ERTL.screen).toShowText(gameDay(games[0]))
             expect(ERTL.screen).toShowText(gameTime(games[0]))
-            expect(ERTL.screen).toShowText(gameDate(games[1]))
+            expect(ERTL.screen).toShowText(gameMonth(games[1]))
+            expect(ERTL.screen).toShowText(gameDay(games[1]))
             expect(ERTL.screen).toShowText(gameTime(games[1]))
           })
         },
@@ -64,8 +72,8 @@ describe("viewing the games tab", () => {
         gameFactory({ played_at: "2024-02-16T03:15:00Z", is_home_team: false }),
       ]
 
-      await mockGamesFromApi({
-        response: games,
+      await mockApi({
+        mockedRequests: [mockGetGames(games)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -89,8 +97,8 @@ describe("viewing the games tab", () => {
         gameFactory({ played_at: "2024-02-16T03:15:00Z", rink: "Rink B" }),
       ]
 
-      await mockGamesFromApi({
-        response: games,
+      await mockApi({
+        mockedRequests: [mockGetGames(games)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -121,8 +129,8 @@ describe("viewing the games tab", () => {
           }),
         ]
 
-        await mockGamesFromApi({
-          response: games,
+        await mockApi({
+          mockedRequests: [mockGetGames(games)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -133,10 +141,8 @@ describe("viewing the games tab", () => {
             const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
 
             await ERTL.waitFor(() => {
-              expect(ERTL.within(gameListItems[0])).toShowText("v Scott's Tots")
-              expect(ERTL.within(gameListItems[1])).toShowText(
-                "v The Einsteins",
-              )
+              expect(ERTL.within(gameListItems[0])).toShowText("Scott's Tots")
+              expect(ERTL.within(gameListItems[1])).toShowText("The Einsteins")
             })
           },
         })
@@ -144,7 +150,7 @@ describe("viewing the games tab", () => {
     })
 
     describe("when the game has a score populated", () => {
-      it("shows the games scores in (green, red, and gray) for (wins, losses and ties), respectively", async () => {
+      it("shows the games scores and outcomes (win, loss, tie)", async () => {
         const games = [
           gameFactory({
             played_at: "2024-02-09T02:30:00Z",
@@ -163,8 +169,8 @@ describe("viewing the games tab", () => {
           }),
         ]
 
-        await mockGamesFromApi({
-          response: games,
+        await mockApi({
+          mockedRequests: [mockGetGames(games)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -175,29 +181,14 @@ describe("viewing the games tab", () => {
             const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
 
             await ERTL.waitFor(() => {
-              expect(ERTL.within(gameListItems[0])).toShowText("2 - 1 W")
-              expect(ERTL.within(gameListItems[1])).toShowText("0 - 3 L")
-              expect(ERTL.within(gameListItems[2])).toShowText("0 - 0 T")
+              expect(ERTL.within(gameListItems[0])).toShowText("W")
+              expect(ERTL.within(gameListItems[0])).toShowText("2-1")
 
-              const winLabelColor = ERTL.within(gameListItems[0]).getByText(
-                "2 - 1 W",
-              ).props.style.color
-              const lossLabelColor = ERTL.within(gameListItems[1]).getByText(
-                "0 - 3 L",
-              ).props.style.color
-              const tieLabelColor = ERTL.within(gameListItems[2]).getByText(
-                "0 - 0 T",
-              ).props.style.color
+              expect(ERTL.within(gameListItems[1])).toShowText("L")
+              expect(ERTL.within(gameListItems[1])).toShowText("0-3")
 
-              if (ReactNative.Platform.OS === "ios") {
-                expect(winLabelColor).toEqual({ semantic: ["systemGreen"] })
-                expect(lossLabelColor).toEqual({ semantic: ["systemRed"] })
-                expect(tieLabelColor).toEqual({ semantic: ["systemGray"] })
-              } else {
-                expect(winLabelColor).toEqual("green")
-                expect(lossLabelColor).toEqual("red")
-                expect(tieLabelColor).toEqual("gray")
-              }
+              expect(ERTL.within(gameListItems[2])).toShowText("T")
+              expect(ERTL.within(gameListItems[2])).toShowText("0-0")
             })
           },
         })
@@ -212,8 +203,8 @@ describe("viewing the games tab", () => {
           }),
         ]
 
-        await mockGamesFromApi({
-          response: games,
+        await mockApi({
+          mockedRequests: [mockGetGames(games)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -222,7 +213,7 @@ describe("viewing the games tab", () => {
             })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).not.toShowText(`v undefined`)
+              expect(ERTL.screen).not.toShowText("undefined")
             })
           },
         })
@@ -234,8 +225,8 @@ describe("viewing the games tab", () => {
       const laterGame = gameFactory({ played_at: "2024-02-16T03:15:00Z" })
       const nonChronologicallyOrderedGames = [laterGame, earlierGame]
 
-      await mockGamesFromApi({
-        response: nonChronologicallyOrderedGames,
+      await mockApi({
+        mockedRequests: [mockGetGames(nonChronologicallyOrderedGames)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -245,21 +236,23 @@ describe("viewing the games tab", () => {
 
           const gameListItems = ERTL.screen.getAllByTestId("Game List Item")
 
+          expect(ERTL.within(gameListItems[0])).toShowText(gameDay(earlierGame))
           expect(ERTL.within(gameListItems[0])).toShowText(
-            gameDate(earlierGame),
+            gameMonth(earlierGame),
           )
           expect(ERTL.within(gameListItems[0])).toShowText(
             gameTime(earlierGame),
           )
-          expect(ERTL.within(gameListItems[1])).toShowText(gameDate(laterGame))
+          expect(ERTL.within(gameListItems[1])).toShowText(gameDay(laterGame))
+          expect(ERTL.within(gameListItems[1])).toShowText(gameMonth(laterGame))
           expect(ERTL.within(gameListItems[1])).toShowText(gameTime(laterGame))
         },
       })
     })
 
     it("removes the loading spinner", async () => {
-      await mockGamesFromApi({
-        response: [],
+      await mockApi({
+        mockedRequests: [mockGetGames([])],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -269,12 +262,93 @@ describe("viewing the games tab", () => {
         },
       })
     })
+
+    describe("when a game is tapped", () => {
+      it("shows the games details screen (without refetching the games details from the api)", async () => {
+        const game = gameFactory({
+          id: 1,
+          played_at: "2024-02-16T03:15:00Z",
+        })
+
+        await mockApi({
+          mockedRequests: [mockGetGames([game])],
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "games" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
+            ERTL.fireEvent.press(ERTL.screen.getByText(gameTime(game)))
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toHavePathname("/games/1")
+              expect(ERTL.screen).toShowText(gameDateWithWeekday(game))
+            })
+          },
+        })
+      })
+
+      it("highlights the game list item while the tap is in progress", async () => {
+        const game = gameFactory({
+          id: 1,
+          played_at: "2024-02-16T03:15:00Z",
+        })
+
+        await mockApi({
+          mockedRequests: [mockGetGames([game])],
+          test: async () => {
+            ERTL.renderRouter("src/app", { initialUrl: "games" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
+            ERTL.fireEvent(ERTL.screen.getByText(gameTime(game)), "pressIn")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).toEqual({ semantic: ["tertiarySystemBackground"] })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).toEqual("white")
+              })
+            }
+
+            ERTL.fireEvent(ERTL.screen.getByText(gameTime(game)), "pressOut")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).not.toEqual({ semantic: ["tertiarySystemBackground"] })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(
+                  ERTL.screen.getByTestId("Game List Item").props.style
+                    .backgroundColor,
+                ).not.toEqual("white")
+              })
+            }
+          },
+        })
+      })
+    })
   })
 
   describe("when there is a network problem loading games", () => {
     it("removes the loading spinner", async () => {
-      await mockGamesFromApi({
-        response: "Network Error",
+      await mockApi({
+        mockedRequests: [mockGetGames([], "Network Error")],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -286,8 +360,8 @@ describe("viewing the games tab", () => {
     })
 
     it("shows an error message", async () => {
-      await mockGamesFromApi({
-        response: "Network Error",
+      await mockApi({
+        mockedRequests: [mockGetGames([], "Network Error")],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -302,8 +376,8 @@ describe("viewing the games tab", () => {
 
     describe("when the error message is tapped", () => {
       it("removes the error message", async () => {
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -328,8 +402,8 @@ describe("viewing the games tab", () => {
     })
 
     it("shows a reload button", async () => {
-      await mockGamesFromApi({
-        response: "Network Error",
+      await mockApi({
+        mockedRequests: [mockGetGames([], "Network Error")],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -342,8 +416,8 @@ describe("viewing the games tab", () => {
 
     describe("when the reload button is tapped", () => {
       it("removes the error message", async () => {
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -353,8 +427,8 @@ describe("viewing the games tab", () => {
           },
         })
 
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
@@ -368,8 +442,8 @@ describe("viewing the games tab", () => {
       })
 
       it("removes the reload button", async () => {
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -379,8 +453,8 @@ describe("viewing the games tab", () => {
           },
         })
 
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
@@ -392,8 +466,8 @@ describe("viewing the games tab", () => {
       })
 
       it("shows a loading spinner", async () => {
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -403,8 +477,8 @@ describe("viewing the games tab", () => {
           },
         })
 
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
@@ -417,8 +491,8 @@ describe("viewing the games tab", () => {
 
       describe("when the reload finishes", () => {
         it("shows games", async () => {
-          await mockGamesFromApi({
-            response: "Network Error",
+          await mockApi({
+            mockedRequests: [mockGetGames([], "Network Error")],
             test: async () => {
               ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
@@ -430,13 +504,14 @@ describe("viewing the games tab", () => {
 
           const game = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
 
-          await mockGamesFromApi({
-            response: [game],
+          await mockApi({
+            mockedRequests: [mockGetGames([game])],
             test: async () => {
               ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
               await ERTL.waitFor(() => {
-                expect(ERTL.screen).toShowText(gameDate(game))
+                expect(ERTL.screen).toShowText(gameDay(game))
+                expect(ERTL.screen).toShowText(gameMonth(game))
                 expect(ERTL.screen).toShowText(gameTime(game))
               })
             },
@@ -453,15 +528,17 @@ describe("viewing the games tab", () => {
         gameFactory({ played_at: "2024-02-16T03:15:00Z" }),
       ]
 
-      await mockGamesFromApi({
-        response: originalGames,
+      await mockApi({
+        mockedRequests: [mockGetGames(originalGames)],
         test: async () => {
           ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText(gameDate(originalGames[0]))
+            expect(ERTL.screen).toShowText(gameDay(originalGames[0]))
+            expect(ERTL.screen).toShowText(gameMonth(originalGames[0]))
             expect(ERTL.screen).toShowText(gameTime(originalGames[0]))
-            expect(ERTL.screen).toShowText(gameDate(originalGames[1]))
+            expect(ERTL.screen).toShowText(gameDay(originalGames[1]))
+            expect(ERTL.screen).toShowText(gameMonth(originalGames[1]))
             expect(ERTL.screen).toShowText(gameTime(originalGames[1]))
           })
         },
@@ -472,15 +549,17 @@ describe("viewing the games tab", () => {
         gameFactory({ played_at: "2024-02-02T03:30:00Z" }),
       ]
 
-      await mockGamesFromApi({
-        response: refreshedGames,
+      await mockApi({
+        mockedRequests: [mockGetGames(refreshedGames)],
         test: async () => {
           await pullToRefresh("Game List")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText(gameDate(refreshedGames[0]))
+            expect(ERTL.screen).toShowText(gameDay(refreshedGames[0]))
+            expect(ERTL.screen).toShowText(gameMonth(refreshedGames[0]))
             expect(ERTL.screen).toShowText(gameTime(refreshedGames[0]))
-            expect(ERTL.screen).toShowText(gameDate(refreshedGames[1]))
+            expect(ERTL.screen).toShowText(gameDay(refreshedGames[1]))
+            expect(ERTL.screen).toShowText(gameMonth(refreshedGames[1]))
             expect(ERTL.screen).toShowText(gameTime(refreshedGames[1]))
           })
         },
@@ -494,22 +573,24 @@ describe("viewing the games tab", () => {
           gameFactory({ played_at: "2024-02-16T03:15:00Z" }),
         ]
 
-        await mockGamesFromApi({
-          response: games,
+        await mockApi({
+          mockedRequests: [mockGetGames(games)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText(gameDate(games[0]))
+              expect(ERTL.screen).toShowText(gameDay(games[0]))
+              expect(ERTL.screen).toShowText(gameMonth(games[0]))
               expect(ERTL.screen).toShowText(gameTime(games[0]))
-              expect(ERTL.screen).toShowText(gameDate(games[1]))
+              expect(ERTL.screen).toShowText(gameDay(games[1]))
+              expect(ERTL.screen).toShowText(gameMonth(games[1]))
               expect(ERTL.screen).toShowText(gameTime(games[1]))
             })
           },
         })
 
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             await pullToRefresh("Game List")
 
@@ -528,29 +609,33 @@ describe("viewing the games tab", () => {
           gameFactory({ played_at: "2024-02-16T03:15:00Z" }),
         ]
 
-        await mockGamesFromApi({
-          response: games,
+        await mockApi({
+          mockedRequests: [mockGetGames(games)],
           test: async () => {
             ERTL.renderRouter("src/app", { initialUrl: "/games" })
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText(gameDate(games[0]))
+              expect(ERTL.screen).toShowText(gameDay(games[0]))
+              expect(ERTL.screen).toShowText(gameMonth(games[0]))
               expect(ERTL.screen).toShowText(gameTime(games[0]))
-              expect(ERTL.screen).toShowText(gameDate(games[1]))
+              expect(ERTL.screen).toShowText(gameDay(games[1]))
+              expect(ERTL.screen).toShowText(gameMonth(games[1]))
               expect(ERTL.screen).toShowText(gameTime(games[1]))
             })
           },
         })
 
-        await mockGamesFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetGames([], "Network Error")],
           test: async () => {
             await pullToRefresh("Game List")
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText(gameDate(games[0]))
+              expect(ERTL.screen).toShowText(gameDay(games[0]))
+              expect(ERTL.screen).toShowText(gameMonth(games[0]))
               expect(ERTL.screen).toShowText(gameTime(games[0]))
-              expect(ERTL.screen).toShowText(gameDate(games[1]))
+              expect(ERTL.screen).toShowText(gameDay(games[1]))
+              expect(ERTL.screen).toShowText(gameMonth(games[1]))
               expect(ERTL.screen).toShowText(gameTime(games[1]))
             })
           },
