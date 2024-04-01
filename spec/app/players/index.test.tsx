@@ -1,21 +1,22 @@
 import * as ERTL from "expo-router/testing-library"
-import playerFactory from "../specHelpers/factories/player"
-import mockPlayersFromApi from "../specHelpers/mockPlayersFromApi"
-import pullToRefresh from "../specHelpers/pullToRefresh"
+import * as ReactNative from "react-native"
+import playerFactory from "../../specHelpers/factories/player"
+import pullToRefresh from "../../specHelpers/pullToRefresh"
+import mockApi, { mockGetPlayers } from "../../specHelpers/mockApi"
 
 describe("opening the app", () => {
   it("sets the navigation bar title to Team", async () => {
     ERTL.renderRouter("src/app")
 
     await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("Team")
+      expect(ERTL.screen).toHaveNavigationBarTitle("Team")
     })
   })
 
   describe("when players are loading", () => {
     it("shows a loading spinner", async () => {
-      await mockPlayersFromApi({
-        response: [],
+      await mockApi({
+        mockedRequests: [mockGetPlayers([])],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -34,8 +35,8 @@ describe("opening the app", () => {
         playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
       ]
 
-      await mockPlayersFromApi({
-        response: players,
+      await mockApi({
+        mockedRequests: [mockGetPlayers(players)],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -53,8 +54,8 @@ describe("opening the app", () => {
         playerFactory({ first_name: "Jim", last_name: "Halpert" }),
       ]
 
-      await mockPlayersFromApi({
-        response: improperlySortedPlayers,
+      await mockApi({
+        mockedRequests: [mockGetPlayers(improperlySortedPlayers)],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -70,68 +71,9 @@ describe("opening the app", () => {
       })
     })
 
-    it("shows players jersey numbers", async () => {
-      const players = [
-        playerFactory({ jersey_number: 1 }),
-        playerFactory({ jersey_number: 2 }),
-      ]
-
-      await mockPlayersFromApi({
-        response: players,
-        test: async () => {
-          ERTL.renderRouter("src/app")
-
-          await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("#1")
-            expect(ERTL.screen).toShowText("#2")
-          })
-        },
-      })
-    })
-
-    it("shows players phone numbers", async () => {
-      const players = [
-        playerFactory({ phone_number: "0123456789" }),
-        playerFactory({ phone_number: "9876543210" }),
-      ]
-
-      await mockPlayersFromApi({
-        response: players,
-        test: async () => {
-          ERTL.renderRouter("src/app")
-
-          await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("(012) 345 6789")
-            expect(ERTL.screen).toShowText("(987) 654 3210")
-          })
-        },
-      })
-    })
-
-    describe("when a player does not have a jersey number", () => {
-      it("does not show a jersey number for the player", async () => {
-        const player = playerFactory({
-          first_name: "Creed",
-          last_name: "Bratton",
-        })
-
-        await mockPlayersFromApi({
-          response: [player],
-          test: async () => {
-            ERTL.renderRouter("src/app")
-
-            await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Creed Bratton")
-              expect(ERTL.screen).not.toShowText("#")
-            })
-          },
-        })
-      })
-    })
-
     it("removes the loading spinner", async () => {
-      await mockPlayersFromApi({
-        response: [],
+      await mockApi({
+        mockedRequests: [mockGetPlayers([])],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -141,12 +83,98 @@ describe("opening the app", () => {
         },
       })
     })
+
+    describe("tapping a players name", () => {
+      it("highlights the player list item while the player is tap is in progress", async () => {
+        const players = [
+          playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
+        ]
+
+        await mockApi({
+          mockedRequests: [mockGetPlayers(players)],
+          test: async () => {
+            ERTL.renderRouter("src/app")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
+            const playerListItems =
+              ERTL.screen.getAllByTestId("Player List Item")
+
+            ERTL.fireEvent(playerListItems[0], "pressIn")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(playerListItems[0].props.style.backgroundColor).toEqual({
+                  semantic: ["tertiarySystemBackground"],
+                })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(playerListItems[0].props.style.backgroundColor).toEqual(
+                  "white",
+                )
+              })
+            }
+
+            ERTL.fireEvent(playerListItems[0], "pressOut")
+
+            if (ReactNative.Platform.OS === "ios") {
+              await ERTL.waitFor(() => {
+                expect(
+                  playerListItems[0].props.style.backgroundColor,
+                ).not.toEqual({
+                  semantic: ["tertiarySystemBackground"],
+                })
+              })
+            } else {
+              await ERTL.waitFor(() => {
+                expect(
+                  playerListItems[0].props.style.backgroundColor,
+                ).not.toEqual("white")
+              })
+            }
+          },
+        })
+      })
+
+      it("shows the player's details screen (without refetching the players details from the api)", async () => {
+        const player = playerFactory({
+          id: 1,
+          first_name: "Creed",
+          last_name: "Bratton",
+          jersey_number: 55,
+          phone_number: "0123456789",
+        })
+
+        await mockApi({
+          mockedRequests: [mockGetPlayers([player])],
+          test: async () => {
+            ERTL.renderRouter("src/app")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowText("Creed Bratton")
+            })
+
+            ERTL.fireEvent.press(ERTL.screen.getByText("Creed Bratton"))
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toHavePathname("/players/1")
+              expect(ERTL.screen).toHaveNavigationBarTitle("Creed Bratton")
+              expect(ERTL.screen).toShowText("#55")
+              expect(ERTL.screen).toShowText("(012) 345-6789")
+            })
+          },
+        })
+      })
+    })
   })
 
   describe("when there is a network problem loading players", () => {
     it("removes the loading spinner", async () => {
-      await mockPlayersFromApi({
-        response: "Network Error",
+      await mockApi({
+        mockedRequests: [mockGetPlayers([], "Network Error")],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -158,8 +186,8 @@ describe("opening the app", () => {
     })
 
     it("shows an error message", async () => {
-      await mockPlayersFromApi({
-        response: "Network Error",
+      await mockApi({
+        mockedRequests: [mockGetPlayers([], "Network Error")],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -174,8 +202,8 @@ describe("opening the app", () => {
 
     describe("when the error message is tapped", () => {
       it("removes the error message", async () => {
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app")
 
@@ -200,8 +228,8 @@ describe("opening the app", () => {
     })
 
     it("shows a reload button", async () => {
-      await mockPlayersFromApi({
-        response: "Network Error",
+      await mockApi({
+        mockedRequests: [mockGetPlayers([], "Network Error")],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -214,8 +242,8 @@ describe("opening the app", () => {
 
     describe("when the reload button is tapped", () => {
       it("removes the error message", async () => {
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app")
 
@@ -225,8 +253,8 @@ describe("opening the app", () => {
           },
         })
 
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
@@ -240,8 +268,8 @@ describe("opening the app", () => {
       })
 
       it("removes the reload button", async () => {
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app")
 
@@ -251,8 +279,8 @@ describe("opening the app", () => {
           },
         })
 
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
@@ -264,8 +292,8 @@ describe("opening the app", () => {
       })
 
       it("shows a loading spinner", async () => {
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             ERTL.renderRouter("src/app")
 
@@ -275,8 +303,8 @@ describe("opening the app", () => {
           },
         })
 
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
 
@@ -289,8 +317,8 @@ describe("opening the app", () => {
 
       describe("when the reload finishes", () => {
         it("shows players", async () => {
-          await mockPlayersFromApi({
-            response: "Network Error",
+          await mockApi({
+            mockedRequests: [mockGetPlayers([], "Network Error")],
             test: async () => {
               ERTL.renderRouter("src/app")
 
@@ -300,9 +328,11 @@ describe("opening the app", () => {
             },
           })
 
-          await mockPlayersFromApi({
-            response: [
-              playerFactory({ first_name: "Kelly", last_name: "Kapoor" }),
+          await mockApi({
+            mockedRequests: [
+              mockGetPlayers([
+                playerFactory({ first_name: "Kelly", last_name: "Kapoor" }),
+              ]),
             ],
             test: async () => {
               ERTL.fireEvent.press(ERTL.screen.getByTestId("Reload Button"))
@@ -324,8 +354,8 @@ describe("opening the app", () => {
         playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
       ]
 
-      await mockPlayersFromApi({
-        response: originalPlayers,
+      await mockApi({
+        mockedRequests: [mockGetPlayers(originalPlayers)],
         test: async () => {
           ERTL.renderRouter("src/app")
 
@@ -341,8 +371,8 @@ describe("opening the app", () => {
         playerFactory({ first_name: "Stanley", last_name: "Hudson" }),
       ]
 
-      await mockPlayersFromApi({
-        response: refreshedPlayers,
+      await mockApi({
+        mockedRequests: [mockGetPlayers(refreshedPlayers)],
         test: async () => {
           await pullToRefresh("Player List")
 
@@ -361,8 +391,8 @@ describe("opening the app", () => {
           playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
         ]
 
-        await mockPlayersFromApi({
-          response: originalPlayers,
+        await mockApi({
+          mockedRequests: [mockGetPlayers(originalPlayers)],
           test: async () => {
             ERTL.renderRouter("src/app")
 
@@ -373,8 +403,8 @@ describe("opening the app", () => {
           },
         })
 
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             await pullToRefresh("Player List")
 
@@ -393,8 +423,8 @@ describe("opening the app", () => {
           playerFactory({ first_name: "Dwight", last_name: "Schrute" }),
         ]
 
-        await mockPlayersFromApi({
-          response: originalPlayers,
+        await mockApi({
+          mockedRequests: [mockGetPlayers(originalPlayers)],
           test: async () => {
             ERTL.renderRouter("src/app")
 
@@ -405,8 +435,8 @@ describe("opening the app", () => {
           },
         })
 
-        await mockPlayersFromApi({
-          response: "Network Error",
+        await mockApi({
+          mockedRequests: [mockGetPlayers([], "Network Error")],
           test: async () => {
             await pullToRefresh("Player List")
 

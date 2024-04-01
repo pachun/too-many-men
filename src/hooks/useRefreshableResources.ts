@@ -1,32 +1,26 @@
 import React from "react"
 import type { RefreshableRequest } from "types/RefreshableRequest"
-import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import Config from "Config"
-import { trackAptabaseEvent } from "aptabase"
+import { trackAptabaseEvent } from "helpers/aptabase"
+import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
 
 interface UseRefreshableResourcesReturnType<Resource> {
-  refreshableResources: RefreshableRequest<Resource[]>
   loadResources: () => Promise<void>
   refreshResources: (resourcesBeforeRefresh: Resource[]) => Promise<void>
 }
 
 const useRefreshableResources = <Resource>(
   resourceApiPath: string,
+  setRefreshableResources: (
+    refreshableResources: RefreshableRequest<Resource[]>,
+  ) => void,
 ): UseRefreshableResourcesReturnType<Resource> => {
   const resourceUrl = React.useMemo(
     () => Config.apiUrl + resourceApiPath,
     [resourceApiPath],
   )
 
-  const [refreshableResources, setRefreshableResources] = React.useState<
-    RefreshableRequest<Resource[]>
-  >({
-    status: "Not Started",
-  })
-
-  const { showNotification } = React.useContext(
-    NavigationHeaderToastNotification.Context,
-  )
+  const { showNotification } = useNavigationHeaderToastNotification()
 
   const loadResources = React.useCallback(async (): Promise<void> => {
     setRefreshableResources({ status: "Loading" })
@@ -44,7 +38,7 @@ const useRefreshableResources = <Resource>(
       setRefreshableResources({ status: "Load Error" })
       trackAptabaseEvent(`Failed to load ${resourceApiPath}`)
     }
-  }, [showNotification, resourceUrl, resourceApiPath])
+  }, [showNotification, resourceUrl, resourceApiPath, setRefreshableResources])
 
   const refreshResources = React.useCallback(
     async (resourcesBeforeRefresh: Resource[]): Promise<void> => {
@@ -70,10 +64,10 @@ const useRefreshableResources = <Resource>(
         trackAptabaseEvent(`Failed to refresh ${resourceApiPath}`)
       }
     },
-    [showNotification, resourceUrl, resourceApiPath],
+    [showNotification, resourceUrl, resourceApiPath, setRefreshableResources],
   )
 
-  return { refreshableResources, loadResources, refreshResources }
+  return { loadResources, refreshResources }
 }
 
 export default useRefreshableResources

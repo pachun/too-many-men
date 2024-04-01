@@ -2,11 +2,21 @@ import React from "react"
 import * as ExpoRouter from "expo-router"
 import * as ExpoStatusBar from "expo-status-bar"
 import * as ExpoVectorIcons from "@expo/vector-icons"
-import * as ReactNavigationNative from "@react-navigation/native"
-import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import useOverTheAirUpdates from "hooks/useOverTheAirUpdates"
-import useTheme from "hooks/useTheme"
-import { initializeAptabase, trackAptabaseEvent } from "aptabase"
+import { initializeAptabase, trackAptabaseEvent } from "helpers/aptabase"
+import RefreshablePlayersProvider from "components/RefreshablePlayersProvider"
+import RefreshableGamesProvider from "components/RefreshableGamesProvider"
+import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
+import ThemeProvider from "components/ThemeProvider"
+import ComposedProviders from "components/ComposedProviders"
+import ApiTokenProvider from "components/ApiTokenProvider"
+import UserIdProvider from "components/UserIdProvider"
+// import AsyncStorage from "@react-native-async-storage/async-storage"
+//
+// const resetAuthenticationForDevelopment = (): void => {
+//   AsyncStorage.setItem("API Token", "")
+//   AsyncStorage.setItem("User ID", "")
+// }
 
 initializeAptabase()
 
@@ -15,45 +25,60 @@ const Layout = (): React.ReactElement => {
     trackAptabaseEvent("App Launched")
   }, [])
 
-  useOverTheAirUpdates()
+  // React.useEffect(() => {
+  //   resetAuthenticationForDevelopment()
+  // }, [])
 
-  const theme = useTheme()
+  useOverTheAirUpdates()
 
   return (
     <>
       <ExpoStatusBar.StatusBar style="auto" />
-      <ReactNavigationNative.ThemeProvider value={theme}>
-        <NavigationHeaderToastNotification.Provider>
-          <ExpoRouter.Tabs>
-            <ExpoRouter.Tabs.Screen
-              name="index"
-              options={{
-                title: "Team",
-                tabBarIcon: ({ color }) => (
-                  <ExpoVectorIcons.FontAwesome6
-                    name="people-group"
-                    color={color}
-                    size={20}
-                  />
-                ),
-              }}
-            />
-            <ExpoRouter.Tabs.Screen
-              name="games"
-              options={{
-                title: "Games",
-                tabBarIcon: ({ color }) => (
-                  <ExpoVectorIcons.FontAwesome
-                    name="calendar"
-                    color={color}
-                    size={20}
-                  />
-                ),
-              }}
-            />
-          </ExpoRouter.Tabs>
-        </NavigationHeaderToastNotification.Provider>
-      </ReactNavigationNative.ThemeProvider>
+      <ComposedProviders
+        providers={[
+          ThemeProvider,
+          ApiTokenProvider,
+          UserIdProvider,
+          RefreshableGamesProvider,
+          RefreshablePlayersProvider,
+          NavigationHeaderToastNotification.Provider,
+        ]}
+      >
+        <ExpoRouter.Tabs screenOptions={{ headerShown: false }}>
+          <ExpoRouter.Tabs.Screen
+            name="players"
+            options={{
+              title: "Team",
+              tabBarIcon: ({ color }) => (
+                <ExpoVectorIcons.FontAwesome6
+                  name="people-group"
+                  color={color}
+                  size={20}
+                />
+              ),
+            }}
+          />
+          <ExpoRouter.Tabs.Screen
+            name="games"
+            options={{
+              title: "Games",
+              tabBarIcon: ({ color }) => (
+                <ExpoVectorIcons.FontAwesome
+                  name="calendar"
+                  color={color}
+                  size={20}
+                />
+              ),
+            }}
+          />
+          <ExpoRouter.Tabs.Screen
+            name="index"
+            options={{
+              href: null,
+            }}
+          />
+        </ExpoRouter.Tabs>
+      </ComposedProviders>
     </>
   )
 }

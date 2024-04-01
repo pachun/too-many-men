@@ -21,18 +21,18 @@ const useHeaderHeight = (): number => {
   return headerHeight
 }
 
-// const secondsToMillisecondsMultiplier = 1000
+const secondsToMillisecondsMultiplier = 1000
 
 const extraHeightToPreventWhitespaceShowingAboveBounceInAnimation = 50
 const showOnTopOfNavigationHeader = { zIndex: 1 }
 
 // type Type = "success" | "warning" | "error" | "info"
-type Type = "warning"
+type Type = "success" | "warning"
 
 type NotificationType = { type: Type; message: string; dismissAfter?: number }
 type DisplayedNotificationType = NotificationType | undefined
 
-interface NavigationHeaderToastNotificationContextType {
+export interface NavigationHeaderToastNotificationContextType {
   showNotification: ({ type, message, dismissAfter }: NotificationType) => void
   displayedNotification: DisplayedNotificationType
   dismissNotification: () => void
@@ -68,16 +68,15 @@ const NavigationHeaderToastNotificationProvider = ({
   const dismissNotification = (): void => setIsShowing(false)
 
   const showNotification = React.useCallback(
-    // ({ type, message, dismissAfter }: NotificationType): void => {
-    ({ type, message }: NotificationType): void => {
+    ({ type, message, dismissAfter }: NotificationType): void => {
       setType(type)
       setMessage(message)
       setIsShowing(true)
-      // if (dismissAfter != undefined) {
-      //   setTimeout(() => {
-      //     dismissNotification()
-      //   }, dismissAfter * secondsToMillisecondsMultiplier)
-      // }
+      if (dismissAfter != undefined) {
+        setTimeout(() => {
+          dismissNotification()
+        }, dismissAfter * secondsToMillisecondsMultiplier)
+      }
     },
     [],
   )
@@ -95,12 +94,12 @@ const NavigationHeaderToastNotificationProvider = ({
 
   const attributes = useMemo(() => {
     switch (type) {
-      // case "success":
-      //   return {
-      //     backgroundColor: "#ebf7ee",
-      //     borderColor: "#bde5c8",
-      //     icon: <AntDesign name="check" size={22} color="#3ebe61" />,
-      //   }
+      case "success":
+        return {
+          backgroundColor: "#ebf7ee",
+          borderColor: "#bde5c8",
+          icon: <AntDesign name="check" size={22} color="#3ebe61" />,
+        }
       // case "error":
       //   return {
       //     backgroundColor: "#FCECE9",
@@ -144,20 +143,21 @@ const NavigationHeaderToastNotificationProvider = ({
                   headerHeight +
                   extraHeightToPreventWhitespaceShowingAboveBounceInAnimation,
                 backgroundColor: attributes.backgroundColor,
-                justifyContent: "flex-end",
-                alignItems: "center",
+                alignItems: "flex-end",
+                justifyContent: "center",
                 paddingLeft: 10,
                 paddingRight: 10,
                 paddingBottom: 3,
                 borderBottomColor: attributes.borderColor,
                 borderBottomWidth: 1,
+                flexDirection: "row",
               }}
             >
               {attributes.icon}
-              <View style={{ height: 3 }} />
+              <View style={{ width: 3 }} />
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: 20,
                   fontWeight: "bold",
                 }}
               >

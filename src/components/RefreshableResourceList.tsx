@@ -1,28 +1,32 @@
 import React from "react"
-import NavigationHeaderToastNotification from "components/NavigationHeaderToastNotification"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import CenteredReloadButton from "components/CenteredReloadButton"
 import useRefreshableResources from "hooks/useRefreshableResources"
 import type { ListComponent } from "types/ListComponent"
+import type { RefreshableRequest } from "types/RefreshableRequest"
+import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
 
 interface RefreshableResourceListProps<Resource> {
   resourceApiPath: string
+  refreshableResources: RefreshableRequest<Resource[]>
+  setRefreshableResources: (
+    refreshableResources: RefreshableRequest<Resource[]>,
+  ) => void
   ListComponent: ListComponent<Resource>
 }
 
-const RefreshableResourceList = <Resource,>({
+function RefreshableResourceList<Resource>({
   resourceApiPath,
+  refreshableResources,
+  setRefreshableResources,
   ListComponent,
-}: RefreshableResourceListProps<Resource>): React.ReactElement => {
-  const { dismissNotification } = React.useContext(
-    NavigationHeaderToastNotification.Context,
-  )
+}: RefreshableResourceListProps<Resource>): React.ReactElement {
+  const { dismissNotification } = useNavigationHeaderToastNotification()
 
-  const {
-    refreshableResources: refreshableResources,
-    loadResources: loadResources,
-    refreshResources: refreshResources,
-  } = useRefreshableResources<Resource>(resourceApiPath)
+  const { loadResources, refreshResources } = useRefreshableResources<Resource>(
+    resourceApiPath,
+    setRefreshableResources,
+  )
 
   React.useEffect(() => {
     loadResources()
