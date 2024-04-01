@@ -2,7 +2,12 @@ import useTheme from "hooks/useTheme"
 import * as ReactNative from "react-native"
 
 interface AppTextProps {
-  children: string
+  children:
+    | string
+    | string[]
+    | React.ReactElement[]
+    | React.ReactElement
+    | (string | React.ReactElement)[]
   bold?: boolean
   style?: ReactNative.StyleProp<ReactNative.TextStyle>
 }

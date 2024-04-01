@@ -3,6 +3,7 @@ import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
+import AppText from "./AppText"
 
 interface GameListItemDateProps {
   game: Game
@@ -31,18 +32,15 @@ const GameListItemDate = ({
         borderRightWidth: 1,
       }}
     >
-      <ReactNative.Text style={{ fontSize: 20, color: theme.colors.text }}>
-        {monthLabel}
-      </ReactNative.Text>
-      <ReactNative.Text
+      <AppText>{monthLabel}</AppText>
+      <AppText
         style={{
           fontWeight: "bold",
           fontSize: 32,
-          color: theme.colors.text,
         }}
       >
         {dayOfMonthLabel}
-      </ReactNative.Text>
+      </AppText>
     </ReactNative.View>
   )
 }

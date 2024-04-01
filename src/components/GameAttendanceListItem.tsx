@@ -4,6 +4,7 @@ import * as ExpoVectorIcons from "@expo/vector-icons"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
 import type { Player } from "types/Player"
+import AppText from "./AppText"
 
 interface GameAttendanceListItemProps {
   game: Game
@@ -42,9 +43,9 @@ const GameAttendanceListItem = ({
           justifyContent: "space-between",
         }}
       >
-        <ReactNative.Text style={{ fontSize: 20, color: theme.colors.text }}>
+        <AppText>
           {player.first_name} {player.last_name}
-        </ReactNative.Text>
+        </AppText>
         {playerIsAttending && (
           <ExpoVectorIcons.FontAwesome
             name="check"

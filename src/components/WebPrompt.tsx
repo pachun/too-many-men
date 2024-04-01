@@ -37,7 +37,7 @@ const WebPrompt = ({
       >
         <ReactNative.View
           style={{
-            padding: 20,
+            padding: theme.foregroundItemVerticalPadding,
             backgroundColor: theme.colors.foregroundItemBackgroundColor,
             borderRadius: 10,
           }}
@@ -47,7 +47,7 @@ const WebPrompt = ({
           <ReactNative.TextInput
             style={{
               width: 300,
-              fontSize: 20,
+              fontSize: theme.fontSize,
               padding: 10,
               borderRadius: 2,
               color: theme.colors.text,

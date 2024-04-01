@@ -6,6 +6,7 @@ import { AntDesign } from "@expo/vector-icons"
 import { useWindowDimensions } from "react-native"
 import { getDefaultHeaderHeight } from "@react-navigation/elements"
 import Constants from "expo-constants"
+import useTheme from "hooks/useTheme"
 
 const useHeaderHeight = (): number => {
   const { width, height } = useWindowDimensions()
@@ -57,6 +58,8 @@ interface NavigationHeaderToastNotificationProps {
 const NavigationHeaderToastNotificationProvider = ({
   children,
 }: NavigationHeaderToastNotificationProps): React.ReactElement => {
+  const theme = useTheme()
+
   const [message, setMessage] = useState<string>("")
   const [isShowing, setIsShowing] = useState<boolean>(false)
 
@@ -157,7 +160,7 @@ const NavigationHeaderToastNotificationProvider = ({
               <View style={{ width: 3 }} />
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: theme.fontSize,
                   fontWeight: "bold",
                 }}
               >

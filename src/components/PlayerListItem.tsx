@@ -3,6 +3,7 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import useTheme from "hooks/useTheme"
 import type { Player } from "types/Player"
+import AppText from "./AppText"
 
 export const paddingLeft = 10
 
@@ -44,13 +45,10 @@ const PlayerListItem = ({
             paddingRight: 10,
           }}
         >
-          <ReactNative.Text style={{ color: theme.colors.text, fontSize: 20 }}>
+          <AppText>
             {player.first_name}
-            <ReactNative.Text style={{ fontWeight: "bold" }}>
-              {" "}
-              {player.last_name}
-            </ReactNative.Text>
-          </ReactNative.Text>
+            <AppText bold> {player.last_name}</AppText>
+          </AppText>
         </ReactNative.View>
       </ReactNative.Pressable>
     </ExpoRouter.Link>

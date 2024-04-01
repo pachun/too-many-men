@@ -3,6 +3,7 @@ import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
+import AppText from "./AppText"
 
 interface GameListItemDescriptionProps {
   game: Game
@@ -18,15 +19,7 @@ const GameListItemDescription = ({
 
   return (
     <ReactNative.View style={{ justifyContent: "space-between" }}>
-      <ReactNative.Text
-        style={{
-          fontSize: 20,
-          color: theme.colors.text,
-          fontWeight: "bold",
-        }}
-      >
-        {timeLabel}
-      </ReactNative.Text>
+      <AppText bold>{timeLabel}</AppText>
       <ReactNative.View>
         {game.opposing_teams_name && (
           <>

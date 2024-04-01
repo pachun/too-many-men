@@ -55,7 +55,7 @@ const RadioButton = ({
             ...(selected
               ? { color: theme.colors.background, fontWeight: "bold" }
               : { color: color }),
-            fontSize: 20,
+            fontSize: theme.fontSize,
             textAlign: "center",
             paddingLeft: 4,
             paddingRight: 4,
