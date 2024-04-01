@@ -3,7 +3,7 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import useTheme from "hooks/useTheme"
 import type { Player } from "types/Player"
-import AppText from "./AppText"
+import AppText from "components/AppText"
 
 export const paddingLeft = 10
 

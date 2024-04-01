@@ -3,9 +3,9 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
-import GameListItemDate from "./GameListItemDate"
-import GameListItemDescription from "./GameListItemDescription"
-import GameListItemOutcome from "./GameListItemOutcome"
+import GameListItemDate from "components/GameListItemDate"
+import GameListItemDescription from "components/GameListItemDescription"
+import GameListItemOutcome from "components/GameListItemOutcome"
 
 export const paddingLeft = 10
 

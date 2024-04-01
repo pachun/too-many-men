@@ -1,4 +1,4 @@
-import type { Player } from "./Player"
+import type { Player } from "types/Player"
 
 export interface Game {
   id: number

@@ -4,7 +4,7 @@ import * as ExpoVectorIcons from "@expo/vector-icons"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
 import type { Player } from "types/Player"
-import AppText from "./AppText"
+import AppText from "components/AppText"
 
 interface GameAttendanceListItemProps {
   game: Game

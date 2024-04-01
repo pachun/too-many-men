@@ -2,7 +2,7 @@ import React from "react"
 import * as ExpoRouter from "expo-router"
 import type { Game } from "types/Game"
 import Config from "Config"
-import useRefreshableGames from "./useRefreshableGames"
+import useRefreshableGames from "hooks/useRefreshableGames"
 
 const useTheCachedGameFirstOrGetTheGameFromTheApi = (
   gameId: string | string[] | undefined,

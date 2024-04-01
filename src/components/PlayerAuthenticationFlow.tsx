@@ -8,7 +8,7 @@ import useApiToken from "hooks/useApiToken"
 import useUserId from "hooks/useUserId"
 import useIsSignedIn from "hooks/useIsSignedIn"
 import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
-import VerticalSpacing from "./VerticalSpacing"
+import VerticalSpacing from "components/VerticalSpacing"
 import WebPrompt from "components/WebPrompt"
 
 const completeConfirmationCodeLength = 6

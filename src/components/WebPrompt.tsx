@@ -1,8 +1,8 @@
 /* c8 ignore start */
 import useTheme from "hooks/useTheme"
 import * as ReactNative from "react-native"
-import AppText from "./AppText"
-import VerticalSpacing from "./VerticalSpacing"
+import AppText from "components/AppText"
+import VerticalSpacing from "components/VerticalSpacing"
 
 interface WebPromptProps {
   value: string

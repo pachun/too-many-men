@@ -1,8 +1,8 @@
 import React from "react"
 import * as ReactNative from "react-native"
+import PlayerListItem, { paddingLeft } from "components/PlayerListItem"
+import ListItemSeparator from "components/ListItemSeparator"
 import type { Player } from "types/Player"
-import PlayerListItem, { paddingLeft } from "./PlayerListItem"
-import ListItemSeparator from "./ListItemSeparator"
 import type { ListComponentProps } from "types/ListComponent"
 
 type PlayerListProps = ListComponentProps<Player>

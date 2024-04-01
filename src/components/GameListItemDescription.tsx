@@ -3,7 +3,7 @@ import * as ReactNative from "react-native"
 import * as DateFNS from "date-fns"
 import useTheme from "hooks/useTheme"
 import type { Game } from "types/Game"
-import AppText from "./AppText"
+import AppText from "components/AppText"
 
 interface GameListItemDescriptionProps {
   game: Game

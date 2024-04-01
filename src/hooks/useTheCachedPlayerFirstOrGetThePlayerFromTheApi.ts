@@ -2,7 +2,7 @@ import React from "react"
 import * as ExpoRouter from "expo-router"
 import type { Player } from "types/Player"
 import Config from "Config"
-import useRefreshablePlayers from "./useRefreshablePlayers"
+import useRefreshablePlayers from "hooks/useRefreshablePlayers"
 
 const useTheCachedPlayerFirstOrGetThePlayerFromTheApi = (
   playerId: string | string[] | undefined,

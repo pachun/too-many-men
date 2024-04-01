@@ -1,5 +1,5 @@
 import AppText from "components/AppText"
-import ForegroundItem from "./ForegroundItem"
+import ForegroundItem from "components/ForegroundItem"
 
 interface LabeledValueProps {
   label: string

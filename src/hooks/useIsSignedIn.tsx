@@ -1,6 +1,6 @@
 import React from "react"
-import useApiToken from "./useApiToken"
-import useUserId from "./useUserId"
+import useApiToken from "hooks/useApiToken"
+import useUserId from "hooks/useUserId"
 
 const useIsSignedIn = (): boolean => {
   const { apiToken } = useApiToken()
