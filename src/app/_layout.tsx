@@ -49,11 +49,12 @@ const Layout = (): React.ReactElement => {
             name="players"
             options={{
               title: "Team",
+              tabBarLabelStyle: { fontSize: 12 },
               tabBarIcon: ({ color }) => (
                 <ExpoVectorIcons.FontAwesome6
                   name="people-group"
                   color={color}
-                  size={20}
+                  size={23}
                 />
               ),
             }}
@@ -62,11 +63,12 @@ const Layout = (): React.ReactElement => {
             name="games"
             options={{
               title: "Games",
+              tabBarLabelStyle: { fontSize: 12 },
               tabBarIcon: ({ color }) => (
                 <ExpoVectorIcons.FontAwesome
                   name="calendar"
                   color={color}
-                  size={20}
+                  size={23}
                 />
               ),
             }}
