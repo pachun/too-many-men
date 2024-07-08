@@ -3,7 +3,7 @@
 import * as Updates from "expo-updates"
 
 const Config = {
-  apiUrl: process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.21:3000",
+  apiUrl: process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.39:3000",
   // apiUrl: "https://too-many-men-api-8dcb4a385e6b.herokuapp.com",
 }
 

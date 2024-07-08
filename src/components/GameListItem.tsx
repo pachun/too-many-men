@@ -15,11 +15,12 @@ interface GameListItemProps {
 
 const GameListItem = ({ game }: GameListItemProps): React.ReactElement => {
   const theme = useTheme()
+  const currentPathname = ExpoRouter.usePathname()
 
   const [isTappingGame, setIsTappingGame] = React.useState(false)
 
   return (
-    <ExpoRouter.Link href={`/games/${game.id}`} asChild>
+    <ExpoRouter.Link href={`${currentPathname}/${game.id}`} asChild>
       <ReactNative.Pressable
         style={{
           paddingTop: 10,

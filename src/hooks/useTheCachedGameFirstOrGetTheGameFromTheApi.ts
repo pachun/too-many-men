@@ -3,13 +3,23 @@ import * as ExpoRouter from "expo-router"
 import type { Game } from "types/Game"
 import Config from "Config"
 import useRefreshableGames from "hooks/useRefreshableGames"
+import useApiToken from "./useApiToken"
 
-const useTheCachedGameFirstOrGetTheGameFromTheApi = (
-  gameId: string | string[] | undefined,
-): Game | undefined => {
+type UseLocalSearchParamsReturnType = string | string[] | undefined
+interface Arguments {
+  teamId: UseLocalSearchParamsReturnType
+  gameId: UseLocalSearchParamsReturnType
+}
+
+const useTheCachedGameFirstOrGetTheGameFromTheApi = ({
+  teamId,
+  gameId,
+}: Arguments): Game | undefined => {
   const [game, setGame] = React.useState<Game | undefined>()
 
   const { refreshableGames, setRefreshableGames } = useRefreshableGames()
+
+  const { apiToken } = useApiToken()
 
   ExpoRouter.useFocusEffect(
     React.useCallback(() => {
@@ -26,8 +36,17 @@ const useTheCachedGameFirstOrGetTheGameFromTheApi = (
           }
         }
 
-        const getGameFromApi = async (): Promise<Game> => {
-          return await (await fetch(Config.apiUrl + `/games/${gameId}`)).json()
+        const getGameFromApi = async (): Promise<Game | undefined> => {
+          if (apiToken) {
+            return await (
+              await fetch(Config.apiUrl + `/teams/${teamId}/games/${gameId}`, {
+                headers: {
+                  "Content-Type": "Application/JSON",
+                  "ApiToken": apiToken,
+                },
+              })
+            ).json()
+          }
         }
 
         const cachedGame = getGameFromCache()
@@ -36,13 +55,15 @@ const useTheCachedGameFirstOrGetTheGameFromTheApi = (
           setGame(cachedGame)
         } else {
           const gameFromApi = await getGameFromApi()
-          setRefreshableGames({ status: "Success", data: [gameFromApi] })
+          if (gameFromApi) {
+            setRefreshableGames({ status: "Success", data: [gameFromApi] })
+          }
           setGame(gameFromApi)
         }
       }
 
       getGame()
-    }, [gameId, refreshableGames, setRefreshableGames]),
+    }, [teamId, gameId, refreshableGames, setRefreshableGames, apiToken]),
   )
 
   return game

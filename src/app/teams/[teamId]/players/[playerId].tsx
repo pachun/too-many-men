@@ -4,14 +4,16 @@ import * as ExpoRouter from "expo-router"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import useTheCachedPlayerFirstOrGetThePlayerFromTheApi from "hooks/useTheCachedPlayerFirstOrGetThePlayerFromTheApi"
-import PlayerAuthenticationFlow from "components/PlayerAuthenticationFlow"
 import LabeledValue from "components/LabeledValue"
 import BackButtonWithTestId from "components/BackButonWithTestId"
 
 const Player = (): React.ReactElement => {
-  const { id: playerId } = ExpoRouter.useLocalSearchParams()
+  const { teamId, playerId } = ExpoRouter.useLocalSearchParams()
 
-  const player = useTheCachedPlayerFirstOrGetThePlayerFromTheApi(playerId)
+  const player = useTheCachedPlayerFirstOrGetThePlayerFromTheApi({
+    teamId,
+    playerId,
+  })
 
   const navigationBarTitleLabel = React.useMemo(
     () => `${player?.first_name} ${player?.last_name}`,
@@ -41,7 +43,6 @@ const Player = (): React.ReactElement => {
         {player.jersey_number !== undefined && (
           <LabeledValue label="Jersey" value={formattedJerseyNumberLabel} />
         )}
-        <PlayerAuthenticationFlow player={player} />
       </ReactNative.View>
     </>
   ) : (

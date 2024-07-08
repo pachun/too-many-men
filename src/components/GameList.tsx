@@ -40,7 +40,9 @@ const GameList = ({
         <ReactNative.RefreshControl
           enabled={!isRefreshing}
           refreshing={isRefreshing}
-          onRefresh={onRefresh}
+          onRefresh={() => {
+            onRefresh()
+          }}
         />
       }
     />

@@ -11,9 +11,9 @@ import VerticalSpacing from "components/VerticalSpacing"
 import BackButtonWithTestId from "components/BackButonWithTestId"
 
 const Game = (): React.ReactElement => {
-  const { id: gameId } = ExpoRouter.useLocalSearchParams()
+  const { teamId, gameId } = ExpoRouter.useLocalSearchParams()
 
-  const game = useTheCachedGameFirstOrGetTheGameFromTheApi(gameId)
+  const game = useTheCachedGameFirstOrGetTheGameFromTheApi({ teamId, gameId })
 
   const dateLabel = React.useMemo((): string => {
     return game?.played_at

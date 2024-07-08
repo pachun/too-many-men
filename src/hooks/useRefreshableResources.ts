@@ -3,6 +3,7 @@ import type { RefreshableRequest } from "types/RefreshableRequest"
 import Config from "Config"
 import { trackAptabaseEvent } from "helpers/aptabase"
 import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
+import useApiToken from "hooks/useApiToken"
 
 interface UseRefreshableResourcesReturnType<Resource> {
   loadResources: () => Promise<void>
@@ -20,51 +21,77 @@ const useRefreshableResources = <Resource>(
     [resourceApiPath],
   )
 
+  const { apiToken } = useApiToken()
+
+  const getJsonResources = React.useCallback(async (): Promise<Resource[]> => {
+    return await (
+      await fetch(resourceUrl, {
+        headers: { "ApiToken": apiToken!, "Content-Type": "Application/JSON" },
+      })
+    ).json()
+  }, [resourceUrl, apiToken])
+
   const { showNotification } = useNavigationHeaderToastNotification()
 
   const loadResources = React.useCallback(async (): Promise<void> => {
-    setRefreshableResources({ status: "Loading" })
-    try {
-      setRefreshableResources({
-        status: "Success",
-        data: await (await fetch(resourceUrl)).json(),
-      })
-      trackAptabaseEvent(`Loaded ${resourceApiPath}`)
-    } catch {
-      showNotification({
-        type: "warning",
-        message: "Trouble Connecting to the Internet",
-      })
-      setRefreshableResources({ status: "Load Error" })
-      trackAptabaseEvent(`Failed to load ${resourceApiPath}`)
-    }
-  }, [showNotification, resourceUrl, resourceApiPath, setRefreshableResources])
-
-  const refreshResources = React.useCallback(
-    async (resourcesBeforeRefresh: Resource[]): Promise<void> => {
-      setRefreshableResources({
-        status: "Refreshing",
-        data: resourcesBeforeRefresh,
-      })
+    if (apiToken) {
+      setRefreshableResources({ status: "Loading" })
       try {
         setRefreshableResources({
           status: "Success",
-          data: await (await fetch(resourceUrl)).json(),
+          data: await getJsonResources(),
         })
-        trackAptabaseEvent(`Refreshed ${resourceApiPath}`)
+        trackAptabaseEvent(`Loaded ${resourceApiPath}`)
       } catch {
         showNotification({
           type: "warning",
           message: "Trouble Connecting to the Internet",
         })
+        setRefreshableResources({ status: "Load Error" })
+        trackAptabaseEvent(`Failed to load ${resourceApiPath}`)
+      }
+    }
+  }, [
+    apiToken,
+    showNotification,
+    resourceApiPath,
+    setRefreshableResources,
+    getJsonResources,
+  ])
+
+  const refreshResources = React.useCallback(
+    async (resourcesBeforeRefresh: Resource[]): Promise<void> => {
+      if (apiToken) {
         setRefreshableResources({
-          status: "Refresh Error",
+          status: "Refreshing",
           data: resourcesBeforeRefresh,
         })
-        trackAptabaseEvent(`Failed to refresh ${resourceApiPath}`)
+        try {
+          setRefreshableResources({
+            status: "Success",
+            data: await getJsonResources(),
+          })
+          trackAptabaseEvent(`Refreshed ${resourceApiPath}`)
+        } catch {
+          showNotification({
+            type: "warning",
+            message: "Trouble Connecting to the Internet",
+          })
+          setRefreshableResources({
+            status: "Refresh Error",
+            data: resourcesBeforeRefresh,
+          })
+          trackAptabaseEvent(`Failed to refresh ${resourceApiPath}`)
+        }
       }
     },
-    [showNotification, resourceUrl, resourceApiPath, setRefreshableResources],
+    [
+      apiToken,
+      showNotification,
+      resourceApiPath,
+      setRefreshableResources,
+      getJsonResources,
+    ],
   )
 
   return { loadResources, refreshResources }

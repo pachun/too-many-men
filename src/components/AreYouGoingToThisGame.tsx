@@ -1,5 +1,6 @@
 import React from "react"
 import * as ReactNative from "react-native"
+import * as ExpoRouter from "expo-router"
 import * as DateFNS from "date-fns"
 import RadioButton from "components/RadioButton"
 import useIsSignedIn from "hooks/useIsSignedIn"
@@ -32,6 +33,8 @@ const AreYouGoingToThisGame = ({
   game,
 }: AreYouGoingToThisGameProps): React.ReactElement => {
   const theme = useTheme()
+
+  const { teamId } = ExpoRouter.useGlobalSearchParams()
 
   const { userId } = useUserId()
 
@@ -83,14 +86,17 @@ const AreYouGoingToThisGame = ({
         )
         setIsWaitingForApiResponse(true)
         try {
-          await fetch(`${Config.apiUrl}/games/${game.id}/player_attendance`, {
-            method: "POST",
-            headers: {
-              "ApiToken": apiToken!,
-              "Content-Type": "Application/JSON",
+          await fetch(
+            `${Config.apiUrl}/teams/${teamId}/games/${game.id}/player_attendance`,
+            {
+              method: "post",
+              headers: {
+                "ApiToken": apiToken!,
+                "Content-Type": "Application/JSON",
+              },
+              body: JSON.stringify({ attending: usersResponseToAttendingGame }),
             },
-            body: JSON.stringify({ attending: usersResponseToAttendingGame }),
-          })
+          )
         } catch {
           setRefreshableGames(
             setUsersResponseToAttendingGame(
@@ -108,7 +114,7 @@ const AreYouGoingToThisGame = ({
         setIsWaitingForApiResponse(false)
       }
     },
-    [apiToken, game, userId, setRefreshableGames, showNotification],
+    [teamId, apiToken, game, userId, setRefreshableGames, showNotification],
   )
 
   if (shouldShowThe_AreYouGoingToThisGame_Question) {

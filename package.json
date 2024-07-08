@@ -49,49 +49,11 @@
     "eslint-plugin-react-native": "^4.1.0",
     "jest": "^29.3.1",
     "jest-expo": "~50.0.4",
-    "msw": "^2.1.5",
+    "nock": "^14.0.0-beta.7",
     "prettier": "^3.2.4",
     "react-test-renderer": "18.2.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.3"
-  },
-  "jest": {
-    "projects": [
-      {
-        "preset": "jest-expo/ios",
-        "setupFilesAfterEnv": [
-          "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
-        ],
-        "setupFiles": ["./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"]
-      },
-      {
-        "preset": "jest-expo/android",
-        "setupFilesAfterEnv": [
-          "./spec/specHelpers/jest/setupFilesAfterEnv/useReactNativeSpecificJestMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/jestCustomMatchers.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockExpoLibraries.ts",
-          "./spec/specHelpers/jest/setupFilesAfterEnv/mockAptabase.ts"
-        ],
-        "setupFiles": ["./spec/specHelpers/jest/setupFiles/mockAsyncStorage.ts"]
-      }
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
-    ],
-    "verbose": false,
-    "passWithNoTests": true,
-    "coverageProvider": "v8",
-    "collectCoverageFrom": ["./src/**", "!src/Config.ts", "!src/types/**"],
-    "coverageThreshold": {
-      "global": {
-        "lines": 100,
-        "functions": 100,
-        "branches": 100,
-        "statements": 100
-      }
-    }
   },
   "private": true
 }

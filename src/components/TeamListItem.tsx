@@ -2,40 +2,38 @@ import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import useTheme from "hooks/useTheme"
-import type { Player } from "types/Player"
+import type { Team } from "types/Team"
 import AppText from "components/AppText"
 
 export const paddingLeft = 10
 
-interface PlayerListItemProps {
-  player: Player
+interface TeamListItemProps {
+  team: Team
 }
 
-const PlayerListItem = ({
-  player,
-}: PlayerListItemProps): React.ReactElement => {
+const TeamListItem = ({ team }: TeamListItemProps): React.ReactElement => {
   const theme = useTheme()
   const currentPathname = ExpoRouter.usePathname()
 
-  const [isTappingPlayer, setIsTappingPlayer] = React.useState(false)
+  const [isTappingTeam, setIsTappingTeam] = React.useState(false)
 
   return (
-    <ExpoRouter.Link href={`${currentPathname}/${player.id}`} asChild>
+    <ExpoRouter.Link href={`${currentPathname}/${team.id}`} asChild>
       <ReactNative.Pressable
         style={{
           paddingTop: 15,
           paddingBottom: 15,
           paddingLeft,
           width: "100%",
-          ...(isTappingPlayer
+          ...(isTappingTeam
             ? {
                 backgroundColor: theme.colors.listItemTapHighlightColor,
               }
             : {}),
         }}
-        onPressIn={() => setIsTappingPlayer(true)}
-        onPressOut={() => setIsTappingPlayer(false)}
-        testID="Player List Item"
+        onPressIn={() => setIsTappingTeam(true)}
+        onPressOut={() => setIsTappingTeam(false)}
+        testID="Team List Item"
       >
         <ReactNative.View
           style={{
@@ -46,14 +44,11 @@ const PlayerListItem = ({
             paddingRight: 10,
           }}
         >
-          <AppText>
-            {player.first_name}
-            <AppText bold> {player.last_name}</AppText>
-          </AppText>
+          <AppText>{team.name}</AppText>
         </ReactNative.View>
       </ReactNative.Pressable>
     </ExpoRouter.Link>
   )
 }
 
-export default PlayerListItem
+export default TeamListItem

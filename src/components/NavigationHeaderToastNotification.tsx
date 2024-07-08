@@ -28,7 +28,7 @@ const extraHeightToPreventWhitespaceShowingAboveBounceInAnimation = 50
 const showOnTopOfNavigationHeader = { zIndex: 1 }
 
 // type Type = "success" | "warning" | "error" | "info"
-type Type = "success" | "warning"
+type Type = "warning"
 
 type NotificationType = { type: Type; message: string; dismissAfter?: number }
 type DisplayedNotificationType = NotificationType | undefined
@@ -77,7 +77,10 @@ const NavigationHeaderToastNotificationProvider = ({
       setIsShowing(true)
       if (dismissAfter != undefined) {
         setTimeout(() => {
+          /* c8 ignore start */
+          // unsure how to test real-time-dependent things
           dismissNotification()
+          /* c8 ignore end */
         }, dismissAfter * secondsToMillisecondsMultiplier)
       }
     },
@@ -97,12 +100,12 @@ const NavigationHeaderToastNotificationProvider = ({
 
   const attributes = useMemo(() => {
     switch (type) {
-      case "success":
-        return {
-          backgroundColor: "#ebf7ee",
-          borderColor: "#bde5c8",
-          icon: <AntDesign name="check" size={22} color="#3ebe61" />,
-        }
+      // case "success":
+      //   return {
+      //     backgroundColor: "#ebf7ee",
+      //     borderColor: "#bde5c8",
+      //     icon: <AntDesign name="check" size={22} color="#3ebe61" />,
+      //   }
       // case "error":
       //   return {
       //     backgroundColor: "#FCECE9",

@@ -6,13 +6,14 @@ import RefreshableResourceList from "components/RefreshableResourceList"
 import useRefreshableGames from "hooks/useRefreshableGames"
 
 const Games = (): React.ReactElement => {
+  const { teamId } = ExpoRouter.useGlobalSearchParams()
   const { refreshableGames, setRefreshableGames } = useRefreshableGames()
 
   return (
     <>
       <ExpoRouter.Stack.Screen options={{ title: "Games" }} />
       <RefreshableResourceList<Game>
-        resourceApiPath="/games"
+        resourceApiPath={`/teams/${teamId}/games`}
         refreshableResources={refreshableGames}
         setRefreshableResources={setRefreshableGames}
         ListComponent={GameList}

@@ -1,7 +1,3 @@
-import * as ExpoRouter from "expo-router"
+import ExpoRouterIndex from "components/ExpoRouterIndex"
 
-const index = (): React.ReactElement => {
-  return <ExpoRouter.Redirect href="/players" />
-}
-
-export default index
+export default (): React.ReactElement => <ExpoRouterIndex indexPath="login" />
