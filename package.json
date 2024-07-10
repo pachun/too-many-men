@@ -42,6 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "babel-plugin-module-resolver": "^5.0.0",
+    "babel-preset-fbjs": "^3.4.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
