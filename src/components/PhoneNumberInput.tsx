@@ -21,6 +21,9 @@ const NUMBER_OF_DIGITS_IN_PHONE_NUMBERS = 10
 const isCompletePhoneNumber = (phoneNumber: string): boolean =>
   phoneNumber.length === NUMBER_OF_DIGITS_IN_PHONE_NUMBERS
 
+const isPartialOrFullPhoneNumber = (phoneNumber: string): boolean =>
+  phoneNumber.length <= NUMBER_OF_DIGITS_IN_PHONE_NUMBERS
+
 interface PhoneNumberInputProps {
   isVisible: boolean
   phoneNumber: string
@@ -71,6 +74,26 @@ const PhoneNumberInput = React.forwardRef(
       }
     }, [phoneNumber, showNotification, setConfirmationCodeInputPopupIsVisible])
 
+    const safeSetPhoneNumber = React.useCallback(
+      (newPhoneNumber: string) => {
+        if (isPartialOrFullPhoneNumber(newPhoneNumber)) {
+          setPhoneNumber(newPhoneNumber)
+        } else {
+          const phoneNumberWithoutWhitespace = newPhoneNumber.replace(
+            /\s+/g,
+            "",
+          )
+          const isCompletePhoneNumberFromSuggestionBarAboveKeyboard =
+            isCompletePhoneNumber(phoneNumberWithoutWhitespace)
+
+          if (isCompletePhoneNumberFromSuggestionBarAboveKeyboard) {
+            setPhoneNumber(phoneNumberWithoutWhitespace)
+          }
+        }
+      },
+      [setPhoneNumber],
+    )
+
     return isVisible ? (
       <>
         <ReactNative.KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
@@ -84,7 +107,7 @@ const PhoneNumberInput = React.forwardRef(
               autoFocus
               keyboardType="number-pad"
               value={phoneNumber}
-              onChangeText={setPhoneNumber}
+              onChangeText={safeSetPhoneNumber}
               style={{
                 width: 0,
                 height: 0,

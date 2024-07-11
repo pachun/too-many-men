@@ -52,9 +52,44 @@ describe("opening the app", () => {
   it("prevents more than 10 digits from being entered", async () => {
     ERTL.renderRouter("src/app", { initialUrl: "/" })
 
-    typeIntoTestId("Phone Number Field", "0123456789")
+    typeIntoTestId("Phone Number Field", "01234567890")
 
     await ERTL.waitFor(() => {
+      expect(ERTL.screen).toShowText("(012) 345-6789")
+    })
+  })
+
+  it("permits editing full phone numbers", async () => {
+    ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+    typeIntoTestId("Phone Number Field", "0123456789{Backspace}")
+
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).toShowText("(012) 345-678")
+    })
+  })
+
+  it("auto removes spaces from phone numbers entered by tapping a full phone number in the suggestion bar above the keyboard", async () => {
+    const phoneNumberFromSuggestionBarAboveKeyboard = "012 3456789"
+    const formattingOfSuggestedPhoneNumberBeforeThisTestIsPassing =
+      "(012)  34-56789"
+
+    ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+    // an intentional fireEvent rather than a userEvent is used here because it
+    // more closely simulates what happens when a phone number in the
+    // suggestion bar above the keyboard is tapped. More:
+    // https://callstack.github.io/react-native-testing-library/docs/api/events/user-event#type
+    ERTL.fireEvent(
+      ERTL.screen.getByTestId("Phone Number Field"),
+      "onChangeText",
+      phoneNumberFromSuggestionBarAboveKeyboard,
+    )
+
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).not.toShowText(
+        formattingOfSuggestedPhoneNumberBeforeThisTestIsPassing,
+      )
       expect(ERTL.screen).toShowText("(012) 345-6789")
     })
   })
