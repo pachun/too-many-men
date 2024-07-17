@@ -2,19 +2,15 @@ import useTheme from "hooks/useTheme"
 import * as ReactNative from "react-native"
 import AppText from "./AppText"
 
-interface AboveKeyboardContinueButtonProps {
+const AboveKeyboardButton = (props: {
+  title: string
   isVisible: boolean
   onPress: () => void
-}
-
-const AboveKeyboardContinueButton = ({
-  isVisible,
-  onPress,
-}: AboveKeyboardContinueButtonProps): React.ReactElement => {
+}): React.ReactElement => {
   const theme = useTheme()
 
-  return isVisible ? (
-    <ReactNative.Pressable onPress={onPress}>
+  return props.isVisible ? (
+    <ReactNative.Pressable onPress={props.onPress}>
       <ReactNative.KeyboardAvoidingView
         style={{
           width: "100%",
@@ -26,7 +22,7 @@ const AboveKeyboardContinueButton = ({
         }}
       >
         <AppText bold style={{ color: "white" }}>
-          Continue
+          {props.title}
         </AppText>
       </ReactNative.KeyboardAvoidingView>
     </ReactNative.Pressable>
@@ -35,4 +31,4 @@ const AboveKeyboardContinueButton = ({
   )
 }
 
-export default AboveKeyboardContinueButton
+export default AboveKeyboardButton

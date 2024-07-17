@@ -5,7 +5,8 @@ import AppText from "components/AppText"
 import VerticalSpacing from "components/VerticalSpacing"
 import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
 import Config from "Config"
-import AboveKeyboardContinueButton from "./AboveKeyboardContinueButton"
+import AboveKeyboardButton from "components/AboveKeyboardButton"
+import hiddenTextInputStyle from "helpers/hiddenTextInputStyle"
 
 const formatCompleteOrPartialPhoneNumber = (phoneNumber: string): string => {
   if (phoneNumber.length < 4) {
@@ -77,7 +78,9 @@ const PhoneNumberInput = React.forwardRef(
     const safeSetPhoneNumber = React.useCallback(
       (newPhoneNumber: string) => {
         if (isPartialOrFullPhoneNumber(newPhoneNumber)) {
-          setPhoneNumber(newPhoneNumber)
+          const removingNonDigitCharacters = (thing: string): string =>
+            thing.replace(/\D/g, "")
+          setPhoneNumber(removingNonDigitCharacters(newPhoneNumber))
         } else {
           const phoneNumberWithoutWhitespace = newPhoneNumber.replace(
             /\s+/g,
@@ -108,15 +111,13 @@ const PhoneNumberInput = React.forwardRef(
               keyboardType="number-pad"
               value={phoneNumber}
               onChangeText={safeSetPhoneNumber}
-              style={{
-                width: 0,
-                height: 0,
-              }}
+              style={hiddenTextInputStyle}
             />
             <AppText bold>{formattedPhoneNumber || " "}</AppText>
           </ForegroundItem>
         </ReactNative.KeyboardAvoidingView>
-        <AboveKeyboardContinueButton
+        <AboveKeyboardButton
+          title="Continue"
           isVisible={hasCompletePhoneNumber}
           onPress={sendTextMessageConfirmationCode}
         />

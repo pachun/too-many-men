@@ -1,31 +1,40 @@
 import React from "react"
-import Dialog from "react-native-dialog"
+import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import * as Animatable from "react-native-animatable"
 import Config from "Config"
 import useUserId from "hooks/useUserId"
 import useApiToken from "hooks/useApiToken"
 import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
+import AppText from "./AppText"
+import VerticalSpacing from "./VerticalSpacing"
+import ForegroundItem from "./ForegroundItem"
+import AboveKeyboardButton from "./AboveKeyboardButton"
+import useTheme from "hooks/useTheme"
+import hiddenTextInputStyle from "helpers/hiddenTextInputStyle"
 
 export type CheckTextMessageConfirmationCodeRequestResponse =
   | { correct_confirmation_code: true; api_token: string; player_id: number }
   | { correct_confirmation_code: false; confirmation_code_was_unset: boolean }
 
-interface ConfirmationCodeInputPopupProps {
+const numberOfDigitsInConfirmationCodes = 6
+const millisecondDurationOfShakingConfirmationCodeAnimation = 300
+
+const ConfirmationCodeInputPopup = (props: {
   phoneNumber: string
   confirmationCode: string
   setConfirmationCode: (confirmationCode: string) => void
   isVisible: boolean
   onDismiss: () => void
-}
+}): React.ReactElement => {
+  const {
+    phoneNumber,
+    confirmationCode,
+    setConfirmationCode,
+    isVisible,
+    onDismiss,
+  } = props
 
-const ConfirmationCodeInputPopup = ({
-  phoneNumber,
-  confirmationCode,
-  setConfirmationCode,
-  isVisible,
-  onDismiss,
-}: ConfirmationCodeInputPopupProps): React.ReactElement => {
   const viewRefThatAnimatesTheConfirmationCodeInputWhenIncorrectCodesAreEntered =
     React.useRef<Animatable.View>(null)
 
@@ -36,13 +45,15 @@ const ConfirmationCodeInputPopup = ({
 
   const { showNotification } = useNavigationHeaderToastNotification()
 
-  const shakeConfirmationCodeInputField = (): void => {
+  const shakeConfirmationCodeInputField = (
+    animationDurationInMilliseconds: number,
+  ): void => {
     if (
       viewRefThatAnimatesTheConfirmationCodeInputWhenIncorrectCodesAreEntered.current
     ) {
       // @ts-ignore
       viewRefThatAnimatesTheConfirmationCodeInputWhenIncorrectCodesAreEntered.current.shake(
-        300,
+        animationDurationInMilliseconds,
       )
     }
   }
@@ -72,8 +83,13 @@ const ConfirmationCodeInputPopup = ({
         !responseJson.correct_confirmation_code &&
         !responseJson.confirmation_code_was_unset
       ) {
-        setConfirmationCode("")
-        shakeConfirmationCodeInputField()
+        shakeConfirmationCodeInputField(
+          millisecondDurationOfShakingConfirmationCodeAnimation,
+        )
+        setTimeout(
+          () => setConfirmationCode(""),
+          millisecondDurationOfShakingConfirmationCodeAnimation,
+        )
       } else {
         onDismiss()
       }
@@ -95,33 +111,66 @@ const ConfirmationCodeInputPopup = ({
     onDismiss,
   ])
 
-  return isVisible ? (
-    <Dialog.Container visible={true}>
-      <Dialog.Title style={{ fontWeight: "bold" }}>
-        We texted you a code
-      </Dialog.Title>
-      <Dialog.Description>Enter it here</Dialog.Description>
-      <Animatable.View
-        ref={
-          viewRefThatAnimatesTheConfirmationCodeInputWhenIncorrectCodesAreEntered
+  const theme = useTheme()
+  const isShowingConfirmationCodePlaceholderText = confirmationCode.length === 0
+  const confirmationCodeLabelStyle: ReactNative.StyleProp<ReactNative.TextStyle> =
+    isShowingConfirmationCodePlaceholderText
+      ? {
+          color: theme.colors.secondaryLabel,
         }
-      >
-        <Dialog.Input
-          autoFocus
-          value={confirmationCode}
-          onChangeText={setConfirmationCode}
-          style={{ fontSize: 20 }}
-          textAlign="center"
-          keyboardType="number-pad"
-          testID="Confirmation Code Input"
+      : {
+          color: theme.colors.text,
+          fontWeight: "bold",
+        }
+
+  return isVisible ? (
+    <>
+      <ReactNative.KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
+        <ForegroundItem style={{ alignItems: "center", marginTop: 100 }}>
+          <AppText>We texted you some numbers</AppText>
+          <VerticalSpacing />
+          <ReactNative.TextInput
+            maxLength={numberOfDigitsInConfirmationCodes}
+            testID="Confirmation Code Input"
+            textContentType="oneTimeCode"
+            autoFocus
+            keyboardType="number-pad"
+            value={confirmationCode}
+            onChangeText={setConfirmationCode}
+            style={hiddenTextInputStyle}
+          />
+          <Animatable.View
+            ref={
+              viewRefThatAnimatesTheConfirmationCodeInputWhenIncorrectCodesAreEntered
+            }
+          >
+            <AppText
+              style={[
+                {
+                  textAlign: "center",
+                },
+                confirmationCodeLabelStyle,
+              ]}
+            >
+              {confirmationCode || "Enter those here"}
+            </AppText>
+          </Animatable.View>
+        </ForegroundItem>
+        <VerticalSpacing />
+        <ReactNative.Button
+          testID="Cancel Button"
+          title="Cancel"
+          onPress={onDismiss}
         />
-      </Animatable.View>
-      <Dialog.Button label="Cancel" onPress={onDismiss} />
-      <Dialog.Button
-        label="Confirm"
+      </ReactNative.KeyboardAvoidingView>
+      <AboveKeyboardButton
+        title="Confirm"
+        isVisible={
+          confirmationCode.length === numberOfDigitsInConfirmationCodes
+        }
         onPress={checkTextMessageConfirmationCode}
       />
-    </Dialog.Container>
+    </>
   ) : (
     <></>
   )

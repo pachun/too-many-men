@@ -7952,10 +7952,6 @@ react-native-animatable@^1.4.0:
   dependencies:
     prop-types "^15.8.1"
 
-react-native-dialog@pachun/react-native-dialog#include-lib:
-  version "9.3.0"
-  resolved "https://codeload.github.com/pachun/react-native-dialog/tar.gz/453288cb53d5bbf803cac015402cb054dc2dd6c9"
-
 react-native-helmet-async@2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-native-helmet-async/-/react-native-helmet-async-2.0.4.tgz#93f53a1ff22d6898039688a541653a2d6b6866bb"

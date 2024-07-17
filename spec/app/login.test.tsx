@@ -69,6 +69,25 @@ describe("opening the app", () => {
     })
   })
 
+  it("does not allow typing non-digit characters shown on the android number pad keyboard", async () => {
+    const nonDigitCharactersShownOnAndroidsNumberPadKeyboard = [
+      "-",
+      " ",
+      ",",
+      ".",
+    ]
+    const enteredCharacters =
+      "1" + nonDigitCharactersShownOnAndroidsNumberPadKeyboard.join("") + "23"
+
+    ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+    typeIntoTestId("Phone Number Field", enteredCharacters)
+
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).toShowText("123")
+    })
+  })
+
   it("auto removes spaces from phone numbers entered by tapping a full phone number in the suggestion bar above the keyboard", async () => {
     const phoneNumberFromSuggestionBarAboveKeyboard = "012 3456789"
     const formattingOfSuggestedPhoneNumberBeforeThisTestIsPassing =
@@ -161,7 +180,7 @@ describe("opening the app", () => {
         })
       })
 
-      it("shows a popup to enter the confirmation code", async () => {
+      it("shows an input to enter the confirmation code", async () => {
         mockRequest({
           method: "post",
           path: "/text_message_confirmation_codes/deliver",
@@ -179,15 +198,14 @@ describe("opening the app", () => {
         ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
 
         await ERTL.waitFor(() => {
-          expect(ERTL.screen).toShowText("We texted you a code")
+          expect(ERTL.screen).toShowText("We texted you some numbers")
           expect(ERTL.screen).toShowTestId("Confirmation Code Input")
-          expect(ERTL.screen).toShowText("Cancel")
-          expect(ERTL.screen).toShowText("Confirm")
+          expect(ERTL.screen).toShowTestId("Cancel Button")
         })
       })
 
-      describe("when the popups cancel button is tapped", () => {
-        it("removes the popup", async () => {
+      describe("when the confirmation code inputs cancel button is tapped", () => {
+        it("removes the confirmation code input", async () => {
           mockRequest({
             method: "post",
             path: "/text_message_confirmation_codes/deliver",
@@ -205,18 +223,18 @@ describe("opening the app", () => {
           ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("Cancel")
+            expect(ERTL.screen).toShowText("We texted you some numbers")
           })
 
-          ERTL.fireEvent.press(ERTL.screen.getByText("Cancel"))
+          ERTL.fireEvent.press(ERTL.screen.getByTestId("Cancel Button"))
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).not.toShowText("We texted you a code")
+            expect(ERTL.screen).not.toShowText("We texted you some numbers")
             expect(ERTL.screen).toShowText("What's your phone number?")
           })
         })
 
-        it("resets the popups confirmation code value to empty string", async () => {
+        it("resets the confirmation code fields value to empty string", async () => {
           mockRequest({
             method: "post",
             path: "/text_message_confirmation_codes/deliver",
@@ -247,10 +265,10 @@ describe("opening the app", () => {
           )
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen.getByText("Cancel"))
+            expect(ERTL.screen.getByTestId("Cancel Button"))
           })
 
-          ERTL.fireEvent.press(ERTL.screen.getByText("Cancel"))
+          ERTL.fireEvent.press(ERTL.screen.getByTestId("Cancel Button"))
 
           mockRequest({
             method: "post",
@@ -278,7 +296,7 @@ describe("opening the app", () => {
         })
       })
 
-      describe("when the popups OK button is tapped", () => {
+      describe("when the confirmation code inputs CONFIRM button is tapped", () => {
         describe("when there is no internet connection", () => {
           it("shows a Trouble Connecting to the Internet message", async () => {
             mockRequest({
@@ -307,7 +325,7 @@ describe("opening the app", () => {
             ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Confirm")
+              expect(ERTL.screen).toShowText("We texted you some numbers")
             })
 
             ERTL.fireEvent.changeText(
@@ -363,7 +381,7 @@ describe("opening the app", () => {
             ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Confirm")
+              expect(ERTL.screen).toShowText("We texted you some numbers")
             })
 
             ERTL.fireEvent.changeText(
@@ -415,7 +433,7 @@ describe("opening the app", () => {
             ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Confirm")
+              expect(ERTL.screen).toShowText("We texted you some numbers")
             })
 
             ERTL.fireEvent.changeText(
@@ -434,7 +452,7 @@ describe("opening the app", () => {
         })
 
         describe("when the entered code is incorrect the third time", () => {
-          it("removes the confirmation code input popup", async () => {
+          it("removes the confirmation code input", async () => {
             mockRequest({
               method: "post",
               path: "/text_message_confirmation_codes/deliver",
@@ -464,7 +482,7 @@ describe("opening the app", () => {
             ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
 
             await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Confirm")
+              expect(ERTL.screen).toShowText("We texted you some numbers")
             })
 
             ERTL.fireEvent.changeText(
