@@ -1,9 +1,10 @@
+import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import * as ExpoVectorIcons from "@expo/vector-icons"
 import useTheme from "hooks/useTheme"
 
-const IOSBackButton = ({ title }: { title: string }): React.ReactElement => {
+const IOSBackButton = (props: { title: string }): React.ReactElement => {
   const theme = useTheme()
   return (
     <>
@@ -14,31 +15,37 @@ const IOSBackButton = ({ title }: { title: string }): React.ReactElement => {
       />
       <ReactNative.View style={{ width: 5 }} />
       <ReactNative.Text style={{ color: theme.colors.primary, fontSize: 18 }}>
-        {title}
+        {props.title}
       </ReactNative.Text>
     </>
   )
 }
 
-interface BackButtonWithTestIdProps {
+const BackButtonWithTestId = (props: {
   title: string
-}
-
-const BackButtonWithTestId = ({
-  title,
-}: BackButtonWithTestIdProps): React.ReactElement => {
+  route?: string
+}): React.ReactElement => {
   const theme = useTheme()
   const router = ExpoRouter.useRouter()
+
+  const { route } = props
+  const goBack = React.useCallback(() => {
+    if (route) {
+      router.navigate(route)
+    } else {
+      router.back()
+    }
+  }, [router, route])
 
   return (
     <ReactNative.Pressable
       hitSlop={50}
-      testID="Back Button"
-      onPress={() => router.back()}
+      testID={`${props.title} Back Button`}
+      onPress={goBack}
       style={{ flexDirection: "row", alignItems: "flex-end" }}
     >
       {ReactNative.Platform.OS === "ios" ? (
-        <IOSBackButton title={title} />
+        <IOSBackButton title={props.title} />
       ) : (
         <ExpoVectorIcons.MaterialCommunityIcons
           name="arrow-left"

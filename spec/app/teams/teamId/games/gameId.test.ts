@@ -713,7 +713,7 @@ describe("viewing a game", () => {
             })
 
             await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Games Back Button"))
             })
 
             await ERTL.waitFor(() => {
@@ -786,7 +786,7 @@ describe("viewing a game", () => {
             })
 
             await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Games Back Button"))
             })
 
             await ERTL.waitFor(() => {
@@ -1601,7 +1601,7 @@ describe("viewing a game", () => {
             })
 
             await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Games Back Button"))
             })
 
             await ERTL.waitFor(() => {
@@ -1669,7 +1669,7 @@ describe("viewing a game", () => {
             })
 
             await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Games Back Button"))
             })
 
             await ERTL.waitFor(() => {
@@ -2479,7 +2479,7 @@ describe("viewing a game", () => {
             })
 
             await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Games Back Button"))
             })
 
             await ERTL.waitFor(() => {
@@ -2552,7 +2552,7 @@ describe("viewing a game", () => {
             })
 
             await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(ERTL.screen.getByTestId("Back Button"))
+              ERTL.fireEvent.press(ERTL.screen.getByTestId("Games Back Button"))
             })
 
             await ERTL.waitFor(() => {

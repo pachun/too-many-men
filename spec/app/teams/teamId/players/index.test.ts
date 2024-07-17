@@ -30,6 +30,34 @@ describe("viewing a team", () => {
     })
   })
 
+  it("shows a back button to reselect a different team", async () => {
+    const apiToken = await mockLoggedInPlayer()
+    const team = teamFactory()
+
+    mockRequest({
+      method: "get",
+      path: `/teams/${team.id}/players`,
+      apiToken,
+      response: [],
+    })
+
+    ERTL.renderRouter("src/app", { initialUrl: `/teams/${team.id}` })
+
+    if (ReactNative.Platform.OS === "ios") {
+      await ERTL.waitFor(() => {
+        expect(
+          ERTL.within(ERTL.screen.getByTestId("Teams Back Button")),
+        ).toShowText("Teams")
+      })
+    }
+
+    ERTL.fireEvent.press(ERTL.screen.getByTestId("Teams Back Button"))
+
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).toHavePathname(`/teams`)
+    })
+  })
+
   describe("when players are loading", () => {
     it("shows a loading spinner", async () => {
       const apiToken = await mockLoggedInPlayer()
