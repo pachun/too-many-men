@@ -26,6 +26,7 @@ const ConfirmationCodeInputPopup = (props: {
   setConfirmationCode: (confirmationCode: string) => void
   isVisible: boolean
   onDismiss: () => void
+  onCorrectCodeEntered: () => void
 }): React.ReactElement => {
   const {
     phoneNumber,
@@ -33,6 +34,7 @@ const ConfirmationCodeInputPopup = (props: {
     setConfirmationCode,
     isVisible,
     onDismiss,
+    onCorrectCodeEntered,
   } = props
 
   const viewRefThatAnimatesTheConfirmationCodeInputWhenIncorrectCodesAreEntered =
@@ -79,6 +81,7 @@ const ConfirmationCodeInputPopup = (props: {
         await setApiToken(apiToken)
         await setUserId(userId)
         router.navigate("/teams")
+        onCorrectCodeEntered()
       } else if (
         !responseJson.correct_confirmation_code &&
         !responseJson.confirmation_code_was_unset
@@ -101,6 +104,7 @@ const ConfirmationCodeInputPopup = (props: {
       })
     }
   }, [
+    onCorrectCodeEntered,
     phoneNumber,
     confirmationCode,
     setConfirmationCode,

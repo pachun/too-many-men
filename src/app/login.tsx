@@ -56,6 +56,10 @@ const Login = (): React.ReactElement => {
         setConfirmationCode={setConfirmationCode}
         isVisible={confirmationCodeInputPopupIsVisible}
         onDismiss={focusPhoneNumberField}
+        onCorrectCodeEntered={() => {
+          setConfirmationCodeInputPopupIsVisible(false)
+          setConfirmationCode("")
+        }}
       />
       <PhoneNumberInput
         ref={phoneNumberFieldRef}

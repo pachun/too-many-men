@@ -5,7 +5,7 @@ import useStateSyncedWithAsyncStorage from "hooks/useStateSyncedWithAsyncStorage
 
 export interface ApiTokenContextType {
   apiToken: string | null
-  setApiToken: (apiToken: string) => Promise<void>
+  setApiToken: (apiToken: string | null) => Promise<void>
 }
 
 export const ApiTokenContext = React.createContext<ApiTokenContextType>({

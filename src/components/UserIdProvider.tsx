@@ -5,7 +5,7 @@ import useStateSyncedWithAsyncStorage from "hooks/useStateSyncedWithAsyncStorage
 
 export interface UserIdContextType {
   userId: number | null
-  setUserId: (userId: number) => Promise<void>
+  setUserId: (userId: number | null) => Promise<void>
 }
 
 export const UserIdContext = React.createContext<UserIdContextType>({

@@ -400,6 +400,84 @@ describe("opening the app", () => {
               expect(ERTL.screen).toHavePathname("/teams")
             })
           })
+
+          it("shows a signout button that signs the user out when tapped", async () => {
+            mockRequest({
+              method: "post",
+              path: "/text_message_confirmation_codes/deliver",
+              params: { phone_number: "0123456789" },
+            })
+            mockRequest({
+              method: "post",
+              path: "/text_message_confirmation_codes/check",
+              params: {
+                phone_number: "0123456789",
+                confirmation_code: "123456",
+              },
+              response: {
+                correct_confirmation_code: true,
+                api_token: "api token",
+                player_id: 1,
+              },
+            })
+            mockRequest({
+              method: "get",
+              path: "/teams",
+              apiToken: "api token",
+              response: [],
+            })
+
+            ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+            typeIntoTestId("Phone Number Field", "0123456789")
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowText("Continue")
+            })
+
+            ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).toShowText("We texted you some numbers")
+            })
+
+            ERTL.fireEvent.changeText(
+              ERTL.screen.getByTestId("Confirmation Code Input"),
+              "123456",
+            )
+
+            ERTL.fireEvent.press(ERTL.screen.getByText("Confirm"))
+
+            await ERTL.waitFor(async () => {
+              expect(ERTL.screen).toShowTestId("Signout Button")
+            })
+
+            ERTL.fireEvent.press(ERTL.screen.getByTestId("Signout Button"))
+
+            await ERTL.waitFor(async () => {
+              const apiToken = await AsyncStorage.getItem("API Token")
+              const userId = await AsyncStorage.getItem("User ID")
+
+              expect(apiToken).toEqual(null)
+              expect(userId).toEqual(null)
+              expect(ERTL.screen).toHavePathname("/login")
+              expect(ERTL.screen).toShowText("What's your phone number?")
+            })
+
+            mockRequest({
+              method: "post",
+              path: "/text_message_confirmation_codes/deliver",
+              params: { phone_number: "0123456789" },
+            })
+
+            ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
+
+            await ERTL.waitFor(() => {
+              expect(
+                ERTL.screen.getByTestId("Confirmation Code Input").props.value,
+              ).toEqual("")
+            })
+          })
         })
 
         describe("when the entered code is incorrect the first or second time", () => {

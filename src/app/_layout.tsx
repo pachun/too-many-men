@@ -47,12 +47,7 @@ const Layout = (): React.ReactElement => {
         ]}
       >
         <ReactNative.View style={{ flex: 1 }}>
-          <ExpoRouter.Stack screenOptions={{ headerShown: false }}>
-            <ExpoRouter.Stack.Screen
-              name="teams/index"
-              options={{ title: "Teams", headerShown: true }}
-            />
-          </ExpoRouter.Stack>
+          <ExpoRouter.Stack screenOptions={{ headerShown: false }} />
         </ReactNative.View>
       </ComposedProviders>
     </>
