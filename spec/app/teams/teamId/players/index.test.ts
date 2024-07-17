@@ -12,7 +12,7 @@ describe("viewing a team", () => {
     await AsyncStorage.clear()
   })
 
-  it("sets the navigation bar title to Team", async () => {
+  it("sets the navigation bar title to Players", async () => {
     const apiToken = await mockLoggedInPlayer()
     const team = teamFactory()
 
@@ -26,7 +26,7 @@ describe("viewing a team", () => {
     ERTL.renderRouter("src/app", { initialUrl: `/teams/${team.id}` })
 
     await ERTL.waitFor(() => {
-      expect(ERTL.screen).toHaveNavigationBarTitle("Team")
+      expect(ERTL.screen).toHaveNavigationBarTitle("Players")
     })
   })
 

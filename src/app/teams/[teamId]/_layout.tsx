@@ -8,7 +8,7 @@ const Team = (): React.ReactElement => (
       <ExpoRouter.Tabs.Screen
         name="players"
         options={{
-          title: "Team",
+          title: "Players",
           tabBarLabelStyle: { fontSize: 12 },
           tabBarIcon: ({ color }) => (
             <ExpoVectorIcons.FontAwesome6

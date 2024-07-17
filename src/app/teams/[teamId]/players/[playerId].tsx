@@ -33,7 +33,7 @@ const Player = (): React.ReactElement => {
       <ExpoRouter.Stack.Screen
         options={{
           title: navigationBarTitleLabel,
-          headerLeft: () => <BackButtonWithTestId title="Team" />,
+          headerLeft: () => <BackButtonWithTestId title="Players" />,
         }}
       />
       <ReactNative.View style={{ flex: 1 }}>

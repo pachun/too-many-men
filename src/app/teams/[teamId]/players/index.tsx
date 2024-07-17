@@ -14,7 +14,7 @@ const Players = (): React.ReactElement => {
     <>
       <ExpoRouter.Stack.Screen
         options={{
-          title: "Team",
+          title: "Players",
           headerLeft: () => (
             <BackButtonWithTestId title="Teams" route="/teams" />
           ),
