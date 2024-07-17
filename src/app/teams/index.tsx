@@ -1,18 +1,15 @@
 import React from "react"
-import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
-import * as ExpoVectorIcons from "@expo/vector-icons"
 import type { Team } from "types/Team"
 import TeamList from "components/TeamList"
 import RefreshableResourceList from "components/RefreshableResourceList"
 import useRefreshableTeams from "hooks/useRefreshableTeams"
 import useApiToken from "hooks/useApiToken"
 import useUserId from "hooks/useUserId"
-import useTheme from "hooks/useTheme"
+import SignOutButton from "components/SignOutButton"
 
 const Teams = (): React.ReactElement => {
   const router = ExpoRouter.useRouter()
-  const theme = useTheme()
   const { setUserId } = useUserId()
   const { setApiToken } = useApiToken()
   const { refreshableTeams, setRefreshableTeams } = useRefreshableTeams()
@@ -29,19 +26,7 @@ const Teams = (): React.ReactElement => {
         options={{
           headerShown: true,
           title: "Teams",
-          headerLeft: () => (
-            <ReactNative.Pressable
-              testID="Signout Button"
-              hitSlop={50}
-              onPress={signout}
-            >
-              <ExpoVectorIcons.SimpleLineIcons
-                name="logout"
-                size={20}
-                color={theme.colors.primary}
-              />
-            </ReactNative.Pressable>
-          ),
+          headerLeft: () => <SignOutButton onPress={signout} />,
         }}
       />
       <RefreshableResourceList<Team>

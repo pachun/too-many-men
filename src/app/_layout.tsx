@@ -47,7 +47,12 @@ const Layout = (): React.ReactElement => {
         ]}
       >
         <ReactNative.View style={{ flex: 1 }}>
-          <ExpoRouter.Stack screenOptions={{ headerShown: false }} />
+          <ExpoRouter.Stack
+            screenOptions={{
+              headerShown: false,
+              headerTitleStyle: { fontSize: 20, fontWeight: "bold" },
+            }}
+          />
         </ReactNative.View>
       </ComposedProviders>
     </>

@@ -1,10 +1,10 @@
 import React from "react"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
 import CenteredReloadButton from "components/CenteredReloadButton"
-import useRefreshableResources from "hooks/useRefreshableResources"
 import type { ListComponent } from "types/ListComponent"
 import type { RefreshableRequest } from "types/RefreshableRequest"
 import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
+import useApi from "hooks/useApi"
 
 interface RefreshableResourceListProps<Resource> {
   resourceApiPath: string
@@ -23,9 +23,47 @@ function RefreshableResourceList<Resource>({
 }: RefreshableResourceListProps<Resource>): React.ReactElement {
   const { dismissNotification } = useNavigationHeaderToastNotification()
 
-  const { loadResources, refreshResources } = useRefreshableResources<Resource>(
-    resourceApiPath,
-    setRefreshableResources,
+  const { getResource } = useApi()
+
+  const loadResources = React.useCallback(async (): Promise<void> => {
+    setRefreshableResources({ status: "Loading" })
+    getResource<Resource[]>({
+      resourceApiPath,
+      onSuccess: data => {
+        setRefreshableResources({
+          status: "Success",
+          data,
+        })
+      },
+      onFailure: () => {
+        setRefreshableResources({ status: "Load Error" })
+      },
+    })
+  }, [resourceApiPath, setRefreshableResources, getResource])
+
+  const refreshResources = React.useCallback(
+    async (resourcesBeforeRefresh: Resource[]): Promise<void> => {
+      setRefreshableResources({
+        status: "Refreshing",
+        data: resourcesBeforeRefresh,
+      })
+      getResource<Resource[]>({
+        resourceApiPath,
+        onSuccess: data => {
+          setRefreshableResources({
+            status: "Success",
+            data,
+          })
+        },
+        onFailure: () => {
+          setRefreshableResources({
+            status: "Refresh Error",
+            data: resourcesBeforeRefresh,
+          })
+        },
+      })
+    },
+    [getResource, resourceApiPath, setRefreshableResources],
   )
 
   React.useEffect(() => {

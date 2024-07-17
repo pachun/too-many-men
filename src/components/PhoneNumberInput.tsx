@@ -3,8 +3,6 @@ import * as ReactNative from "react-native"
 import ForegroundItem from "components/ForegroundItem"
 import AppText from "components/AppText"
 import VerticalSpacing from "components/VerticalSpacing"
-import useNavigationHeaderToastNotification from "hooks/useNavigationHeaderToastNotification"
-import Config from "Config"
 import AboveKeyboardButton from "components/AboveKeyboardButton"
 import hiddenTextInputStyle from "helpers/hiddenTextInputStyle"
 
@@ -29,19 +27,12 @@ interface PhoneNumberInputProps {
   isVisible: boolean
   phoneNumber: string
   setPhoneNumber: (phoneNumber: string) => void
-  setConfirmationCodeInputPopupIsVisible: (
-    confirmationCodePopupIsVisible: boolean,
-  ) => void
+  onSubmit: () => Promise<void>
 }
 
 const PhoneNumberInput = React.forwardRef(
   (
-    {
-      isVisible,
-      phoneNumber,
-      setPhoneNumber,
-      setConfirmationCodeInputPopupIsVisible,
-    }: PhoneNumberInputProps,
+    { isVisible, phoneNumber, setPhoneNumber, onSubmit }: PhoneNumberInputProps,
     phoneNumberFieldRef: React.ForwardedRef<ReactNative.TextInput>,
   ): React.ReactElement => {
     const hasCompletePhoneNumber = React.useMemo(
@@ -52,28 +43,6 @@ const PhoneNumberInput = React.forwardRef(
     const formattedPhoneNumber = React.useMemo(() => {
       return formatCompleteOrPartialPhoneNumber(phoneNumber)
     }, [phoneNumber])
-
-    const { showNotification } = useNavigationHeaderToastNotification()
-
-    const sendTextMessageConfirmationCode = React.useCallback(async () => {
-      try {
-        setConfirmationCodeInputPopupIsVisible(true)
-        await fetch(
-          `${Config.apiUrl}/text_message_confirmation_codes/deliver`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "Application/JSON" },
-            body: JSON.stringify({ phone_number: phoneNumber }),
-          },
-        )
-      } catch {
-        showNotification({
-          type: "warning",
-          message: "Trouble Connecting to the Internet",
-          dismissAfter: 3,
-        })
-      }
-    }, [phoneNumber, showNotification, setConfirmationCodeInputPopupIsVisible])
 
     const safeSetPhoneNumber = React.useCallback(
       (newPhoneNumber: string) => {
@@ -119,7 +88,7 @@ const PhoneNumberInput = React.forwardRef(
         <AboveKeyboardButton
           title="Continue"
           isVisible={hasCompletePhoneNumber}
-          onPress={sendTextMessageConfirmationCode}
+          onPress={onSubmit}
         />
       </>
     ) : (

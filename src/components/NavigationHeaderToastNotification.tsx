@@ -30,7 +30,11 @@ const showOnTopOfNavigationHeader = { zIndex: 1 }
 // type Type = "success" | "warning" | "error" | "info"
 type Type = "warning"
 
-type NotificationType = { type: Type; message: string; dismissAfter?: number }
+export type NotificationType = {
+  type: Type
+  message: string
+  dismissAfter?: number
+}
 type DisplayedNotificationType = NotificationType | undefined
 
 export interface NavigationHeaderToastNotificationContextType {

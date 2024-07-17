@@ -1,6 +1,6 @@
 import Config from "Config"
 import nock from "nock"
-import type { CheckTextMessageConfirmationCodeRequestResponse } from "components/ConfirmationCodeInputPopup"
+import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/CheckTextMessageConfirmationCodeRequestResponse"
 import type { Team } from "types/Team"
 import type { Player } from "types/Player"
 import type { Game } from "types/Game"

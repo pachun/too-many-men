@@ -3,6 +3,7 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import * as ExpoVectorIcons from "@expo/vector-icons"
 import useTheme from "hooks/useTheme"
+import leftNavigationBarButtonStyle from "helpers/leftNavigationBarButtonStyle"
 
 const IOSBackButton = (props: { title: string }): React.ReactElement => {
   const theme = useTheme()
@@ -51,13 +52,7 @@ const BackButtonWithTestId = (props: {
           name="arrow-left"
           size={24}
           color={theme.colors.text}
-          style={{
-            // the non-android values in here are for web, which we do not test
-            /* c8 ignore start */
-            marginRight: ReactNative.Platform.OS === "android" ? 40 : 15,
-            ...(ReactNative.Platform.OS === "web" ? { marginLeft: 15 } : {}),
-            /* c8 ignore end */
-          }}
+          style={leftNavigationBarButtonStyle}
         />
       )}
     </ReactNative.Pressable>
