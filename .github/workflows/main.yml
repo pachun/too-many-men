@@ -68,6 +68,12 @@ jobs:
         run: yarn install
       - name: Test
         run: EXPO_PUBLIC_API_URL=http://localhost:3000 yarn test --collectCoverage
+      - name: Upload Test Coverage Report Artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-coverage-report
+          path: coverage
 
   # https://docs.expo.dev/eas-update/github-actions/
   mobile-deploy:
