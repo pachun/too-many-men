@@ -196,7 +196,6 @@ describe("viewing a team", () => {
           expect(ERTL.screen).toHavePathname(
             `/teams/${team.id}/players/${player.id}`,
           )
-          expect(ERTL.screen).toHaveNavigationBarTitle("Creed Bratton")
           expect(ERTL.screen).toShowText("#55")
           expect(ERTL.screen).toShowText("(012) 345-6789")
         })

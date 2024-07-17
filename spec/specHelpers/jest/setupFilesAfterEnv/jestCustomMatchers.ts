@@ -30,7 +30,7 @@ expect.extend({
       .UNSAFE_getAllByType(
         "RNSScreenStackHeaderConfig" as unknown as ComponentType<unknown>,
       )
-      .at(-1).props.title
+      .at(0).props.title
     const pass = actualTitle === title
 
     return {

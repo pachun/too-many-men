@@ -10,6 +10,21 @@ describe("the teams screen", () => {
     await AsyncStorage.clear()
   })
 
+  it("shows a teams header", async () => {
+    mockRequest({
+      method: "get",
+      path: "/teams",
+      apiToken: await mockLoggedInPlayer(),
+      response: [],
+    })
+
+    ERTL.renderRouter("src/app", { initialUrl: "/teams" })
+
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).toHaveNavigationBarTitle("Teams")
+    })
+  })
+
   it("shows the players teams", async () => {
     mockRequest({
       method: "get",
