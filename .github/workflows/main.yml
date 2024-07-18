@@ -107,7 +107,7 @@ jobs:
         run: yarn install
 
       - name: Publish update
-        run: eas update --branch preview --auto
+        run: eas update --branch production --auto
 
   web-deploy:
     name: Web Deploy
