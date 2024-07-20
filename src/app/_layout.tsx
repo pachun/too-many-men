@@ -12,12 +12,6 @@ import ComposedProviders from "components/ComposedProviders"
 import ApiTokenProvider from "components/ApiTokenProvider"
 import UserIdProvider from "components/UserIdProvider"
 import RefreshableTeamsProvider from "components/RefreshableTeamsProvider"
-// import AsyncStorage from "@react-native-async-storage/async-storage"
-//
-// const resetAuthenticationForDevelopment = (): void => {
-//   AsyncStorage.setItem("API Token", "")
-//   AsyncStorage.setItem("User ID", "")
-// }
 
 initializeAptabase()
 
@@ -25,10 +19,6 @@ const Layout = (): React.ReactElement => {
   React.useEffect(() => {
     trackAptabaseEvent("App Launched")
   }, [])
-
-  // React.useEffect(() => {
-  //   resetAuthenticationForDevelopment()
-  // }, [])
 
   useOverTheAirUpdates()
 
