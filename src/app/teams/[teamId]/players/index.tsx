@@ -20,12 +20,14 @@ const Players = (): React.ReactElement => {
           ),
         }}
       />
-      <RefreshableResourceList<Player>
-        resourceApiPath={`/teams/${teamId}/players`}
-        refreshableResources={refreshablePlayers}
-        setRefreshableResources={setRefreshablePlayers}
-        ListComponent={PlayerList}
-      />
+      {teamId && (
+        <RefreshableResourceList<Player>
+          resourceApiPath={`/teams/${teamId}/players`}
+          refreshableResources={refreshablePlayers}
+          setRefreshableResources={setRefreshablePlayers}
+          ListComponent={PlayerList}
+        />
+      )}
     </>
   )
 }

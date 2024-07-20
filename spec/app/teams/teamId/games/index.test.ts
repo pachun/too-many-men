@@ -58,10 +58,18 @@ describe("viewing the games tab", () => {
       })
     }
 
+    mockRequest({
+      method: "get",
+      path: "/teams",
+      apiToken,
+      response: [teamFactory({ name: "Scott's Tots" })],
+    })
+
     ERTL.fireEvent.press(ERTL.screen.getByTestId("Teams Back Button"))
 
     await ERTL.waitFor(() => {
       expect(ERTL.screen).toHavePathname(`/teams`)
+      expect(ERTL.screen).toShowText("Scott's Tots")
     })
   })
 

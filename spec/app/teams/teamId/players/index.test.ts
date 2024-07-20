@@ -33,7 +33,6 @@ describe("viewing a team", () => {
   it("shows a back button to reselect a different team", async () => {
     const apiToken = await mockLoggedInPlayer()
     const team = teamFactory()
-
     mockRequest({
       method: "get",
       path: `/teams/${team.id}/players`,
@@ -51,10 +50,18 @@ describe("viewing a team", () => {
       })
     }
 
+    mockRequest({
+      method: "get",
+      path: "/teams",
+      apiToken,
+      response: [teamFactory({ name: "Scott's Tots" })],
+    })
+
     ERTL.fireEvent.press(ERTL.screen.getByTestId("Teams Back Button"))
 
     await ERTL.waitFor(() => {
       expect(ERTL.screen).toHavePathname(`/teams`)
+      expect(ERTL.screen).toShowText("Scott's Tots")
     })
   })
 
