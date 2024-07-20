@@ -67,7 +67,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       - name: Test
-        run: EXPO_PUBLIC_API_URL=http://localhost:3000 yarn test --collectCoverage
+        run: yarn test --collectCoverage
       - name: Upload Test Coverage Report Artifact
         if: failure()
         uses: actions/upload-artifact@v4
@@ -127,7 +127,7 @@ jobs:
         run: yarn install
 
       - name: Build Web App
-        run: EXPO_PUBLIC_API_URL=https://too-many-men-api-8dcb4a385e6b.herokuapp.com npx expo export -p web
+        run: npx expo export -p web
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2.1.0
