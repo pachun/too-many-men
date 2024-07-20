@@ -9,6 +9,29 @@ import playerFactory from "spec/specHelpers/factories/player"
 import iosSystemColorWithOtherPlatformAlternative from "helpers/iosSystemColorWithOtherPlatformAlternative"
 import { mockRequest } from "spec/specHelpers/mockApi"
 import teamFactory from "spec/specHelpers/factories/team"
+import { unstable_settings } from "app/teams/[teamId]/games/_layout"
+import type { Team } from "types/Team"
+import type { UnstableSettings } from "types/UnstableSettings"
+
+const mockGetGamesToKeepBackButtonsWorkingAfterDeepLink = ({
+  apiToken,
+  team,
+  games = [],
+  unstable_settings:
+    _unusedButCalledOutHereToShowTheNeedForTheMockInThisFunction,
+}: {
+  apiToken: string
+  team: Team
+  games?: Game[]
+  unstable_settings: UnstableSettings
+}): void => {
+  mockRequest({
+    apiToken,
+    method: "get",
+    path: `/teams/${team.id}/games`,
+    response: games,
+  })
+}
 
 const gameTime = (game: Game): string =>
   DateFNS.format(DateFNS.parseISO(game.played_at), "h:mm a")
@@ -58,7 +81,10 @@ describe("viewing a game", () => {
       })
 
       await ERTL.waitFor(() => {
-        expect(ERTL.screen).toHaveNavigationBarTitle("")
+        expect(ERTL.screen).toHaveNavigationBarTitle({
+          title: "",
+          nestedNavigationBarIndex: 1,
+        })
       })
     })
   })
@@ -68,6 +94,11 @@ describe("viewing a game", () => {
       const team = teamFactory()
       const game = gameFactory()
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -88,6 +119,11 @@ describe("viewing a game", () => {
       const team = teamFactory()
       const game = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -100,7 +136,10 @@ describe("viewing a game", () => {
       })
 
       await ERTL.waitFor(() => {
-        expect(ERTL.screen).toHaveNavigationBarTitle(gameDateWithWeekday(game))
+        expect(ERTL.screen).toHaveNavigationBarTitle({
+          title: gameDateWithWeekday(game),
+          nestedNavigationBarIndex: 1,
+        })
       })
     })
 
@@ -108,6 +147,11 @@ describe("viewing a game", () => {
       const team = teamFactory()
       const game = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -128,6 +172,11 @@ describe("viewing a game", () => {
       const team = teamFactory()
       const game = gameFactory({ played_at: "2024-02-09T02:30:00Z" })
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -148,6 +197,11 @@ describe("viewing a game", () => {
       const game = gameFactory({ rink: "Rink C" })
       const team = teamFactory()
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -168,6 +222,11 @@ describe("viewing a game", () => {
       const team = teamFactory()
       const game = gameFactory({ opposing_teams_name: "Scott's Tots" })
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -188,6 +247,11 @@ describe("viewing a game", () => {
       const team = teamFactory()
       const game = gameFactory({ is_home_team: true })
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -208,6 +272,11 @@ describe("viewing a game", () => {
       const team = teamFactory()
       const game = gameFactory({ is_home_team: false })
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -234,6 +303,11 @@ describe("viewing a game", () => {
       })
       const team = teamFactory()
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -253,7 +327,7 @@ describe("viewing a game", () => {
       })
     })
 
-    it("sorts the list of the games players with respondants at the tope (ordered: Yeses, Nos, Maybes, Unanswereds)", async () => {
+    it("sorts the list of the games players with respondants at the top (ordered: Yeses, Nos, Maybes, Unanswereds)", async () => {
       const game = gameFactory({
         ids_of_players_who_responded_yes_to_attending: [3],
         ids_of_players_who_responded_no_to_attending: [2],
@@ -267,6 +341,11 @@ describe("viewing a game", () => {
       })
       const team = teamFactory()
       const apiToken = await mockLoggedInPlayer()
+      mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -299,6 +378,11 @@ describe("viewing a game", () => {
         })
         const team = teamFactory()
         const apiToken = await mockLoggedInPlayer()
+        mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+          apiToken,
+          team,
+          unstable_settings,
+        })
         mockRequest({
           apiToken,
           method: "get",
@@ -327,6 +411,11 @@ describe("viewing a game", () => {
         })
         const team = teamFactory()
         const apiToken = await mockLoggedInPlayer()
+        mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+          apiToken,
+          team,
+          unstable_settings,
+        })
         mockRequest({
           apiToken,
           method: "get",
@@ -354,6 +443,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer()
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -398,6 +492,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -447,6 +546,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -494,6 +598,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -535,6 +644,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -589,6 +703,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -633,6 +752,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -678,25 +802,25 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              games: [game],
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
-              path: `/teams/${team.id}/games`,
+              path: `/teams/${team.id}/games/${game.id}`,
               response: [game],
             })
 
             ERTL.renderRouter("src/app", {
-              initialUrl: `/teams/${team.id}/games`,
+              initialUrl: `/teams/${team.id}/games/${game.id}`,
             })
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-            })
-
-            ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
-
-            await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Yes")
             })
 
             mockRequest({
@@ -747,25 +871,25 @@ describe("viewing a game", () => {
             ]
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              games: games,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
-              path: `/teams/${team.id}/games`,
+              path: `/teams/${team.id}/games/${games[0].id}`,
               response: games,
             })
 
             ERTL.renderRouter("src/app", {
-              initialUrl: `/teams/${team.id}/games`,
+              initialUrl: `/teams/${team.id}/games/${games[0].id}`,
             })
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-            })
-
-            await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(
-                ERTL.screen.getAllByTestId("Game List Item")[0],
-              )
             })
 
             await ERTL.waitFor(() => {
@@ -816,6 +940,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -860,6 +989,11 @@ describe("viewing a game", () => {
             const game = gameFactory({
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [player],
+            })
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
             })
             mockRequest({
               apiToken,
@@ -932,6 +1066,11 @@ describe("viewing a game", () => {
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
               })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
+              })
               mockRequest({
                 apiToken,
                 method: "get",
@@ -998,6 +1137,11 @@ describe("viewing a game", () => {
               const game = gameFactory({
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
+              })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
               })
               mockRequest({
                 apiToken,
@@ -1078,6 +1222,11 @@ describe("viewing a game", () => {
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [player],
             })
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -1149,6 +1298,11 @@ describe("viewing a game", () => {
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
               })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
+              })
               mockRequest({
                 apiToken,
                 method: "get",
@@ -1215,6 +1369,11 @@ describe("viewing a game", () => {
               const game = gameFactory({
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
+              })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
               })
               mockRequest({
                 apiToken,
@@ -1296,6 +1455,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -1340,6 +1504,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -1387,6 +1556,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -1428,6 +1602,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -1477,6 +1656,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -1521,6 +1705,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -1566,25 +1755,25 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              games: [game],
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
-              path: `/teams/${team.id}/games`,
+              path: `/teams/${team.id}/games/${game.id}`,
               response: [game],
             })
 
             ERTL.renderRouter("src/app", {
-              initialUrl: `/teams/${team.id}/games`,
+              initialUrl: `/teams/${team.id}/games/${game.id}`,
             })
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-            })
-
-            ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
-
-            await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("No")
             })
 
             mockRequest({
@@ -1630,25 +1819,25 @@ describe("viewing a game", () => {
             ]
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              games: games,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
-              path: `/teams/${team.id}/games`,
+              path: `/teams/${team.id}/games/${games[0].id}`,
               response: games,
             })
 
             ERTL.renderRouter("src/app", {
-              initialUrl: `/teams/${team.id}/games`,
+              initialUrl: `/teams/${team.id}/games/${games[0].id}`,
             })
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-            })
-
-            await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(
-                ERTL.screen.getAllByTestId("Game List Item")[0],
-              )
             })
 
             await ERTL.waitFor(() => {
@@ -1694,6 +1883,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -1738,6 +1932,11 @@ describe("viewing a game", () => {
             const game = gameFactory({
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [player],
+            })
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
             })
             mockRequest({
               apiToken,
@@ -1810,6 +2009,11 @@ describe("viewing a game", () => {
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
               })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
+              })
               mockRequest({
                 apiToken,
                 method: "get",
@@ -1876,6 +2080,11 @@ describe("viewing a game", () => {
               const game = gameFactory({
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
+              })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
               })
               mockRequest({
                 apiToken,
@@ -1951,6 +2160,11 @@ describe("viewing a game", () => {
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [player],
             })
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -2022,6 +2236,11 @@ describe("viewing a game", () => {
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
               })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
+              })
               mockRequest({
                 apiToken,
                 method: "get",
@@ -2088,6 +2307,11 @@ describe("viewing a game", () => {
               const game = gameFactory({
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
+              })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
               })
               mockRequest({
                 apiToken,
@@ -2164,6 +2388,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -2213,6 +2442,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -2260,6 +2494,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -2301,6 +2540,11 @@ describe("viewing a game", () => {
           })
           const team = teamFactory()
           const apiToken = await mockLoggedInPlayer(player)
+          mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+            apiToken,
+            team,
+            unstable_settings,
+          })
           mockRequest({
             apiToken,
             method: "get",
@@ -2355,6 +2599,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -2399,6 +2648,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -2444,25 +2698,25 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              games: [game],
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
-              path: `/teams/${team.id}/games`,
+              path: `/teams/${team.id}/games/${game.id}`,
               response: [game],
             })
 
             ERTL.renderRouter("src/app", {
-              initialUrl: `/teams/${team.id}/games`,
+              initialUrl: `/teams/${team.id}/games/${game.id}`,
             })
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-            })
-
-            ERTL.fireEvent.press(ERTL.screen.getByTestId("Game List Item"))
-
-            await ERTL.waitFor(() => {
-              expect(ERTL.screen).toShowText("Maybe")
             })
 
             mockRequest({
@@ -2499,6 +2753,7 @@ describe("viewing a game", () => {
         })
 
         describe("when leaving the games details screen and entering another games details screen", () => {
+          // TODO: here
           it("does not change the Maybe selection on the details screen of the other game", async () => {
             const player = playerFactory()
             const games = [
@@ -2513,25 +2768,25 @@ describe("viewing a game", () => {
             ]
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              games: games,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
-              path: `/teams/${team.id}/games`,
+              path: `/teams/${team.id}/games/${games[0].id}`,
               response: games,
             })
 
             ERTL.renderRouter("src/app", {
-              initialUrl: `/teams/${team.id}/games`,
+              initialUrl: `/teams/${team.id}/games/${games[0].id}`,
             })
 
             await ERTL.waitFor(() => {
               expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-            })
-
-            await ERTL.waitFor(() => {
-              ERTL.fireEvent.press(
-                ERTL.screen.getAllByTestId("Game List Item")[0],
-              )
             })
 
             await ERTL.waitFor(() => {
@@ -2582,6 +2837,11 @@ describe("viewing a game", () => {
             })
             const team = teamFactory()
             const apiToken = await mockLoggedInPlayer(player)
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -2626,6 +2886,11 @@ describe("viewing a game", () => {
             const game = gameFactory({
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [player],
+            })
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
             })
             mockRequest({
               apiToken,
@@ -2698,6 +2963,11 @@ describe("viewing a game", () => {
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
               })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
+              })
               mockRequest({
                 apiToken,
                 method: "get",
@@ -2764,6 +3034,11 @@ describe("viewing a game", () => {
               const game = gameFactory({
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
+              })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
               })
               mockRequest({
                 apiToken,
@@ -2844,6 +3119,11 @@ describe("viewing a game", () => {
               played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
               players: [player],
             })
+            mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+              apiToken,
+              team,
+              unstable_settings,
+            })
             mockRequest({
               apiToken,
               method: "get",
@@ -2915,6 +3195,11 @@ describe("viewing a game", () => {
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
               })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
+              })
               mockRequest({
                 apiToken,
                 method: "get",
@@ -2981,6 +3266,11 @@ describe("viewing a game", () => {
               const game = gameFactory({
                 played_at: gamePlayedAtValue({ minutesInFuture: 1 }),
                 players: [player],
+              })
+              mockGetGamesToKeepBackButtonsWorkingAfterDeepLink({
+                apiToken,
+                team,
+                unstable_settings,
               })
               mockRequest({
                 apiToken,

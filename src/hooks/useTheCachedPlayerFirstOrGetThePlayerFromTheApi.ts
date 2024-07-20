@@ -4,6 +4,8 @@ import type { Player } from "types/Player"
 import Config from "Config"
 import useRefreshablePlayers from "hooks/useRefreshablePlayers"
 import useApiToken from "./useApiToken"
+import { unstable_settings } from "app/teams/[teamId]/players/_layout"
+import previousScreenIsPrefetchingResourcesToKeepBackButtonsWorkingAfterDeepLink from "helpers/previousScreenIsPrefetchingResourcesToKeepBackButtonsWorkingAfterDeepLink"
 
 type UseLocalSearchParamsReturnType = string | string[] | undefined
 interface Arguments {
@@ -26,9 +28,14 @@ const useTheCachedPlayerFirstOrGetThePlayerFromTheApi = ({
       const getPlayer = async (): Promise<void> => {
         const getPlayerFromCache = (): Player | undefined => {
           if (
+            /* c8 ignore start */
+            // This is only untested (and currently unused) because of the
+            // preloading that's happening to keep back buttons working after
+            // deep links are used. Git blame me.
             refreshablePlayers.status === "Success" ||
             refreshablePlayers.status === "Refreshing" ||
             refreshablePlayers.status === "Refresh Error"
+            /* c8 ignore end */
           ) {
             return refreshablePlayers.data.find(
               refreshablePlayer => refreshablePlayer.id === Number(playerId),
@@ -57,7 +64,16 @@ const useTheCachedPlayerFirstOrGetThePlayerFromTheApi = ({
         setPlayer(cachedPlayer ? cachedPlayer : await getPlayerFromApi())
       }
 
-      getPlayer()
+      if (
+        !previousScreenIsPrefetchingResourcesToKeepBackButtonsWorkingAfterDeepLink<
+          Player[]
+        >({
+          unstable_settings,
+          refreshableResources: refreshablePlayers,
+        })
+      ) {
+        getPlayer()
+      }
     }, [teamId, playerId, refreshablePlayers, apiToken]),
   )
 

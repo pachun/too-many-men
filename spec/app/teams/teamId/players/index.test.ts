@@ -26,7 +26,7 @@ describe("viewing a team", () => {
     ERTL.renderRouter("src/app", { initialUrl: `/teams/${team.id}` })
 
     await ERTL.waitFor(() => {
-      expect(ERTL.screen).toHaveNavigationBarTitle("Players")
+      expect(ERTL.screen).toHaveNavigationBarTitle({ title: "Players" })
     })
   })
 

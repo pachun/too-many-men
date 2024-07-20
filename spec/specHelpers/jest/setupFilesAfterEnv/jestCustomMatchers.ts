@@ -25,20 +25,33 @@ expect.extend({
           : `expected test id "${testID}" to be shown`,
     }
   },
-  toHaveNavigationBarTitle: (component: RenderResult, title: string) => {
-    const actualTitle = component
-      .UNSAFE_getAllByType(
-        "RNSScreenStackHeaderConfig" as unknown as ComponentType<unknown>,
-      )
-      .at(0).props.title
+  toHaveNavigationBarTitle: (
+    component: RenderResult,
+    {
+      title,
+      nestedNavigationBarIndex,
+    }: { title: string; nestedNavigationBarIndex?: number },
+  ) => {
+    const shallowestNestedNavigationBarIndex = 0
+    const navigationBarIndex =
+      nestedNavigationBarIndex === undefined
+        ? shallowestNestedNavigationBarIndex
+        : nestedNavigationBarIndex
+    const allNavigationBars = component.UNSAFE_getAllByType(
+      "RNSScreenStackHeaderConfig" as unknown as ComponentType<unknown>,
+    )
+    const allNavigationBarTitles = allNavigationBars.map(
+      navigationBar => navigationBar.props.title,
+    )
+    const actualTitle = allNavigationBars.at(navigationBarIndex).props.title
     const pass = actualTitle === title
 
     return {
       pass,
       message: (): string =>
         pass
-          ? `expected "${title}" not to be the navigation bar title`
-          : `expected "${title}" to be the navigation bar title but got "${actualTitle}"`,
+          ? `expected "${title}" not to be the navigation bar title at index ${navigationBarIndex} (nav bar titles: ${JSON.stringify(allNavigationBarTitles)})`
+          : `expected "${title}" to be the navigation bar title at index ${navigationBarIndex} but got "${actualTitle}" (nav bar titles: ${JSON.stringify(allNavigationBarTitles)})`,
     }
   },
 })

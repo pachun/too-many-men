@@ -4,6 +4,27 @@ import playerFactory from "spec/specHelpers/factories/player"
 import { mockRequest } from "spec/specHelpers/mockApi"
 import teamFactory from "spec/specHelpers/factories/team"
 import mockLoggedInPlayer from "spec/specHelpers/mockLoggedInPlayer"
+import { unstable_settings } from "app/teams/[teamId]/players/_layout"
+import type { Team } from "types/Team"
+import type { UnstableSettings } from "types/UnstableSettings"
+
+const mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink = ({
+  apiToken,
+  team,
+  unstable_settings:
+    _unusedButCalledOutHereToShowTheNeedForTheMockInThisFunction,
+}: {
+  apiToken: string
+  team: Team
+  unstable_settings: UnstableSettings
+}): void => {
+  mockRequest({
+    apiToken,
+    method: "get",
+    path: `/teams/${team.id}/players`,
+    response: [],
+  })
+}
 
 describe("viewing a player", () => {
   afterEach(async () => {
@@ -35,6 +56,11 @@ describe("viewing a player", () => {
       const player = playerFactory()
       const apiToken = await mockLoggedInPlayer(player)
       const team = teamFactory()
+      mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -47,7 +73,10 @@ describe("viewing a player", () => {
       })
 
       await ERTL.waitFor(() => {
-        expect(ERTL.screen).toHaveNavigationBarTitle("")
+        expect(ERTL.screen).toHaveNavigationBarTitle({
+          title: "",
+          nestedNavigationBarIndex: 1,
+        })
       })
     })
   })
@@ -57,6 +86,11 @@ describe("viewing a player", () => {
       const player = playerFactory()
       const apiToken = await mockLoggedInPlayer(player)
       const team = teamFactory()
+      mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -80,6 +114,11 @@ describe("viewing a player", () => {
       })
       const apiToken = await mockLoggedInPlayer(player)
       const team = teamFactory()
+      mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -92,7 +131,10 @@ describe("viewing a player", () => {
       })
 
       await ERTL.waitFor(() => {
-        expect(ERTL.screen).toHaveNavigationBarTitle("Jim Halpert")
+        expect(ERTL.screen).toHaveNavigationBarTitle({
+          title: "Jim Halpert",
+          nestedNavigationBarIndex: 1,
+        })
       })
     })
 
@@ -100,6 +142,11 @@ describe("viewing a player", () => {
       const player = playerFactory({ phone_number: "0123456789" })
       const apiToken = await mockLoggedInPlayer(player)
       const team = teamFactory()
+      mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",
@@ -120,6 +167,11 @@ describe("viewing a player", () => {
       const player = playerFactory({ jersey_number: 12 })
       const apiToken = await mockLoggedInPlayer(player)
       const team = teamFactory()
+      mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink({
+        apiToken,
+        team,
+        unstable_settings,
+      })
       mockRequest({
         apiToken,
         method: "get",

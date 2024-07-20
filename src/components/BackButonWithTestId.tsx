@@ -24,18 +24,14 @@ const IOSBackButton = (props: { title: string }): React.ReactElement => {
 
 const BackButtonWithTestId = (props: {
   title: string
-  route?: string
+  route: string
 }): React.ReactElement => {
   const theme = useTheme()
   const router = ExpoRouter.useRouter()
 
   const { route } = props
   const goBack = React.useCallback(() => {
-    if (route) {
-      router.navigate(route)
-    } else {
-      router.back()
-    }
+    router.navigate(route)
   }, [router, route])
 
   return (

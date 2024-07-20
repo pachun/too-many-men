@@ -34,7 +34,7 @@ describe("viewing the games tab", () => {
     ERTL.renderRouter("src/app", { initialUrl: `/teams/${team.id}/games` })
 
     await ERTL.waitFor(() => {
-      expect(ERTL.screen).toHaveNavigationBarTitle("Games")
+      expect(ERTL.screen).toHaveNavigationBarTitle({ title: "Games" })
     })
   })
 

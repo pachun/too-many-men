@@ -32,7 +32,12 @@ const Game = (): React.ReactElement => {
       <ExpoRouter.Stack.Screen
         options={{
           title: dateLabel,
-          headerLeft: () => <BackButtonWithTestId title="Games" />,
+          headerLeft: () => (
+            <BackButtonWithTestId
+              title="Games"
+              route={`/teams/${teamId}/games`}
+            />
+          ),
         }}
       />
       <ReactNative.ScrollView style={{ flex: 1 }}>
