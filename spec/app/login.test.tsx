@@ -22,6 +22,10 @@ describe("opening the app", () => {
   it("formats the phone number as the user types it in", async () => {
     ERTL.renderRouter("src/app", { initialUrl: "/" })
 
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+    })
+
     typeIntoTestId("Phone Number Field", "012")
 
     await ERTL.waitFor(() => {
@@ -52,6 +56,10 @@ describe("opening the app", () => {
   it("prevents more than 10 digits from being entered", async () => {
     ERTL.renderRouter("src/app", { initialUrl: "/" })
 
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+    })
+
     typeIntoTestId("Phone Number Field", "01234567890")
 
     await ERTL.waitFor(() => {
@@ -61,6 +69,10 @@ describe("opening the app", () => {
 
   it("permits editing full phone numbers", async () => {
     ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+    })
 
     typeIntoTestId("Phone Number Field", "0123456789{Backspace}")
 
@@ -81,6 +93,10 @@ describe("opening the app", () => {
 
     ERTL.renderRouter("src/app", { initialUrl: "/" })
 
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+    })
+
     typeIntoTestId("Phone Number Field", enteredCharacters)
 
     await ERTL.waitFor(() => {
@@ -94,6 +110,10 @@ describe("opening the app", () => {
       "(012)  34-56789"
 
     ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+    await ERTL.waitFor(() => {
+      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+    })
 
     // an intentional fireEvent rather than a userEvent is used here because it
     // more closely simulates what happens when a phone number in the
@@ -118,6 +138,10 @@ describe("opening the app", () => {
       ERTL.renderRouter("src/app", { initialUrl: "/" })
 
       await ERTL.waitFor(() => {
+        expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+      })
+
+      await ERTL.waitFor(() => {
         expect(ERTL.screen).not.toShowText("Continue")
       })
 
@@ -139,6 +163,10 @@ describe("opening the app", () => {
           })
 
           ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+          })
 
           typeIntoTestId("Phone Number Field", "0123456789")
 
@@ -162,6 +190,10 @@ describe("opening the app", () => {
         })
 
         ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+        await ERTL.waitFor(() => {
+          expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+        })
 
         typeIntoTestId("Phone Number Field", "0123456789")
 
@@ -189,6 +221,10 @@ describe("opening the app", () => {
 
         ERTL.renderRouter("src/app", { initialUrl: "/" })
 
+        await ERTL.waitFor(() => {
+          expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+        })
+
         typeIntoTestId("Phone Number Field", "0123456789")
 
         await ERTL.waitFor(() => {
@@ -213,6 +249,10 @@ describe("opening the app", () => {
           })
 
           ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+          })
 
           typeIntoTestId("Phone Number Field", "0123456789")
 
@@ -242,6 +282,10 @@ describe("opening the app", () => {
           })
 
           ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+          await ERTL.waitFor(() => {
+            expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+          })
 
           await ERTL.waitFor(() => {
             expect(ERTL.screen.getByTestId("Phone Number Field"))
@@ -316,6 +360,10 @@ describe("opening the app", () => {
 
             ERTL.renderRouter("src/app", { initialUrl: "/" })
 
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
             typeIntoTestId("Phone Number Field", "0123456789")
 
             await ERTL.waitFor(() => {
@@ -371,6 +419,10 @@ describe("opening the app", () => {
             })
 
             ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
 
             typeIntoTestId("Phone Number Field", "0123456789")
 
@@ -428,6 +480,10 @@ describe("opening the app", () => {
             })
 
             ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
 
             typeIntoTestId("Phone Number Field", "0123456789")
 
@@ -502,6 +558,10 @@ describe("opening the app", () => {
 
             ERTL.renderRouter("src/app", { initialUrl: "/" })
 
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
+
             typeIntoTestId("Phone Number Field", "0123456789")
 
             await ERTL.waitFor(() => {
@@ -550,6 +610,10 @@ describe("opening the app", () => {
             })
 
             ERTL.renderRouter("src/app", { initialUrl: "/" })
+
+            await ERTL.waitFor(() => {
+              expect(ERTL.screen).not.toShowTestId("Loading Spinner")
+            })
 
             typeIntoTestId("Phone Number Field", "0123456789")
 
