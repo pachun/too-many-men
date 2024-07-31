@@ -12,6 +12,7 @@ import ComposedProviders from "components/ComposedProviders"
 import ApiTokenProvider from "components/ApiTokenProvider"
 import UserIdProvider from "components/UserIdProvider"
 import RefreshableTeamsProvider from "components/RefreshableTeamsProvider"
+import KeyboardHeightProvider from "components/KeyboardHeightProvider"
 
 initializeAptabase()
 
@@ -27,6 +28,7 @@ const Layout = (): React.ReactElement => {
       <ExpoStatusBar.StatusBar style="auto" />
       <ComposedProviders
         providers={[
+          KeyboardHeightProvider,
           ThemeProvider,
           ApiTokenProvider,
           UserIdProvider,

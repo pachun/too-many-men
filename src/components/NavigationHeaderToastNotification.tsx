@@ -28,7 +28,7 @@ const extraHeightToPreventWhitespaceShowingAboveBounceInAnimation = 50
 const showOnTopOfNavigationHeader = { zIndex: 1 }
 
 // type Type = "success" | "warning" | "error" | "info"
-type Type = "warning"
+type Type = "success" | "warning"
 
 export type NotificationType = {
   type: Type
@@ -104,12 +104,12 @@ const NavigationHeaderToastNotificationProvider = ({
 
   const attributes = useMemo(() => {
     switch (type) {
-      // case "success":
-      //   return {
-      //     backgroundColor: "#ebf7ee",
-      //     borderColor: "#bde5c8",
-      //     icon: <AntDesign name="check" size={22} color="#3ebe61" />,
-      //   }
+      case "success":
+        return {
+          backgroundColor: "#ebf7ee",
+          borderColor: "#bde5c8",
+          icon: <AntDesign name="check" size={22} color="#3ebe61" />,
+        }
       // case "error":
       //   return {
       //     backgroundColor: "#FCECE9",

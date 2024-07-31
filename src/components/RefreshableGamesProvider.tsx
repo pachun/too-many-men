@@ -13,7 +13,10 @@ export interface RefreshableGamesContextType {
 
 export const RefreshableGamesContext =
   React.createContext<RefreshableGamesContextType>({
-    refreshableGames: { status: "Not Started" },
+    refreshableGames: {
+      type: "Without Data",
+      status: "Not Started",
+    },
     setRefreshableGames: emptyFunctionForInitializingContexts,
   })
 
@@ -21,6 +24,7 @@ const RefreshableGamesProvider: ProviderType = ({ children }) => {
   const [refreshableGames, setRefreshableGames] = React.useState<
     RefreshableRequest<Game[]>
   >({
+    type: "Without Data",
     status: "Not Started",
   })
 

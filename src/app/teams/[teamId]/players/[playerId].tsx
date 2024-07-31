@@ -3,17 +3,13 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import formatPhoneNumber from "helpers/formatPhoneNumber"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
-import useTheCachedPlayerFirstOrGetThePlayerFromTheApi from "hooks/useTheCachedPlayerFirstOrGetThePlayerFromTheApi"
 import LabeledValue from "components/LabeledValue"
 import BackButtonWithTestId from "components/BackButonWithTestId"
+import useCurrentPlayer from "hooks/useCurrentPlayer"
 
 const Player = (): React.ReactElement => {
-  const { teamId, playerId } = ExpoRouter.useLocalSearchParams()
-
-  const player = useTheCachedPlayerFirstOrGetThePlayerFromTheApi({
-    teamId,
-    playerId,
-  })
+  const player = useCurrentPlayer()
+  const { teamId } = ExpoRouter.useLocalSearchParams()
 
   const navigationBarTitleLabel = React.useMemo(
     () => `${player?.first_name} ${player?.last_name}`,

@@ -11,7 +11,10 @@ export interface RefreshableTeamsContextType {
 
 export const RefreshableTeamsContext =
   React.createContext<RefreshableTeamsContextType>({
-    refreshableTeams: { status: "Not Started" },
+    refreshableTeams: {
+      type: "Without Data",
+      status: "Not Started",
+    },
     setRefreshableTeams: emptyFunctionForInitializingContexts,
   })
 
@@ -19,6 +22,7 @@ const RefreshableTeamsProvider: ProviderType = ({ children }) => {
   const [refreshableTeams, setRefreshableTeams] = React.useState<
     RefreshableRequest<Team[]>
   >({
+    type: "Without Data",
     status: "Not Started",
   })
 

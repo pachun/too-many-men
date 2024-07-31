@@ -3,17 +3,27 @@ import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
 import * as DateFNS from "date-fns"
 import CenteredLoadingSpinner from "components/CenteredLoadingSpinner"
-import useTheCachedGameFirstOrGetTheGameFromTheApi from "hooks/useTheCachedGameFirstOrGetTheGameFromTheApi"
 import LabeledValue from "components/LabeledValue"
 import AreYouGoingToThisGame from "components/AreYouGoingToThisGame"
 import GameAttendanceList from "components/GameAttendanceList"
 import VerticalSpacing from "components/VerticalSpacing"
 import BackButtonWithTestId from "components/BackButonWithTestId"
+import useTheCachedResourceFirstOrGetTheResourceFromTheApi from "hooks/useTheCachedResourceFirstOrGetTheResourceFromTheApi"
+import { unstable_settings } from "./_layout"
+import useRefreshableGames from "hooks/useRefreshableGames"
 
 const Game = (): React.ReactElement => {
   const { teamId, gameId } = ExpoRouter.useLocalSearchParams()
 
-  const game = useTheCachedGameFirstOrGetTheGameFromTheApi({ teamId, gameId })
+  const { refreshableGames, setRefreshableGames } = useRefreshableGames()
+
+  const game = useTheCachedResourceFirstOrGetTheResourceFromTheApi({
+    resourceId: Number(gameId),
+    resourceApiPath: `/teams/${teamId}/games/${gameId}`,
+    refreshableResources: refreshableGames,
+    setRefreshableResources: setRefreshableGames,
+    unstable_settings,
+  })
 
   const dateLabel = React.useMemo((): string => {
     return game?.played_at

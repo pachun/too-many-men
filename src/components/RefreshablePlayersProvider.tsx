@@ -13,7 +13,7 @@ export interface RefreshablePlayersContextType {
 
 export const RefreshablePlayersContext =
   React.createContext<RefreshablePlayersContextType>({
-    refreshablePlayers: { status: "Not Started" },
+    refreshablePlayers: { type: "Without Data", status: "Not Started" },
     setRefreshablePlayers: emptyFunctionForInitializingContexts,
   })
 
@@ -21,6 +21,7 @@ const RefreshablePlayersProvider: ProviderType = ({ children }) => {
   const [refreshablePlayers, setRefreshablePlayers] = React.useState<
     RefreshableRequest<Player[]>
   >({
+    type: "Without Data",
     status: "Not Started",
   })
 

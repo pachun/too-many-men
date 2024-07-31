@@ -26,17 +26,24 @@ function RefreshableResourceList<Resource>({
   const { getResource } = useApi()
 
   const loadResources = React.useCallback(async (): Promise<void> => {
-    setRefreshableResources({ status: "Loading" })
+    setRefreshableResources({
+      type: "Without Data",
+      status: "Loading",
+    })
     getResource<Resource[]>({
       resourceApiPath,
       onSuccess: data => {
         setRefreshableResources({
+          type: "With Data",
           status: "Success",
           data,
         })
       },
       onFailure: () => {
-        setRefreshableResources({ status: "Load Error" })
+        setRefreshableResources({
+          type: "Without Data",
+          status: "Load Error",
+        })
       },
     })
   }, [resourceApiPath, setRefreshableResources, getResource])
@@ -44,6 +51,7 @@ function RefreshableResourceList<Resource>({
   const refreshResources = React.useCallback(
     async (resourcesBeforeRefresh: Resource[]): Promise<void> => {
       setRefreshableResources({
+        type: "With Data",
         status: "Refreshing",
         data: resourcesBeforeRefresh,
       })
@@ -51,12 +59,14 @@ function RefreshableResourceList<Resource>({
         resourceApiPath,
         onSuccess: data => {
           setRefreshableResources({
+            type: "With Data",
             status: "Success",
             data,
           })
         },
         onFailure: () => {
           setRefreshableResources({
+            type: "With Data",
             status: "Refresh Error",
             data: resourcesBeforeRefresh,
           })

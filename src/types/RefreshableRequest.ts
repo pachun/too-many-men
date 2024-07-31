@@ -3,11 +3,11 @@ export type RefreshableRequest<T> =
   | RefreshableRequestWithData<T>
 
 export type RefreshableRequestWithoutData =
-  | { status: "Not Started" }
-  | { status: "Loading" }
-  | { status: "Load Error" }
+  | { type: "Without Data"; status: "Not Started" }
+  | { type: "Without Data"; status: "Loading" }
+  | { type: "Without Data"; status: "Load Error" }
 
 export type RefreshableRequestWithData<T> =
-  | { status: "Success"; data: T }
-  | { status: "Refreshing"; data: T }
-  | { status: "Refresh Error"; data: T }
+  | { type: "With Data"; status: "Success"; data: T }
+  | { type: "With Data"; status: "Refreshing"; data: T }
+  | { type: "With Data"; status: "Refresh Error"; data: T }

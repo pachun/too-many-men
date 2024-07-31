@@ -4,7 +4,7 @@ import { mockRequest } from "spec/specHelpers/mockApi"
 import mockLoggedInPlayer from "spec/specHelpers/mockLoggedInPlayer"
 
 describe("opening the app when already authenticated", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     await AsyncStorage.clear()
   })
 

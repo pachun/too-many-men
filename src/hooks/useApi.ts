@@ -5,7 +5,6 @@ import type { CheckTextMessageConfirmationCodeRequestResponse } from "types/Chec
 import type { NotificationType } from "components/NavigationHeaderToastNotification"
 import useApiToken from "hooks/useApiToken"
 import { trackAptabaseEvent } from "helpers/aptabase"
-import emptyFunction from "helpers/emptyFunctionForInitializingContexts"
 
 const troubleConnectingToTheInternetNotification: NotificationType = {
   type: "warning",
@@ -29,10 +28,17 @@ type CheckTextMessageConfirmationCodeArguments = {
 
 type SendTextMessageConfirmationCodeArguments = { phoneNumber: string }
 
-type GetResourcesArguments<Resources> = {
+type GetResourceArguments<Resources> = {
   resourceApiPath: string
   onSuccess: (resources: Resources) => void
-  onFailure?: () => void
+  onFailure: () => void
+}
+
+type CreateResourceArguments<Resource> = {
+  resourceApiPath: string
+  resource: Partial<Resource>
+  onSuccess: () => void
+  onFailure: () => void
 }
 
 interface useApiReturnType {
@@ -42,8 +48,9 @@ interface useApiReturnType {
   checkTextMessageConfirmationCode: (
     args: CheckTextMessageConfirmationCodeArguments,
   ) => Promise<void>
-  getResource: <Resources>(
-    args: GetResourcesArguments<Resources>,
+  getResource: <Resource>(args: GetResourceArguments<Resource>) => Promise<void>
+  createResource: <Resource>(
+    args: CreateResourceArguments<Resource>,
   ) => Promise<void>
 }
 
@@ -59,12 +66,16 @@ const useApi = (): useApiReturnType => {
     [apiToken],
   )
 
+  const automaticOnFailure = React.useCallback(() => {
+    showNotification(troubleConnectingToTheInternetNotification)
+  }, [showNotification])
+
   const getResource = React.useCallback(
     async <Resource>({
       resourceApiPath,
       onSuccess,
-      onFailure = emptyFunction,
-    }: GetResourcesArguments<Resource>): Promise<void> => {
+      onFailure,
+    }: GetResourceArguments<Resource>): Promise<void> => {
       if (apiToken) {
         try {
           const response = await fetch(`${Config.apiUrl}${resourceApiPath}`, {
@@ -75,12 +86,36 @@ const useApi = (): useApiReturnType => {
           trackAptabaseEvent(`Loaded ${resourceApiPath}`)
         } catch {
           trackAptabaseEvent(`Failed to load ${resourceApiPath}`)
-          showNotification(troubleConnectingToTheInternetNotification)
+          automaticOnFailure()
           onFailure()
         }
       }
     },
-    [headers, showNotification, apiToken],
+    [headers, apiToken, automaticOnFailure],
+  )
+
+  const createResource = React.useCallback(
+    async <Resource>({
+      resource,
+      resourceApiPath,
+      onSuccess,
+      onFailure,
+    }: CreateResourceArguments<Resource>): Promise<void> => {
+      if (apiToken) {
+        try {
+          await fetch(`${Config.apiUrl}${resourceApiPath}`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(resource),
+          })
+          onSuccess()
+        } catch {
+          automaticOnFailure()
+          onFailure()
+        }
+      }
+    },
+    [apiToken, automaticOnFailure, headers],
   )
 
   const sendTextMessageConfirmationCode = React.useCallback(
@@ -150,6 +185,7 @@ const useApi = (): useApiReturnType => {
     sendTextMessageConfirmationCode,
     checkTextMessageConfirmationCode,
     getResource,
+    createResource,
   }
 }
 

@@ -1,15 +1,22 @@
 import React from "react"
 import * as ReactNative from "react-native"
 import * as ExpoRouter from "expo-router"
-import type * as Animatable from "react-native-animatable"
+import * as Animatable from "react-native-animatable"
 import useTheme from "hooks/useTheme"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import ConfirmationCodeInput from "components/ConfirmationCodeInput"
-import PhoneNumberInput from "components/PhoneNumberInput"
 import useApi from "hooks/useApi"
 import waitForKeyboardToBeDismissed from "helpers/waitForKeyboardToBeDismissed"
 import useUserId from "hooks/useUserId"
 import useApiToken from "hooks/useApiToken"
+import ForegroundItem from "components/ForegroundItem"
+import PhoneNumberField, {
+  numberOfDigitsInFullPhoneNumber,
+} from "components/PhoneNumberField"
+import AppText from "components/AppText"
+import VerticalSpacing from "components/VerticalSpacing"
+import AboveKeyboardButton from "components/AboveKeyboardButton"
+
+const numberOfDigitsInConfirmationCodes = 6
 
 type InputType = "Phone Number" | "Confirmation Code"
 
@@ -37,7 +44,7 @@ const Login = (): React.ReactElement => {
     setConfirmationCode("")
   }, [])
 
-  const focusThePhoneNumberField = React.useCallback(async () => {
+  const showPhoneNumberInput = React.useCallback(async () => {
     resetLoginState()
     /* c8 ignore start */
     // This is required for physical iOS devices, but we're unsure how to test it
@@ -51,7 +58,7 @@ const Login = (): React.ReactElement => {
     async ({ apiToken, userId }: { apiToken: string; userId: number }) => {
       await setApiToken(apiToken)
       await setUserId(userId)
-      router.navigate("/teams")
+      router.push("/teams")
       resetLoginState()
     },
     [resetLoginState, router, setApiToken, setUserId],
@@ -76,7 +83,7 @@ const Login = (): React.ReactElement => {
       whenTheCodeIsCorrect: login,
       whenTheCodeIsIncorrectTheFirstOrSecondTime:
         shakeAndEmptyTheConfirmationCodeField,
-      whenTheCodeIsIncorrectTheThirdTime: focusThePhoneNumberField,
+      whenTheCodeIsIncorrectTheThirdTime: showPhoneNumberInput,
     })
   }, [
     api,
@@ -84,32 +91,100 @@ const Login = (): React.ReactElement => {
     confirmationCode,
     login,
     shakeAndEmptyTheConfirmationCodeField,
-    focusThePhoneNumberField,
+    showPhoneNumberInput,
   ])
+
+  const focusPhoneNumberField = (): void => phoneNumberFieldRef.current?.focus()
+
+  const confirmationCodeLabelStyle: ReactNative.StyleProp<ReactNative.TextStyle> =
+    React.useMemo(() => {
+      const isShowingConfirmationCodePlaceholderText =
+        confirmationCode.length === 0
+      return isShowingConfirmationCodePlaceholderText
+        ? {
+            color: theme.colors.secondaryLabel,
+            fontSize: theme.fontSize,
+          }
+        : {
+            color: theme.colors.text,
+            fontSize: theme.fontSize,
+            fontWeight: "bold",
+          }
+    }, [confirmationCode, theme])
 
   return (
     <ReactNative.View
       style={{
         flex: 1,
         backgroundColor: theme.colors.background,
-        paddingTop: insets.top,
+        paddingTop: insets.top + 100,
       }}
     >
-      <PhoneNumberInput
-        ref={phoneNumberFieldRef}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
-        isVisible={inputType === "Phone Number"}
-        onSubmit={sendTextMessageConfirmationCode}
-      />
-      <ConfirmationCodeInput
-        ref={refForShakeAnimatingTheConfirmationCodeFieldAfterIncorrectEntries}
-        confirmationCode={confirmationCode}
-        setConfirmationCode={setConfirmationCode}
-        isVisible={inputType === "Confirmation Code"}
-        onSubmit={checkTextMessageConfirmationCode}
-        onCancel={focusThePhoneNumberField}
-      />
+      {inputType === "Phone Number" && (
+        <>
+          <ReactNative.Pressable onPress={focusPhoneNumberField}>
+            <ForegroundItem style={{ alignItems: "center" }}>
+              <AppText>What's your phone number?</AppText>
+              <VerticalSpacing />
+              <PhoneNumberField
+                autoFocus
+                ref={phoneNumberFieldRef}
+                phoneNumber={phoneNumber}
+                onChangePhoneNumber={setPhoneNumber}
+                testID="Phone Number Field"
+                style={{
+                  color: theme.colors.text,
+                  fontSize: theme.fontSize,
+                  fontWeight: "bold",
+                }}
+              />
+            </ForegroundItem>
+          </ReactNative.Pressable>
+          {phoneNumber.length === numberOfDigitsInFullPhoneNumber && (
+            <AboveKeyboardButton
+              title="Continue"
+              onPress={sendTextMessageConfirmationCode}
+            />
+          )}
+        </>
+      )}
+      {inputType === "Confirmation Code" && (
+        <>
+          <ForegroundItem style={{ alignItems: "center" }}>
+            <AppText>We texted you some numbers</AppText>
+            <VerticalSpacing />
+            <Animatable.View
+              ref={
+                refForShakeAnimatingTheConfirmationCodeFieldAfterIncorrectEntries
+              }
+            >
+              <ReactNative.TextInput
+                style={confirmationCodeLabelStyle}
+                maxLength={numberOfDigitsInConfirmationCodes}
+                placeholder="Enter those here"
+                testID="Confirmation Code Input"
+                textContentType="oneTimeCode"
+                autoFocus
+                keyboardType="number-pad"
+                value={confirmationCode}
+                onChangeText={setConfirmationCode}
+              />
+            </Animatable.View>
+          </ForegroundItem>
+          <VerticalSpacing />
+          <ReactNative.Button
+            testID="Cancel Button"
+            title="Cancel"
+            onPress={showPhoneNumberInput}
+          />
+          {confirmationCode.length === numberOfDigitsInConfirmationCodes && (
+            <AboveKeyboardButton
+              title="Confirm"
+              onPress={checkTextMessageConfirmationCode}
+            />
+          )}
+        </>
+      )}
     </ReactNative.View>
   )
 }

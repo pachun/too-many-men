@@ -30,6 +30,29 @@ describe("viewing a team", () => {
     })
   })
 
+  it("shows a button to add players to the team", async () => {
+    const apiToken = await mockLoggedInPlayer()
+    const team = teamFactory()
+
+    const getPlayersRequest = mockRequest({
+      method: "get",
+      path: `/teams/${team.id}/players`,
+      apiToken,
+      response: [],
+    })
+
+    ERTL.renderRouter("src/app", { initialUrl: `/teams/${team.id}` })
+
+    await ERTL.waitFor(() => expect(getPlayersRequest.isDone()).toBe(true))
+    await ERTL.waitFor(() => expect(ERTL.screen).toShowTestId("Add Player"))
+
+    ERTL.fireEvent.press(ERTL.screen.getByTestId("Add Player"))
+
+    await ERTL.waitFor(() =>
+      expect(ERTL.screen).toHavePathname(`/teams/${team.id}/players/new`),
+    )
+  })
+
   it("shows a back button to reselect a different team", async () => {
     const apiToken = await mockLoggedInPlayer()
     const team = teamFactory()

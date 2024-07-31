@@ -9,7 +9,9 @@ export const unstable_settings: UnstableSettings = {
 const Layout = (): React.ReactElement => (
   <ExpoRouter.Stack
     screenOptions={{ headerTitleStyle: { fontSize: 20, fontWeight: "bold" } }}
-  />
+  >
+    <ExpoRouter.Stack.Screen name="new" options={{ presentation: "modal" }} />
+  </ExpoRouter.Stack>
 )
 
 export default Layout

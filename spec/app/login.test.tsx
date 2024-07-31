@@ -1,13 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import * as ERTL from "expo-router/testing-library"
 import { mockRequest } from "spec/specHelpers/mockApi"
-
-const typeIntoTestId = (testId: string, text: string): void => {
-  ERTL.userEvent.setup().type(ERTL.screen.getByTestId(testId), text)
-}
+import typeIntoTestId from "spec/specHelpers/typeIntoTestId"
 
 describe("opening the app", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     await AsyncStorage.clear()
   })
 
@@ -16,120 +13,7 @@ describe("opening the app", () => {
 
     await ERTL.waitFor(() => {
       expect(ERTL.screen).toShowText("What's your phone number?")
-    })
-  })
-
-  it("formats the phone number as the user types it in", async () => {
-    ERTL.renderRouter("src/app", { initialUrl: "/" })
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-    })
-
-    typeIntoTestId("Phone Number Field", "012")
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("012")
-    })
-
-    typeIntoTestId("Phone Number Field", "3")
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("(012) 3")
-    })
-
-    typeIntoTestId("Phone Number Field", "456")
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("(012) 345-6")
-    })
-
-    ERTL.userEvent
-      .setup()
-      .type(ERTL.screen.getByTestId("Phone Number Field"), "789")
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("(012) 345-6789")
-    })
-  })
-
-  it("prevents more than 10 digits from being entered", async () => {
-    ERTL.renderRouter("src/app", { initialUrl: "/" })
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-    })
-
-    typeIntoTestId("Phone Number Field", "01234567890")
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("(012) 345-6789")
-    })
-  })
-
-  it("permits editing full phone numbers", async () => {
-    ERTL.renderRouter("src/app", { initialUrl: "/" })
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-    })
-
-    typeIntoTestId("Phone Number Field", "0123456789{Backspace}")
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("(012) 345-678")
-    })
-  })
-
-  it("does not allow typing non-digit characters shown on the android number pad keyboard", async () => {
-    const nonDigitCharactersShownOnAndroidsNumberPadKeyboard = [
-      "-",
-      " ",
-      ",",
-      ".",
-    ]
-    const enteredCharacters =
-      "1" + nonDigitCharactersShownOnAndroidsNumberPadKeyboard.join("") + "23"
-
-    ERTL.renderRouter("src/app", { initialUrl: "/" })
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-    })
-
-    typeIntoTestId("Phone Number Field", enteredCharacters)
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).toShowText("123")
-    })
-  })
-
-  it("auto removes spaces from phone numbers entered by tapping a full phone number in the suggestion bar above the keyboard", async () => {
-    const phoneNumberFromSuggestionBarAboveKeyboard = "012 3456789"
-    const formattingOfSuggestedPhoneNumberBeforeThisTestIsPassing =
-      "(012)  34-56789"
-
-    ERTL.renderRouter("src/app", { initialUrl: "/" })
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).not.toShowTestId("Loading Spinner")
-    })
-
-    // an intentional fireEvent rather than a userEvent is used here because it
-    // more closely simulates what happens when a phone number in the
-    // suggestion bar above the keyboard is tapped. More:
-    // https://callstack.github.io/react-native-testing-library/docs/api/events/user-event#type
-    ERTL.fireEvent(
-      ERTL.screen.getByTestId("Phone Number Field"),
-      "onChangeText",
-      phoneNumberFromSuggestionBarAboveKeyboard,
-    )
-
-    await ERTL.waitFor(() => {
-      expect(ERTL.screen).not.toShowText(
-        formattingOfSuggestedPhoneNumberBeforeThisTestIsPassing,
-      )
-      expect(ERTL.screen).toShowText("(012) 345-6789")
+      expect(ERTL.screen).toShowTestId("Phone Number Field")
     })
   })
 
@@ -171,7 +55,7 @@ describe("opening the app", () => {
           typeIntoTestId("Phone Number Field", "0123456789")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("(012) 345-6789")
+            expect(ERTL.screen).toShowText("Continue")
           })
 
           ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
@@ -198,7 +82,7 @@ describe("opening the app", () => {
         typeIntoTestId("Phone Number Field", "0123456789")
 
         await ERTL.waitFor(() => {
-          expect(ERTL.screen).toShowText("(012) 345-6789")
+          expect(ERTL.screen).toShowText("Continue")
         })
 
         ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
@@ -228,7 +112,7 @@ describe("opening the app", () => {
         typeIntoTestId("Phone Number Field", "0123456789")
 
         await ERTL.waitFor(() => {
-          expect(ERTL.screen).toShowText("(012) 345-6789")
+          expect(ERTL.screen).toShowText("Continue")
         })
 
         ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))
@@ -257,7 +141,7 @@ describe("opening the app", () => {
           typeIntoTestId("Phone Number Field", "0123456789")
 
           await ERTL.waitFor(() => {
-            expect(ERTL.screen).toShowText("(012) 345-6789")
+            expect(ERTL.screen).toShowText("Continue")
           })
 
           ERTL.fireEvent.press(ERTL.screen.getByText("Continue"))

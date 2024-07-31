@@ -54,7 +54,7 @@ const gamePlayedAtValue = ({
   )
 
 describe("viewing a game", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     await AsyncStorage.clear()
   })
 

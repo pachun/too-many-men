@@ -63,7 +63,11 @@ const setUsersResponseToAttendingGame =
       },
     )
 
-    return { status: refreshableGames.status, data: gamesWithUpdatedAttendance }
+    return {
+      type: "With Data",
+      status: refreshableGames.status,
+      data: gamesWithUpdatedAttendance,
+    }
   }
 
 export default setUsersResponseToAttendingGame

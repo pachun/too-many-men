@@ -6,7 +6,7 @@ import mockLoggedInPlayer from "spec/specHelpers/mockLoggedInPlayer"
 import { mockRequest } from "spec/specHelpers/mockApi"
 
 describe("the teams screen", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     await AsyncStorage.clear()
   })
 

@@ -5,29 +5,10 @@ import { mockRequest } from "spec/specHelpers/mockApi"
 import teamFactory from "spec/specHelpers/factories/team"
 import mockLoggedInPlayer from "spec/specHelpers/mockLoggedInPlayer"
 import { unstable_settings } from "app/teams/[teamId]/players/_layout"
-import type { Team } from "types/Team"
-import type { UnstableSettings } from "types/UnstableSettings"
-
-const mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink = ({
-  apiToken,
-  team,
-  unstable_settings:
-    _unusedButCalledOutHereToShowTheNeedForTheMockInThisFunction,
-}: {
-  apiToken: string
-  team: Team
-  unstable_settings: UnstableSettings
-}): void => {
-  mockRequest({
-    apiToken,
-    method: "get",
-    path: `/teams/${team.id}/players`,
-    response: [],
-  })
-}
+import mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink from "spec/specHelpers/mockGetPlayersToKeepBackButtonsWorkingAfterDeepLink"
 
 describe("viewing a player", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     await AsyncStorage.clear()
   })
 
