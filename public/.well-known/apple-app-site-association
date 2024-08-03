@@ -1,0 +1,27 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "46R6UV9U68.com.castlelabs.too-many-men"
+        ],
+        "components": [
+          {
+            "/": "*",
+            "comment": "Matches all routes"
+          }
+        ]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": [
+      "46R6UV9U68.com.castlelabs.too-many-men"
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "46R6UV9U68.com.castlelabs.too-many-men"
+    ]
+  }
+}

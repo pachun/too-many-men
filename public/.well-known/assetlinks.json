@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.castlelabs.too_many_men",
+      "sha256_cert_fingerprints": [
+        "67:3F:64:B7:54:7B:4A:4A:C4:90:F9:80:2D:2A:AC:40:16:68:FE:62:C4:C1:77:11:7D:67:1C:C2:BE:81:FB:15"
+      ]
+    }
+  }
+]

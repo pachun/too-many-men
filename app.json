@@ -3,7 +3,7 @@
     "name": "Too Many Men",
     "slug": "too-many-men",
     "scheme": "too-many-men",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -15,14 +15,29 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.castlelabs.too-many-men"
+      "bundleIdentifier": "com.castlelabs.too-many-men",
+      "associatedDomains": ["applinks:too-many-men.netlify.app"]
     },
     "android": {
       "package": "com.castlelabs.too_many_men",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.too-many-men.netlify.app",
+              "pathPattern": ".*"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
